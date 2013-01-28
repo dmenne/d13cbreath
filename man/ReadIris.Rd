@@ -16,7 +16,8 @@
 }
 \examples{
 filename = system.file("extdata", "standard.txt", package = "D13CBreath")
-ReadIris(filename)
+irisData = ReadIris(filename)
+str(irisData)
 }
 \author{
   Dieter Menne, \email{dieter.menne@menne-biomed.de}
