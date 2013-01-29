@@ -1,6 +1,6 @@
 \name{bluckCoward}
 \alias{bluckCoward}
-\title{Fit Bluck/Coward function to 13C breath test data}
+\title{Fit Bluck/Coward self-corrected function to 13C breath test PDR}
 \usage{
   bluckCoward(time, Dose, m, k, beta)
 }
@@ -16,23 +16,49 @@
   \item{beta}{form factor}
 }
 \value{
-  list with fields \code{FileName, StartTime, EndTime,
-  PatientNumber, PatientID, TestNo, Type, Dose, Height,
-  Weight, T50, TLag, GEC}, and \code{Data} as a data frame
-  of \code{Time, DOB, PDR, PDRfit, CPDR, CPDRfit}
+  values and gradients of estimated PDR for use with nls
+  and nlme
 }
 \description{
-  Functions to fit PDR/DOB data to formula given in Bluck L
-  J C and Coward W A 2006 Measurement of gastric emptying
-  by the C-13-octanoate breath test --- rationalization
-  with scintigraphy Physiol. Meas. 27 279?89 For a review,
-  see Bluck LJC (2009) Recent advances in the
-  interpretation of the 13C octanoate breath test for
-  gastric emptying. Journal of Breath Research, 3 1-8
+  Functions to fit PDR/DOB data to exponential-beta formula
+  given in Sanaka M, Nakada K (2010) Stable isotope breath
+  test for assessing gastric emptying: A comprehensive
+  review J. Smooth Muscle Research 46(6): 267-280
+
+  Bluck L J C and Coward W A 2006 Measurement of gastric
+  emptying by the C-13-octanoate breath test ---
+  rationalization with scintigraphy Physiol. Meas. 27
+  279?89 For a review, see Bluck LJC (2009) Recent advances
+  in the interpretation of the 13C octanoate breath test
+  for gastric emptying. Journal of Breath Research, 3 1-8
 }
 \examples{
-Dose = 100
 start = list(m=20,k=1/100,beta=2)
+
+# Fit to real data set and show different t50 results
+sampleFile = system.file("extdata", "350_20043_0_GER.txt", package = "D13CBreath")
+# Time 0 must be removed to avoid singularity
+breathID = ReadBreathId(sampleFile)
+data = subset(breathID$Data,Time >0)
+sample.nls = nls(PDR~bluckCoward(Time,100,m,k,beta),data=data,start=start)
+data$PDRFitBluck=predict(sample.nls)
+plot(data$Time,data$PDR,pch=16,cex=0.7,xlab="time (min)",ylab="PDR",
+  main="t50 with different methods")
+lines(data$Time,data$PDRFitBluck,col="blue")
+t50 = t50BluckCoward2(coef(sample.nls))
+t50Ghoos = t50Ghoos(coef(sample.nls))
+t50Scint = t50GhoosScintigraphy(coef(sample.nls))
+abline(v=t50,col="red")
+abline(v=t50Ghoos,col="darkgreen",lty=2)
+abline(v=breathID$T50,col="black",lty=4)
+abline(v=t50Scint,col="gray",lty=3)
+text(t50,0,"Self-corrected Bluck Coward",col="red",adj=-0.01)
+text(breathID$T50,0.5,"From BreathID device",col="black",adj=-0.01)
+text(t50Scint,1,"Ghoos scintigraphic",col="gray",adj=-0.01)
+text(t50Ghoos,1.5,"Classic Ghoos",col="darkgreen",adj=-0.01)
+
+# Simulated Data set
+Dose = 100
 set.seed(4711)
 # Do not use time 0, this gives singular gradients
 # If required, shift time=0 by a small positive amount, e.g 0.1
@@ -54,8 +80,10 @@ plot(pdr$time,bluckCoward2(pdr$time,100,coef(pdr.nls)),type="l",
      xlab="time (min)", ylab="cPDR")
 # Show t50
 t50 = t50BluckCoward2(coef(pdr.nls))
-abline(v=t50,col="red")
-abline(h=50,col="red")
+tlag = tLagBluckCoward(coef(pdr.nls))
+abline(v=t50,col="gray")
+abline(v=tlag,col="green")
+abline(h=50,col="gray")
 
 
 # Create simulated data from several patients
@@ -72,10 +100,13 @@ set.seed(4711)
 pdr1$PDR =
   with(pdr1, bluckCoward(time,100,m,k,beta)+rnorm(nrow(pdr1),0,1))
 
+# Compute nls fit for patient A only: fails
+# The following line will produce an error message
 pdr.nls = try(nls(PDR~bluckCoward(time,100,m,k,beta),data=pdr1,start=start,
                   subset=patient=="A"))
 stopifnot(class(pdr.nls)=="try-error")
 
+# Use nlme to fit the whole set with one truncated record
 library(nlme)
 library(lattice)
 library(latticeExtra)
@@ -92,7 +123,9 @@ pdr1$what = "data"
 predData = rbind(pdr1[,c("patient","time","PDR","what")],predData)
 predData$what = as.factor(predData$what)
 xyplot(PDR~time|patient,groups=what,data=predData,cex=0.4,pch=16, type=c("p","l"),
-       main="Patient A has a good fit with nlme with few data")
+    distribute.type=TRUE,
+    main="Patient A gives a good fit with few data using nlme.
+    Borrowing strength in action!")
 }
 \author{
   Dieter Menne, \email{dieter.menne@menne-biomed.de}
