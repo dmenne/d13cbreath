@@ -6,11 +6,11 @@ Author: Dieter Menne
 Maintainer: Dieter Menne <dieter.menne@menne-biomed.de>
 Description: Reads several formats of 13C data (IRIS/Wagner, BreathID)
         Saves data in via RODBC.
-        Fits Bluck/Coward self-correcting formula using nls or nmle on failure.
+        Fits Bluck/Coward self-correcting formula using nls.
         Bluck L J C and Coward W A 2006 Measurement of gastric
-        emptying by the C-13-octanoate breath test?rationalization
-        with scintigraphy Physiol. Meas. 27 279?89
+        emptying by the C-13-octanoate breath test --- rationalization
+        with scintigraphy Physiol. Meas. 27 279-89
 Depends: R (>= 2.14.1)
 Imports: stringr 
-Suggests: testthat
+Suggests: testthat,nlme,lattice,latticeExtra
 License: MIT

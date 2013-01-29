@@ -8,7 +8,9 @@
   \item{filename}{Name of IRIS/Wagner file in csv format}
 }
 \value{
-  \code{readContrasts}
+  list with \code{FileName, PatientName, PatientFirstName,
+  Test, Identifikation}, and data frame \code{Data} with
+  \code{Time} and \code{DOB}
 }
 \description{
   Reads 13C data from IRIS/Wagner Analysen. Currently it

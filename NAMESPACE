@@ -1,3 +1,6 @@
+export(bluckCoward)
+export(bluckCoward2)
 export(ReadBreathId)
 export(ReadIris)
+export(t50BluckCoward2)
 import(stringr)

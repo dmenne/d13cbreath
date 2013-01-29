@@ -4,7 +4,8 @@
 #' it only support "standard" files in csv-format.
 #' 
 #' @param filename Name of IRIS/Wagner file in csv format
-#' @return \code{readContrasts} 
+#' @return list with \code{FileName, PatientName, PatientFirstName, Test, Identifikation}, 
+#' and data frame \code{Data} with \code{Time} and \code{DOB}
 #' @author Dieter Menne, \email{dieter.menne@@menne-biomed.de}
 #' @examples
 #' filename = system.file("extdata", "standard.txt", package = "D13CBreath")
