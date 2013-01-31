@@ -6,46 +6,44 @@
 #' @param path Full filename with path to create database file
 #' @examples
 
-library(RSQLite)
-sqlitePath = file.path(Sys.getenv("HOME"),"Gastrobase2/Gastrobase2.sqlite")
+library(RODBC)
+accessFile = file.path(Sys.getenv("HOME"),"Gastrobase2/Gastrobase2.accdb")
+if (!file.exists(accessFile)) 
+  stop(str_c(accessFile," not found"))
+channel = odbcConnectAccess2007(accessFile)
 
-path = dirname(sqlitePath)
-
-if (!file.exists(path)) dir.create(path)
-m <- dbDriver("SQLite")
-con <- dbConnect(m, dbname = sqlitePath)
+DOB DATETIME, 
 
 createPat = 
-'CREATE TABLE IF NOT EXISTS Patient (
-  PatientID TEXT PRIMARY KEY  NOT NULL , 
-  Name TEXT, 
-  FirstName TEXT, 
-  Initials TEXT, 
-  DOB DATETIME, 
-  BirthYear INTEGER, 
-  Gender CHAR, 
-  Study TEXT, 
-  PatStudyID TEXT)'
+'CREATE TABLE Pat (
+  PatientID varchar(20) PRIMARY KEY  NOT NULL , 
+  Name varchar(30), 
+  FirstName varchar(20), 
+  Initials varchar(3), 
+  DOB DATETIME,
+  BirthYear INT, 
+  Gender char(1), 
+  Study varchar(10), 
+  PatStudyID varchar(10))'
 
-createBreathTestRecord = '
-CREATE TABLE IF NOT EXISTS BreathTestRecord(
-  BreathTestRecordID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-  Device TEXT,
-  PatientID TEXT NOT NULL,
+sqlQuery(channel,createPat)
+
+
+createBreathTestRecordA = '
+CREATE TABLE BreathTestRecordA(
+  BreathTestRecordID AUTOINCREMENT PRIMARY KEY AUTOINCREMENT NOT NULL,
+  Device varchar(10),
+  PatientID varchar(20),
   RecordDate DateTime,
   StartTime DateTime,
   EndTime DateTime,
-  FOREIGN KEY (PatientID) REFERENCES Patient(PatientID) ON DELETE CASCADE
-  )'
+  CONSTRAINT FKPatientID FOREIGN KEY (PatientID) 
+  REFERENCES Pat(PatientID) ON DELETE CASCADE)
+'
 
+sqlQuery(channel, "DROP TABLE BreathTestRecordA")
+sqlQuery(channel,createBreathTestRecordA)
 
-dbSendQuery(con,"DROP TABLE PATIENT")
-dbSendQuery(con,"DROP TABLE BreathTestRecord")
-dbSendQuery(con,createPat)
-dbSendQuery(con,createBreathTestRecord)
-dbSendQuery(con,"INSERT INTO Patient (PatientID) VALUES ('ASDF') ")
-dbSendQuery(con,"INSERT INTO BreathTestRecord (PatientID) VALUES ('ASDF')")
-rowID = dbGetQuery(con,"SELECT last_insert_rowid()")
 
 
 # Check if there are data in the Patient table
