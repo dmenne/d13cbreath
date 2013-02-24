@@ -1,4 +1,4 @@
-#' @title Create and sample fill sqlite database for D13CBreath
+#' @title Create and sample fill SQLite database for D13CBreath
 #' @description 
 #' These functions can be used for testing, or as a sample
 #' how to write data to the database. Using sqlite allows for full control of
@@ -10,7 +10,9 @@
 #' @name CreateBreathTestDatabase
 #' @author Dieter Menne, \email{dieter.menne@@menne-biomed.de}
 #' @param sqlitePath Full filename with path to create database file. 
-#' The file will not be overwritten if it exists.
+#' The file will not be overwritten if it exists. 
+#' Use \code{getOption(GastrobaseSqlitePath)} to find the default path for the database.
+#' @import RSQLite
 #' @examples
 #' sqlitePath = tempfile(pattern = "Gastrobase", tmpdir = tempdir(), fileext = ".sqlite")
 #' unlink(sqlitePath)
@@ -31,7 +33,8 @@ CreateBreathTestDatabase = function(sqlitePath){
     BirthYear INTEGER, 
     Gender CHAR, 
     Study TEXT, 
-    PatStudyID TEXT)'
+    PatStudyID TEXT,
+    Status INTEGER)'
   
   createBreathTestRecord = '
   CREATE TABLE IF NOT EXISTS BreathTestRecord(
@@ -46,6 +49,7 @@ CreateBreathTestDatabase = function(sqlitePath){
     Dose REAL,
     Height REAL,
     Weight REAL,
+    Status INTEGER,
     FOREIGN KEY (PatientID) REFERENCES Patient(PatientID) ON DELETE CASCADE
     )'
   
@@ -89,14 +93,24 @@ CreateBreathTestDatabase = function(sqlitePath){
 #' @title Opens sqlite database connection
 #' @name OpenSqliteConnection
 #' @description Opens an connection to sqlite database; creates the database
-#' if it does not exists
+#' if it does not exists. If missing, file name is given by 
+#' \code{getOption(GastrobaseSqlitePath)} which is set to 
+#' <HOME>/GastroBase/Gastobase/Gastrobase2sqlite" at package load time.
 #' @param sqlitePath Full filename with path to create database file. 
 #' @return con Connection for use with dbSendQuery and dbGetQuery
+#' @import stringr
+#' @import reshape2
+#' @examples
+#' \dontrun{
+#' library(RSQLite)
+#' con = OpenSqliteConnection()
+#' dbGetQuery(con, "Select PatientID,Name,FirstName from Patient")
+#' dbDisconnect(con)
+#' }
 #' @export
 OpenSqliteConnection = function(sqlitePath=NULL){
   if (is.null(sqlitePath))
-    sqlitePath = file.path(Sys.getenv("HOME"),
-                           "Gastrobase2/Gastrobase2.sqlite")
+    sqlitePath = getOption("Gastrobase2SqlitePath")
   if (!file.exists(sqlitePath)){
     # Create Path
     path = dirname(sqlitePath)
@@ -110,62 +124,58 @@ OpenSqliteConnection = function(sqlitePath=NULL){
   return (con)
 }
 
-#' @title Creates a simulated BreathID record for testing
-#' @name SimulateBreathId
-#' @return A record that is a modified version of the provided sample
-#' record, with additional fields \code{Name, FirstName, Initials, FileName}
-#' @seealso \code{\link{ReadBreathId}}
-#' @export
-SimulateBreathId = function(){
-  # To be sure we get the format right, we read one sample from BreathID
-  filename = system.file("extdata", "350_20043_0_GER.txt", 
-                         package = "D13CBreath")
-  bid = ReadBreathId(filename)
-  bid$FirstName = RandomName()
-  bid$Name = RandomName()
-  bid$Initials = str_c(str_sub(bid$FirstName,1,1),
-                       str_sub(bid$Name,1,1))
-  bid$FileName = RandomFile()
-  bid$StartTime = Sys.time() -  60*60*24*200*runif(1)
-  bid$EndTime = bid$StartTime+ rnorm(1,60*100,20)
-  bid$PatientNumber = sample(c("Alpha","Beta","Gamma","Delta"),1)
-  bid$TestNo = sample(20000:30000,1)
-  bid$Height = rnorm(1,180,5)
-  bid$Weight = rnorm(1,70,5)
-  
-  start = list(m=20,k=1/100,beta=2)
-  m = rnorm(1,start$m,start$m*0.1)
-  k = rnorm(1,start$k,start$k*0.1)
-  beta = rnorm(1,start$beta,start$beta*0.05)
-  
-  bid$Data$DOB =as.numeric(bluckCoward(bid$Data$Time,100,m,k,beta))+
-                     rnorm(length(bid$Data$Time),0,0.5)
-  bid$Data$PDR = bid$Data$DOB* rnorm(1,1.2,0.1)
-  bid$Data$PDRfit= NULL
-  bid$Data$CPDR= NULL
-  bid$Data$CPDRfit= NULL
-  bid
-}
 
-#' @title Adds a simulated breath test record to the database
-#' @name AddSimulatedBreathTestRecord
-#' @description Creates a simulated data record, computes several fit 
-#' parameters, and append these to the database 
+#' @title Reads record from file and writes it to the database
+#' @name AddBreathTestRecord
+#' @description Reads BreathID data record, computes several fit 
+#' parameters and a fit, and writes these to the database 
+#' @param filename Name of BreathID file
 #' @param con Connection to sqlite database
 #' @examples
 #' if (exists("con")) suppressWarnings(dbDisconnect(con))
 #' sqlitePath = tempfile(pattern = "Gastrobase", tmpdir = tempdir(), fileext = ".sqlite")
 #' unlink(sqlitePath)
 #' CreateBreathTestDatabase(sqlitePath)
-#' con = OpenSqliteConnection()
-#' add = try (
-#'   for (i in 1:10)
-#'     AddSimulatedBreathTestRecord(con),silent = TRUE)
-#' if (inherits(add,"try-error")) dbRollback(con) else dbCommit(con)
+#' con = OpenSqliteConnection(sqlitePath)
+#' filename = system.file("extdata", "350_20043_0_GER.txt", package = "D13CBreath")
+#' AddBreathTestRecord(filename,con)
 #' dbDisconnect(con)
 #' @export
-AddSimulatedBreathTestRecord = function(con){
-  bid = SimulateBreathId()
+AddBreathTestRecord = function(filename,con){
+  bid = ReadBreathId(filename)
+  BreathTestRecordToDatabase(bid,con)
+}
+
+#' @title Writes a 13C record to the database
+#' @name BreathTestRecordToDatabase
+#' @description Appends a record to the database.
+#' Table Patient:  Creates patient if required.
+#' Table BreathTestRecord: PatientID (refers to Patient); Filename, Device, ...
+#' Table BreathTestTimeSeries: Original times series as \code{Parameter=BreathID}, 
+#' 
+#' @param bid Record as simulated by \code{SimulateBreathID} or \code{ReadBreathID}
+#' @param con Connection to sqlite database
+#' @export
+BreathTestRecordToDatabase = function(bid, con){
+  Device = "BreathID" # Make this generic 
+  BreathTestRecordID = SavePatientRecord(bid,con,Device)
+  # Device specific (factor out later)
+  pars = data.frame(BreathTestParameterID=as.integer(NA), BreathTestRecordID,
+                    Parameter = c("t50","tlag","GEC"),
+                    Method = rep(Device,3),
+                    Values = c(bid$T50, bid$TLag,bid$GEC)
+  )
+  success = dbWriteTable(con,"BreathTestParameter",pars,append=TRUE,
+                         row.names=FALSE)
+  if (!success)
+    stop(str_c("Could not write Device parameters for patient ",bid["PatientNumber"]))
+
+  # Compute and save fit
+  ComputeAndSaveFit(bid,con,BreathTestRecordID)  
+}
+
+SavePatientRecord = function(bid,con,Device) {
+  # returns last inserted RecordID
   # Check if patient exists
   PatientID = bid$PatientNumber
   q = sprintf("SELECT COUNT(*) from Patient where PatientID='%s'",
@@ -174,15 +184,15 @@ AddSimulatedBreathTestRecord = function(con){
   {
     # Must insert Patient
     q = with(bid,sprintf("INSERT INTO Patient (PatientID,Name,FirstName,Initials)
-        VALUES ('%s','%s','%s','%s')",
-        PatientID,Name,FirstName,Initials))
+          VALUES ('%s','%s','%s','%s')",
+                         PatientID,Name,FirstName,Initials))
     tryCatch( dbSendQuery(con,q), 
-     error=function(e) stop(str_c("Error inserting PatientID",PatientID)))
+              error=function(e) stop(str_c("Error inserting PatientID",PatientID)))
   }
   q = with(bid,sprintf("INSERT INTO BreathTestRecord (Filename, Device,
-    PatientID,RecordDate,StartTime,EndTime,TestNo,Dose) VALUES (
-    '%s','%s','%s','%s','%s','%s',%d,%d)",
-     FileName, "BreathID", PatientNumber,StartTime,StartTime,EndTime,TestNo,Dose))
+      PatientID,RecordDate,StartTime,EndTime,TestNo,Dose) VALUES (
+      '%s','%s','%s','%s','%s','%s',%d,%d)",
+                       FileName, Device, PatientNumber,StartTime,StartTime,EndTime,TestNo,Dose))
   ret = try(dbGetQuery(con,q),TRUE)
   if (inherits(ret,"try-error"))
   {
@@ -202,35 +212,32 @@ AddSimulatedBreathTestRecord = function(con){
                          row.names=FALSE)
   if (!success)
     stop(str_c("Could not write raw time series record for patient",PatientID))
+  BreathTestRecordID
+}
+
+ComputeAndSaveFit = function(bid,con,BreathTestRecordID)  {
   start = list(m=20,k=1/100,beta=2)
   Dose = bid$Dose
   # Fit Model and compute prediction
   bid.nls = nls(PDR~bluckCoward(Time,Dose,m,k,beta),
                 data=bid$Data[bid$Data$Time > 0,], start=start)
   cf = coef(bid.nls)
-  bidPred = data.frame(BreathTestTimeSeriesID=NA,
-    BreathTestRecordID,
-    Time = seq(min(bid$Data$Time),max(bid$Data$Time)+5,by=5))
-  bidPred$Parameter="PDRFitBC"
-  bidPred$Value = predict(bid.nls,newdata=bidPred)
-  # Save Prediction
-  success = dbWriteTable(con,"BreathTestTimeSeries",bidPred,append=TRUE,
-                         row.names=FALSE)
-  if (!success)
-    stop(str_c("Could not write fitted time series record for patient",
-               PatientID))
-  # Write parameters
+  
+  # Write parameters and coefficients
   pars = data.frame(BreathTestParameterID=as.integer(NA), BreathTestRecordID,
-    Parameter = c("t50","t50","t50","t50","tlag","tlag","tlag","GEC"),
-    Method = c("BreathID","BluckCoward","Ghoos","GhoosScint",
-               "BreathID","BluckCoward","Ghoos","BreathID"),
-    Values = c(bid$T50,t50BluckCoward2(cf),t50Ghoos(cf),t50GhoosScintigraphy(cf),
-               bid$TLag,tLagBluckCoward(cf),tLagGhoos(cf),bid$GEC)
+    Parameter = c("m","k","beta","t50","t50","t50","tlag","tlag"),
+    Method = c("BluckCoward","BluckCoward","BluckCoward",
+               "BluckCoward","Ghoos","GhoosScint",
+               "BluckCoward","Ghoos"),
+    Values = c(cf["m"],cf["k"],cf["beta"],
+               t50BluckCoward2(cf),t50Ghoos(cf),t50GhoosScintigraphy(cf),
+               tLagBluckCoward(cf),tLagGhoos(cf))
     )
   success = dbWriteTable(con,"BreathTestParameter",pars,append=TRUE,
                          row.names=FALSE)
   if (!success)
-    stop(str_c("Could not write parameters for patient",PatientID))
+    stop(str_c("Could not write fit parameters for patient ",,bid["PatientNumber"]))
+  
 }
 
 RandomName = function(nLetters=6){
