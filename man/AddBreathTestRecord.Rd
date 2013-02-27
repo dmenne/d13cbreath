@@ -17,7 +17,7 @@
 if (exists("con")) suppressWarnings(dbDisconnect(con))
 sqlitePath = tempfile(pattern = "Gastrobase", tmpdir = tempdir(), fileext = ".sqlite")
 unlink(sqlitePath)
-CreateBreathTestDatabase(sqlitePath)
+CreateEmptyBreathTestDatabase(sqlitePath)
 con = OpenSqliteConnection(sqlitePath)
 filename = system.file("extdata", "350_20043_0_GER.txt", package = "D13CBreath")
 AddBreathTestRecord(filename,con)

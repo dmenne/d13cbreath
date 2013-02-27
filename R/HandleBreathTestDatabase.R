@@ -1,4 +1,4 @@
-#' @title Create and sample fill SQLite database for D13CBreath
+#' @title Create an empty SQLite database for breath test data
 #' @description 
 #' These functions can be used for testing, or as a sample
 #' how to write data to the database. Using sqlite allows for full control of
@@ -7,7 +7,7 @@
 #' "ON UPDATE DELETE" fails and you will need to dig deep into webspace
 #' to find it is not your fault. 
 #'
-#' @name CreateBreathTestDatabase
+#' @name CreateEmptyBreathTestDatabase
 #' @author Dieter Menne, \email{dieter.menne@@menne-biomed.de}
 #' @param sqlitePath Full filename with path to create database file. 
 #' The file will not be overwritten if it exists. 
@@ -15,9 +15,9 @@
 #' @examples
 #' sqlitePath = tempfile(pattern = "Gastrobase", tmpdir = tempdir(), fileext = ".sqlite")
 #' unlink(sqlitePath)
-#' CreateBreathTestDatabase(sqlitePath)
-#' @export CreateBreathTestDatabase
-CreateBreathTestDatabase = function(sqlitePath){
+#' CreateEmptyBreathTestDatabase(sqlitePath)
+#' @export 
+CreateEmptyBreathTestDatabase = function(sqlitePath){
   if (file.exists(sqlitePath))
     stop(str_c("The database", basename(sqlitePath),
                " already exists, please delete it manually to proceed."))
@@ -133,7 +133,7 @@ OpenSqliteConnection = function(sqlitePath=NULL){
 #' if (exists("con")) suppressWarnings(dbDisconnect(con))
 #' sqlitePath = tempfile(pattern = "Gastrobase", tmpdir = tempdir(), fileext = ".sqlite")
 #' unlink(sqlitePath)
-#' CreateBreathTestDatabase(sqlitePath)
+#' CreateEmptyBreathTestDatabase(sqlitePath)
 #' con = OpenSqliteConnection(sqlitePath)
 #' filename = system.file("extdata", "350_20043_0_GER.txt", package = "D13CBreath")
 #' AddBreathTestRecord(filename,con)
@@ -193,9 +193,10 @@ SavePatientRecord = function(bid,con,Device) {
               error=function(e) stop(str_c("Error inserting PatientID",PatientID)))
   }
   q = with(bid,sprintf("INSERT INTO BreathTestRecord (Filename, Device,
-      PatientID,RecordDate,StartTime,EndTime,TestNo,Dose) VALUES (
-      '%s','%s','%s','%s','%s','%s',%d,%d)",
-                       FileName, Device, PatientNumber,StartTime,StartTime,EndTime,TestNo,Dose))
+      PatientID,RecordDate,StartTime,EndTime,TestNo,Dose,Height,Weight,Status) VALUES (
+      '%s','%s','%s','%s','%s','%s',%d,%d,%f,%f,%d)",
+      FileName, Device, PatientNumber,StartTime,StartTime,EndTime,TestNo,Dose,
+                       Height,Weight,0))
   ret = try(dbGetQuery(con,q),TRUE)
   if (inherits(ret,"try-error"))
   {

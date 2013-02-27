@@ -1,8 +1,8 @@
-\name{CreateBreathTestDatabase}
-\alias{CreateBreathTestDatabase}
-\title{Create and sample fill SQLite database for D13CBreath}
+\name{CreateEmptyBreathTestDatabase}
+\alias{CreateEmptyBreathTestDatabase}
+\title{Create an empty SQLite database for breath test data}
 \usage{
-  CreateBreathTestDatabase(sqlitePath)
+  CreateEmptyBreathTestDatabase(sqlitePath)
 }
 \arguments{
   \item{sqlitePath}{Full filename with path to create
@@ -22,7 +22,7 @@
 \examples{
 sqlitePath = tempfile(pattern = "Gastrobase", tmpdir = tempdir(), fileext = ".sqlite")
 unlink(sqlitePath)
-CreateBreathTestDatabase(sqlitePath)
+CreateEmptyBreathTestDatabase(sqlitePath)
 }
 \author{
   Dieter Menne, \email{dieter.menne@menne-biomed.de}

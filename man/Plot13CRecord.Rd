@@ -30,13 +30,13 @@
 if (exists("con")) suppressWarnings(dbDisconnect(con))
 sqlitePath = tempfile(pattern = "Gastrobase", tmpdir = tempdir(), fileext = ".sqlite")
 unlink(sqlitePath)
-CreateBreathTestDatabase(sqlitePath)
+CreateEmptyBreathTestDatabase(sqlitePath)
 filename = system.file("extdata", "350_20043_0_GER.txt", package = "D13CBreath")
 con = OpenSqliteConnection(sqlitePath)
 breathTestRecordID = AddBreathTestRecord(filename,con)
 showParameters = data.frame(Parameter="t50",Method = c("BreathID","BluckCoward"))
-Plot13CRecord(con,breathTestRecordID, showParameters)
 Plot13CRecord(con,breathTestRecordID)
+Plot13CRecord(con,breathTestRecordID, showParameters)
 dbDisconnect(con)
 }
 \author{

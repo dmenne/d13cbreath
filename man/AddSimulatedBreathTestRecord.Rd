@@ -12,10 +12,11 @@
   parameters, and append these to the database
 }
 \examples{
+# This example does the same as function CreateSimulatedBreathTestDatabase
 if (exists("con")) suppressWarnings(dbDisconnect(con))
 sqlitePath = tempfile(pattern = "Gastrobase", tmpdir = tempdir(), fileext = ".sqlite")
 unlink(sqlitePath)
-CreateBreathTestDatabase(sqlitePath)
+CreateEmptyBreathTestDatabase(sqlitePath)
 con = OpenSqliteConnection(sqlitePath)
 add = try (
   for (i in 1:10)
@@ -25,6 +26,7 @@ dbDisconnect(con)
 }
 \seealso{
   \code{\link{ReadBreathId}},
-  \code{\link{SimulateBreathId}}
+  \code{\link{SimulateBreathId}},
+  \code{\link{CreateSimulatedBreathTestDatabase}}
 }
 

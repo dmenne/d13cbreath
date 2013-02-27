@@ -20,7 +20,7 @@ SimulateBreathId = function(){
   bid$TestNo = sample(20000:30000,1)
   bid$Height = rnorm(1,180,5)
   bid$Weight = rnorm(1,70,5)
-  
+  bid$Device = "BreathID"
   start = list(m=20,k=1/100,beta=2)
   m = rnorm(1,start$m,start$m*0.1)
   k = rnorm(1,start$k,start$k*0.1)
@@ -41,12 +41,15 @@ SimulateBreathId = function(){
 #' @description Creates a simulated data record, computes several fit 
 #' parameters, and append these to the database 
 #' @param con Connection to sqlite database
-#' @seealso \code{\link{ReadBreathId}}, \code{\link{SimulateBreathId}}
+#' @seealso \code{\link{ReadBreathId}}, \code{\link{SimulateBreathId}}, 
+#' \code{\link{CreateSimulatedBreathTestDatabase}}
+#' 
 #' @examples
+#' # This example does the same as function CreateSimulatedBreathTestDatabase
 #' if (exists("con")) suppressWarnings(dbDisconnect(con))
 #' sqlitePath = tempfile(pattern = "Gastrobase", tmpdir = tempdir(), fileext = ".sqlite")
 #' unlink(sqlitePath)
-#' CreateBreathTestDatabase(sqlitePath)
+#' CreateEmptyBreathTestDatabase(sqlitePath)
 #' con = OpenSqliteConnection(sqlitePath)
 #' add = try (
 #'   for (i in 1:10)
@@ -56,5 +59,26 @@ SimulateBreathId = function(){
 #' @export
 AddSimulatedBreathTestRecord = function(con){
   bid = SimulateBreathId()
-  BreathTestRecordToDatabase(bid)
+  BreathTestRecordToDatabase(bid,con)
+}
+
+
+#' @title Creates a database with simulated breath tests
+#' @name CreateSimulatedBreathTestDatabase
+#' @description Creates a database in temporary directory with 
+#' simulated breath test records
+#' @return File name of simulated database
+#' @export
+CreateSimulatedBreathTestDatabase = function(){
+  set.seed(4711)
+  sqlitePath = tempfile(pattern = "Gastrobase", tmpdir = tempdir(), fileext = ".sqlite")
+  unlink(sqlitePath)
+  CreateEmptyBreathTestDatabase(sqlitePath)
+  con = OpenSqliteConnection(sqlitePath)
+  add = try (
+    for (i in 1:10)
+      AddSimulatedBreathTestRecord(con),silent = TRUE)
+  if (inherits(add,"try-error")) dbRollback(con) else dbCommit(con)
+  dbDisconnect(con)
+  sqlitePath
 }
