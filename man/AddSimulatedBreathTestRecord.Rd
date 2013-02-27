@@ -1,0 +1,30 @@
+\name{AddSimulatedBreathTestRecord}
+\alias{AddSimulatedBreathTestRecord}
+\title{Adds one simulated breath test record to the database}
+\usage{
+  AddSimulatedBreathTestRecord(con)
+}
+\arguments{
+  \item{con}{Connection to sqlite database}
+}
+\description{
+  Creates a simulated data record, computes several fit
+  parameters, and append these to the database
+}
+\examples{
+if (exists("con")) suppressWarnings(dbDisconnect(con))
+sqlitePath = tempfile(pattern = "Gastrobase", tmpdir = tempdir(), fileext = ".sqlite")
+unlink(sqlitePath)
+CreateBreathTestDatabase(sqlitePath)
+con = OpenSqliteConnection(sqlitePath)
+add = try (
+  for (i in 1:10)
+    AddSimulatedBreathTestRecord(con),silent = TRUE)
+if (inherits(add,"try-error")) dbRollback(con) else dbCommit(con)
+dbDisconnect(con)
+}
+\seealso{
+  \code{\link{ReadBreathId}},
+  \code{\link{SimulateBreathId}}
+}
+

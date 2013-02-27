@@ -1,11 +1,12 @@
 #' @title Read 13C data from BreathID
 #' 
-#' @description Reads 13C data from BreathId
+#' @description Reads 13C data from a BreathId file.
 #' 
 #' @param filename Name of TXT-file to be read
-#' @return list with fields \code{FileName, StartTime, EndTime, PatientNumber, PatientID,
+#' @return list with fields \code{FileName, StartTime, EndTime, PatientNumber, 
 #' TestNo, Type, Dose, Height, Weight, T50, TLag, GEC}, and \code{Data} as a data frame of
-#' \code{Time, DOB, PDR, PDRfit,	CPDR, CPDRfit}
+#' \code{Time, DOB, PDR, PDRfit,	CPDR, CPDRfit}. Fields \code{Name, FirstName and Initials}
+#' are returned as NA for manual filling
 #' @author Dieter Menne, \email{dieter.menne@@menne-biomed.de}
 #' @import stringr
 #' @examples

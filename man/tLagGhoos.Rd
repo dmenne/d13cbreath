@@ -15,6 +15,6 @@
   Determine tlag from Ghoos formula
 }
 \seealso{
-  \code{\link{bluckCoward}}
+  \code{\link{BluckCoward}}
 }
 

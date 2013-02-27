@@ -1,6 +1,6 @@
 \name{t50BluckCoward2}
 \alias{t50BluckCoward2}
-\title{Newton's method to solve bluckCoward2 for 1/2 to compute t_50}
+\title{Newton's method to solve BluckCoward2 for 1/2 to compute t_50}
 \usage{
   t50BluckCoward2(cf)
 }
@@ -12,10 +12,10 @@
   time where value is 1/2 of maximum, i.e. t50 in minutes
 }
 \description{
-  Newton's method to solve bluckCoward2 for 1/2 to compute
+  Newton's method to solve BluckCoward2 for 1/2 to compute
   t_50
 }
 \seealso{
-  \code{\link{bluckCoward}}
+  \code{\link{BluckCoward}}
 }
 

@@ -1,8 +1,8 @@
-\name{bluckCoward2}
-\alias{bluckCoward2}
+\name{BluckCoward2}
+\alias{BluckCoward2}
 \title{Equation 2 from Bluck Review}
 \usage{
-  bluckCoward2(Time, Dose, cf)
+  BluckCoward2(Time, Dose, cf)
 }
 \arguments{
   \item{Time}{in minutes}
@@ -19,6 +19,6 @@
   Equation 2 from Bluck Review
 }
 \seealso{
-  \code{\link{bluckCoward}}
+  \code{\link{BluckCoward}}
 }
 

@@ -9,12 +9,14 @@
 }
 \value{
   list with fields \code{FileName, StartTime, EndTime,
-  PatientNumber, PatientID, TestNo, Type, Dose, Height,
-  Weight, T50, TLag, GEC}, and \code{Data} as a data frame
-  of \code{Time, DOB, PDR, PDRfit, CPDR, CPDRfit}
+  PatientNumber, TestNo, Type, Dose, Height, Weight, T50,
+  TLag, GEC}, and \code{Data} as a data frame of
+  \code{Time, DOB, PDR, PDRfit, CPDR, CPDRfit}. Fields
+  \code{Name, FirstName and Initials} are returned as NA
+  for manual filling
 }
 \description{
-  Reads 13C data from BreathId
+  Reads 13C data from a BreathId file.
 }
 \examples{
 filename = system.file("extdata", "350_20043_0_GER.txt", package = "D13CBreath")

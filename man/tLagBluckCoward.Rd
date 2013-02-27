@@ -16,6 +16,6 @@
   Lag phase for BluckCoward self-correcting fit
 }
 \seealso{
-  \code{\link{bluckCoward}}
+  \code{\link{BluckCoward}}
 }
 

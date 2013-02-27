@@ -19,6 +19,6 @@
   for using it.
 }
 \seealso{
-  \code{\link{bluckCoward}}
+  \code{\link{BluckCoward}}
 }
 

@@ -12,7 +12,6 @@
 #' @param sqlitePath Full filename with path to create database file. 
 #' The file will not be overwritten if it exists. 
 #' Use \code{getOption(GastrobaseSqlitePath)} to find the default path for the database.
-#' @import RSQLite
 #' @examples
 #' sqlitePath = tempfile(pattern = "Gastrobase", tmpdir = tempdir(), fileext = ".sqlite")
 #' unlink(sqlitePath)
@@ -102,7 +101,6 @@ CreateBreathTestDatabase = function(sqlitePath){
 #' @import reshape2
 #' @examples
 #' \dontrun{
-#' library(RSQLite)
 #' con = OpenSqliteConnection()
 #' dbGetQuery(con, "Select PatientID,Name,FirstName from Patient")
 #' dbDisconnect(con)
@@ -149,10 +147,14 @@ AddBreathTestRecord = function(filename,con){
 #' @title Writes a 13C record to the database
 #' @name BreathTestRecordToDatabase
 #' @description Appends a record to the database.
+#' 
 #' Table Patient:  Creates patient if required.
+#' 
 #' Table BreathTestRecord: PatientID (refers to Patient); Filename, Device, ...
+#' 
 #' Table BreathTestTimeSeries: Original times series as \code{Parameter=BreathID}, 
 #' 
+#' @return BreathTestRecordID of added record
 #' @param bid Record as simulated by \code{SimulateBreathID} or \code{ReadBreathID}
 #' @param con Connection to sqlite database
 #' @export
@@ -172,6 +174,7 @@ BreathTestRecordToDatabase = function(bid, con){
 
   # Compute and save fit
   ComputeAndSaveFit(bid,con,BreathTestRecordID)  
+  BreathTestRecordID
 }
 
 SavePatientRecord = function(bid,con,Device) {
@@ -219,7 +222,7 @@ ComputeAndSaveFit = function(bid,con,BreathTestRecordID)  {
   start = list(m=20,k=1/100,beta=2)
   Dose = bid$Dose
   # Fit Model and compute prediction
-  bid.nls = nls(PDR~bluckCoward(Time,Dose,m,k,beta),
+  bid.nls = nls(PDR~BluckCoward(Time,Dose,m,k,beta),
                 data=bid$Data[bid$Data$Time > 0,], start=start)
   cf = coef(bid.nls)
   

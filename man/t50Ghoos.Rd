@@ -15,6 +15,6 @@
   Determine t50 the original way (Sanaka Nakada eq 6)
 }
 \seealso{
-  \code{\link{bluckCoward}}
+  \code{\link{BluckCoward}}
 }
 

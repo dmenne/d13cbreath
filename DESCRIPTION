@@ -11,6 +11,6 @@ Description: Reads several formats of 13C data (IRIS/Wagner, BreathID)
         emptying by the C-13-octanoate breath test --- rationalization
         with scintigraphy Physiol. Meas. 27 279-89
 Depends: R (>= 2.14.1),RSQLite
-Imports: stringr,reshape2
+Imports: stringr,reshape2,ggplot2,RColorBrewer
 Suggests: testthat,nlme,lattice,latticeExtra
 License: MIT

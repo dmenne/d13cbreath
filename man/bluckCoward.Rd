@@ -1,8 +1,8 @@
-\name{bluckCoward}
-\alias{bluckCoward}
+\name{BluckCoward}
+\alias{BluckCoward}
 \title{Fit Bluck/Coward self-corrected function to 13C breath test PDR}
 \usage{
-  bluckCoward(time, Dose, m, k, beta)
+  BluckCoward(time, Dose, m, k, beta)
 }
 \arguments{
   \item{time}{vector of time in minutes}
@@ -40,7 +40,7 @@ sampleFile = system.file("extdata", "350_20043_0_GER.txt", package = "D13CBreath
 # Time 0 must be removed to avoid singularity
 breathID = ReadBreathId(sampleFile)
 data = subset(breathID$Data,Time >0)
-sample.nls = nls(PDR~bluckCoward(Time,100,m,k,beta),data=data,start=start)
+sample.nls = nls(PDR~BluckCoward(Time,100,m,k,beta),data=data,start=start)
 data$PDRFitBluck=predict(sample.nls)
 plot(data$Time,data$PDR,pch=16,cex=0.7,xlab="time (min)",ylab="PDR",
   main="t50 with different methods")
@@ -65,18 +65,18 @@ set.seed(4711)
 # Create simulated data
 pdr  = data.frame(time=seq(2,200,by=10))
 pdr$PDR =
-  bluckCoward(pdr$time,100,start$m,start$k,start$beta)+rnorm(nrow(pdr),0,1)
+  BluckCoward(pdr$time,100,start$m,start$k,start$beta)+rnorm(nrow(pdr),0,1)
 par(mfrow=c(2,1))
 # Plot raw data
 plot(pdr$time,pdr$PDR,pch=16,cex=0.5,xlab="time (min)",ylab="PDR")
 # Compute fit
-pdr.nls = nls(PDR~bluckCoward(time,100,m,k,beta),data=pdr,start=start)
+pdr.nls = nls(PDR~BluckCoward(time,100,m,k,beta),data=pdr,start=start)
 # Compute prediction
 pdr$PDRfit= predict(pdr.nls)
 lines(pdr$time,pdr$PDRfit,col="red",lwd=2)
 
 # Plot cumulative
-plot(pdr$time,bluckCoward2(pdr$time,100,coef(pdr.nls)),type="l",
+plot(pdr$time,BluckCoward2(pdr$time,100,coef(pdr.nls)),type="l",
      xlab="time (min)", ylab="cPDR")
 # Show t50
 t50 = t50BluckCoward2(coef(pdr.nls))
@@ -98,11 +98,11 @@ pdr1 = pdr1[order(pdr1$patient,pdr1$time),]
 pdr1 = pdr1[!(pdr1$patient=="A" & pdr1$time > 50),]
 set.seed(4711)
 pdr1$PDR =
-  with(pdr1, bluckCoward(time,100,m,k,beta)+rnorm(nrow(pdr1),0,1))
+  with(pdr1, BluckCoward(time,100,m,k,beta)+rnorm(nrow(pdr1),0,1))
 
 # Compute nls fit for patient A only: fails
 # The following line will produce an error message
-pdr.nls = try(nls(PDR~bluckCoward(time,100,m,k,beta),data=pdr1,start=start,
+pdr.nls = try(nls(PDR~BluckCoward(time,100,m,k,beta),data=pdr1,start=start,
                   subset=patient=="A"))
 stopifnot(class(pdr.nls)=="try-error")
 
@@ -110,7 +110,7 @@ stopifnot(class(pdr.nls)=="try-error")
 library(nlme)
 library(lattice)
 library(latticeExtra)
-pdr.nlme = nlme(PDR~bluckCoward(time,100,m,k,beta),data=pdr1,
+pdr.nlme = nlme(PDR~BluckCoward(time,100,m,k,beta),data=pdr1,
                 fixed= m+k+beta~1,
                 random = m+k+beta~1,
                 groups=~patient,

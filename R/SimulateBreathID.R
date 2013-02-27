@@ -26,7 +26,7 @@ SimulateBreathId = function(){
   k = rnorm(1,start$k,start$k*0.1)
   beta = rnorm(1,start$beta,start$beta*0.05)
   
-  bid$Data$DOB =as.numeric(bluckCoward(bid$Data$Time,100,m,k,beta))+
+  bid$Data$DOB =as.numeric(BluckCoward(bid$Data$Time,100,m,k,beta))+
     rnorm(length(bid$Data$Time),0,0.5)
   bid$Data$PDR = bid$Data$DOB* rnorm(1,1.2,0.1)
   bid$Data$PDRfit= NULL
@@ -42,7 +42,6 @@ SimulateBreathId = function(){
 #' parameters, and append these to the database 
 #' @param con Connection to sqlite database
 #' @seealso \code{\link{ReadBreathId}}, \code{\link{SimulateBreathId}}
-#' @import RSQLite
 #' @examples
 #' if (exists("con")) suppressWarnings(dbDisconnect(con))
 #' sqlitePath = tempfile(pattern = "Gastrobase", tmpdir = tempdir(), fileext = ".sqlite")

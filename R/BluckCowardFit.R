@@ -11,8 +11,8 @@
 #' For a review, see 
 #' Bluck LJC (2009) Recent advances in the interpretation of the 13C octanoate 
 #' breath test for gastric emptying. Journal of Breath Research, 3 1-8 
-#' @name bluckCoward
-# bluckCoward = expression(m*D*k*beta*(1-exp(-k*time))^(beta-1)*exp(-k*time))
+#' @name BluckCoward
+# BluckCoward = expression(m*D*k*beta*(1-exp(-k*time))^(beta-1)*exp(-k*time))
 # deriv(bluck,c("m","k","beta"))
 #' @author Dieter Menne, \email{dieter.menne@@menne-biomed.de}
 #' 
@@ -30,7 +30,7 @@
 #' # Time 0 must be removed to avoid singularity
 #' breathID = ReadBreathId(sampleFile)
 #' data = subset(breathID$Data,Time >0)
-#' sample.nls = nls(PDR~bluckCoward(Time,100,m,k,beta),data=data,start=start)
+#' sample.nls = nls(PDR~BluckCoward(Time,100,m,k,beta),data=data,start=start)
 #' data$PDRFitBluck=predict(sample.nls)
 #' plot(data$Time,data$PDR,pch=16,cex=0.7,xlab="time (min)",ylab="PDR",
 #'   main="t50 with different methods")
@@ -55,18 +55,18 @@
 #' # Create simulated data
 #' pdr  = data.frame(time=seq(2,200,by=10))
 #' pdr$PDR = 
-#'   bluckCoward(pdr$time,100,start$m,start$k,start$beta)+rnorm(nrow(pdr),0,1)
+#'   BluckCoward(pdr$time,100,start$m,start$k,start$beta)+rnorm(nrow(pdr),0,1)
 #' par(mfrow=c(2,1))
 #' # Plot raw data
 #' plot(pdr$time,pdr$PDR,pch=16,cex=0.5,xlab="time (min)",ylab="PDR")
 #' # Compute fit
-#' pdr.nls = nls(PDR~bluckCoward(time,100,m,k,beta),data=pdr,start=start)
+#' pdr.nls = nls(PDR~BluckCoward(time,100,m,k,beta),data=pdr,start=start)
 #' # Compute prediction
 #' pdr$PDRfit= predict(pdr.nls)
 #' lines(pdr$time,pdr$PDRfit,col="red",lwd=2)
 #' 
 #' # Plot cumulative
-#' plot(pdr$time,bluckCoward2(pdr$time,100,coef(pdr.nls)),type="l",
+#' plot(pdr$time,BluckCoward2(pdr$time,100,coef(pdr.nls)),type="l",
 #'      xlab="time (min)", ylab="cPDR")
 #' # Show t50
 #' t50 = t50BluckCoward2(coef(pdr.nls))
@@ -88,11 +88,11 @@
 #' pdr1 = pdr1[!(pdr1$patient=="A" & pdr1$time > 50),]
 #' set.seed(4711)
 #' pdr1$PDR =
-#'   with(pdr1, bluckCoward(time,100,m,k,beta)+rnorm(nrow(pdr1),0,1))
+#'   with(pdr1, BluckCoward(time,100,m,k,beta)+rnorm(nrow(pdr1),0,1))
 #'
 #' # Compute nls fit for patient A only: fails
 #' # The following line will produce an error message
-#' pdr.nls = try(nls(PDR~bluckCoward(time,100,m,k,beta),data=pdr1,start=start,
+#' pdr.nls = try(nls(PDR~BluckCoward(time,100,m,k,beta),data=pdr1,start=start,
 #'                   subset=patient=="A"))
 #' stopifnot(class(pdr.nls)=="try-error")
 #'
@@ -100,7 +100,7 @@
 #' library(nlme)
 #' library(lattice)
 #' library(latticeExtra)
-#' pdr.nlme = nlme(PDR~bluckCoward(time,100,m,k,beta),data=pdr1,
+#' pdr.nlme = nlme(PDR~BluckCoward(time,100,m,k,beta),data=pdr1,
 #'                 fixed= m+k+beta~1,
 #'                 random = m+k+beta~1,
 #'                 groups=~patient,
@@ -118,7 +118,7 @@
 #'     Borrowing strength in action!")
 #' @export
 
-bluckCoward = function(time,Dose,m,k,beta){
+BluckCoward = function(time,Dose,m,k,beta){
   .expr1 <- m * Dose
   .expr2 <- .expr1 * k
   .expr3 <- .expr2 * beta
@@ -140,7 +140,7 @@ bluckCoward = function(time,Dose,m,k,beta){
   .value
 }
 
-#' @name bluckCoward2
+#' @name BluckCoward2
 #' @title Equation 2 from Bluck Review
 #'
 #' @param Time in minutes
@@ -148,22 +148,22 @@ bluckCoward = function(time,Dose,m,k,beta){
 #' @param cf named vector of coefficients; only \code{k} and \code{beta} are required
 #' @return vector of predicted cumulative PDR
 #' @export
-#' @seealso \code{\link{bluckCoward}}
-bluckCoward2  = function(Time,Dose,cf){
+#' @seealso \code{\link{BluckCoward}}
+BluckCoward2  = function(Time,Dose,cf){
   ekt = 1-exp(-cf["k"]*Time)
   beta = cf["beta"]
   Dose*(beta*(ekt)^(beta-1)-(beta-1)*ekt^beta)
 }
 
 #' @name t50BluckCoward2
-#' @title Newton's method to solve bluckCoward2 for 1/2 to compute t_50
+#' @title Newton's method to solve BluckCoward2 for 1/2 to compute t_50
 #' @param cf named vector of coefficients; only \code{k} and \code{beta} are required
 #' @return time where value is 1/2 of maximum, i.e. t50 in minutes
-#' @seealso \code{\link{bluckCoward}}
+#' @seealso \code{\link{BluckCoward}}
 #' @export
 t50BluckCoward2 = function(cf){
   ret = round(uniroot(function(t) {
-    bluckCoward2(t,1,cf)-0.5
+    BluckCoward2(t,1,cf)-0.5
   },c(1,1000))$root,1)
   names(ret)="t50BluckCoward"
   ret
@@ -174,7 +174,7 @@ t50BluckCoward2 = function(cf){
 #' @param cf named vector of coefficients; only \code{k} and \code{beta} are required
 #' @return lag phase in minutes (time t at which the maximum in the rate of change 
 #' of G(t) occurs)
-#' @seealso \code{\link{bluckCoward}}
+#' @seealso \code{\link{BluckCoward}}
 #' @export
 tLagBluckCoward = function(cf){
   ret = log(cf["beta"]/2)/cf["k"]  
@@ -186,7 +186,7 @@ tLagBluckCoward = function(cf){
 #' @title Determine t50 the original way (Sanaka Nakada eq 6)
 #' @param cf named vector of coefficients; only \code{k} and \code{beta} are required
 #' @return time where value is 1/2 of maximum, i.e. t50 in minutes
-#' @seealso \code{\link{bluckCoward}}
+#' @seealso \code{\link{BluckCoward}}
 #' @export
 t50Ghoos = function(cf){
   ret = -log(1-2^(-1/cf["beta"]))/cf["k"]
@@ -198,7 +198,7 @@ t50Ghoos = function(cf){
 #' @title Determine tlag from Ghoos formula
 #' @param cf named vector of coefficients; only \code{k} and \code{beta} are required
 #' @return lag time as defined from Ghoos fit
-#' @seealso \code{\link{bluckCoward}}
+#' @seealso \code{\link{BluckCoward}}
 #' @export
 tLagGhoos = function(cf){
   ret = log(cf["beta"])/cf["k"]
@@ -214,7 +214,7 @@ tLagGhoos = function(cf){
 #' there is little justification for using it.
 #' @param cf named vector of coefficients; only \code{k} and \code{beta} are required
 #' @return time where value is 1/2 of maximum, i.e. t50 in minutes
-#' @seealso \code{\link{bluckCoward}}
+#' @seealso \code{\link{BluckCoward}}
 #' @export
 t50GhoosScintigraphy = function(cf){
   ret = (t50Ghoos(cf)-66.09)/1.12
