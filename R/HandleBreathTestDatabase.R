@@ -11,7 +11,7 @@
 #' @author Dieter Menne, \email{dieter.menne@@menne-biomed.de}
 #' @param sqlitePath Full filename with path to create database file. 
 #' The file will not be overwritten if it exists. 
-#' Use \code{getOption(GastrobaseSqlitePath)} to find the default path for the database.
+#' Use \code{getOption("Gastrobase2SqlitePath")} to find the default path for the database.
 #' @examples
 #' sqlitePath = tempfile(pattern = "Gastrobase", tmpdir = tempdir(), fileext = ".sqlite")
 #' unlink(sqlitePath)
@@ -75,6 +75,13 @@ CreateEmptyBreathTestDatabase = function(sqlitePath){
        REFERENCES BreathTestRecord(BreathTestRecordID) ON DELETE CASCADE
   )'
   
+  createShowParameters = 
+  'CREATE TABLE IF NOT EXISTS "ShowParameters" (
+    "Parameter" VARCHAR NOT NULL , 
+    "Method" VARCHAR NOT NULL , 
+    "Show" INT NOT NULL  DEFAULT 0, 
+    PRIMARY KEY ("Method", "Parameter"))'
+  
 #  dbSendQuery(con,"DROP TABLE IF EXISTS Patient")
 #  dbSendQuery(con,"DROP TABLE IF EXISTS BreathTestRecord")
 #  dbSendQuery(con,"DROP TABLE IF EXISTS BreathTestTimeSeries")
@@ -82,6 +89,7 @@ CreateEmptyBreathTestDatabase = function(sqlitePath){
   dbSendQuery(con,createPatient)
   dbSendQuery(con,createBreathTestRecord)
   dbSendQuery(con,createBreathTestTimeSeries)
+  dbSendQuery(con,createShowParameters)
   res = dbSendQuery(con,createBreathTestParameter)
   dbClearResult(res)
   dbDisconnect(con)
@@ -93,8 +101,8 @@ CreateEmptyBreathTestDatabase = function(sqlitePath){
 #' @name OpenSqliteConnection
 #' @description Opens an connection to sqlite database; creates the database
 #' if it does not exists. If missing, file name is given by 
-#' \code{getOption(GastrobaseSqlitePath)} which is set to 
-#' <HOME>/GastroBase/Gastobase/Gastrobase2sqlite" at package load time.
+#' \code{getOption("Gastrobase2SqlitePath")} which is set to 
+#' <HOME>/GastroBase/Gastobase/Gastrobase2.sqlite at package load time.
 #' @param sqlitePath Full filename with path to create database file. 
 #' @return con Connection for use with dbSendQuery and dbGetQuery
 #' @import stringr
@@ -126,7 +134,7 @@ OpenSqliteConnection = function(sqlitePath=NULL){
 #' @title Reads record from file and writes it to the database
 #' @name AddBreathTestRecord
 #' @description Reads BreathID data record, computes several fit 
-#' parameters and a fit, and writes these to the database 
+#' parameters and a fit, and writes these to the database.
 #' @param filename Name of BreathID file
 #' @param con Connection to sqlite database
 #' @examples
@@ -144,9 +152,59 @@ AddBreathTestRecord = function(filename,con){
   BreathTestRecordToDatabase(bid,con)
 }
 
+#' @title Reads and saves multiple 13C Breath test records
+#' @name AddAllBreathTestRecords
+#' @description Reads BreathID data record in a path, 
+#' computes several fit parameters and a fit, and writes these to the database. 
+#' Files that are already in the database are skipped. Note that files with 
+#' the same name in different directories are considered the same file.
+#' @param path Start path for recursive search
+#' @param con Connection to sqlite database
+#' @return A dataframe with columns \code{file}, \code{basename}, 
+#' \code{recordID} (NULL if not saved) and \code{status}
+#' with levels \code{"saved", "skipped", "invalid"}.
+#' @examples
+#' if (exists("con")) suppressWarnings(dbDisconnect(con))
+#' sqlitePath = tempfile(pattern = "Gastrobase", tmpdir = tempdir(), fileext = ".sqlite")
+#' unlink(sqlitePath)
+#' CreateEmptyBreathTestDatabase(sqlitePath)
+#' con = OpenSqliteConnection(sqlitePath)
+#' path = dirname(
+#'   system.file("extdata", "350_20043_0_GER.txt", package = "D13CBreath"))
+#' AddAllBreathTestRecords(path,con)
+#' dbDisconnect(con)
+#' @export
+AddAllBreathTestRecords = function(path,con){
+  files = data.frame(file = dir(path,pattern="*.txt",ignore.case=TRUE,
+                     recursive=TRUE,full.names=TRUE),stringsAsFactors=FALSE)
+  files$basename = basename(files$file)
+  files$recordID = NA
+  files$status = NA
+  for (i in seq(along=files$file)){
+    filename = files[i,"file"]
+    bid = try(ReadBreathId(filename),silent=TRUE)
+    if (inherits(bid,"try-error")){
+      files[i,"status"] = "invalid"      
+      next
+    }
+    recId = try(BreathTestRecordToDatabase(bid,con),silent=TRUE)
+    if (inherits(recId,"try-error")){
+      files[i,"status"] = "skipped"      
+      next
+    }
+    files[i,"recordID"] = recId
+    files[i,"status"] = "saved"  
+  }
+  files$status = as.factor(files$status)
+  # Rearrange for easier printout
+  files[,c(2,3,4,1)]
+}
+
 #' @title Writes a 13C record to the database
 #' @name BreathTestRecordToDatabase
-#' @description Appends a record to the database.
+#' @description Appends a record to the database. Skips saving if the
+#' file is already in the database. To overwrite an existing file, 
+#' the old record must be manually deleted from the database.
 #' 
 #' Table Patient:  Creates patient if required.
 #' 
@@ -154,7 +212,7 @@ AddBreathTestRecord = function(filename,con){
 #' 
 #' Table BreathTestTimeSeries: Original times series as \code{Parameter=BreathID}, 
 #' 
-#' @return BreathTestRecordID of added record
+#' @return BreathTestRecordID of added record, or NULL if not written.
 #' @param bid Record as simulated by \code{SimulateBreathID} or \code{ReadBreathID}
 #' @param con Connection to sqlite database
 #' @export

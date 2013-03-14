@@ -1,3 +1,4 @@
+export(AddAllBreathTestRecords)
 export(AddBreathTestRecord)
 export(AddSimulatedBreathTestRecord)
 export(BluckCoward)

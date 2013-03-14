@@ -12,6 +12,9 @@
 #' column \code{Parameter} (t50, tlag,GEC) and \code{Method} (BreathID, BluckCoward, Ghoos).
 #' If Method is NA, all variants of Parameter are shown. By default, shows all
 #' variants of t50.
+#' @param ymax Vertical scaling; default of NULL is for autoscaling
+#' @param xmax Time axis scaling; default of NULL is for autoscaling
+#' @param showName Show full patient name and DOB, initials otherwise
 #' @return A ggplot2 graphics 
 #' @author Dieter Menne, \email{dieter.menne@@menne-biomed.de}
 #' @examples
@@ -30,7 +33,8 @@
 #' @import RSQLite
 #' @import RColorBrewer
 #' @export
-Plot13CRecord = function(con, breathTestRecordID, showParameters=NULL) {
+Plot13CRecord = function(con, breathTestRecordID, showParameters=NULL,ymax=NULL,
+                         xmax = NULL,  showName=FALSE) {
   q = str_c("SELECT Time, Value as PDR from BreathTestTimeSeries where 
 Time > 0 and Parameter = 'PDR' and BreathTestRecordID = ",
             breathTestRecordID)
@@ -45,8 +49,9 @@ Time > 0 and Parameter = 'PDR' and BreathTestRecordID = ",
   if (nrow(parm)==0)
     stop(str_c("No parameters found for BreathTestRecordID ",breathTestRecordID))
 
-  q = str_c("SELECT * from BreathTestRecord where BreathTestRecordID = ",
-    breathTestRecordID)
+  q = str_c("SELECT * from BreathTestRecord 
+ join Patient on Patient.PatientID = BreathTestRecord.PatientID
+ where BreathTestRecordID = ",    breathTestRecordID)
   rec = dbGetQuery(con,q)
   # Find out what parameters to show
   if (is.null(showParameters)) {
@@ -58,6 +63,7 @@ Time > 0 and Parameter = 'PDR' and BreathTestRecordID = ",
   showParameters1 = showParameters[is.na(showParameters$Method),"Parameter",drop=FALSE]
   showParameters2 = showParameters[!is.na(showParameters$Method),]
   showPars = rbind(merge(parm,showParameters1),merge(parm,showParameters2))
+  showPars = showPars[order(showPars$Value),]
   showPars$text = str_c(showPars$Parameter," ",showPars$Method)
   # Compute prediction
   stepMinutes = 2 # 
@@ -65,25 +71,45 @@ Time > 0 and Parameter = 'PDR' and BreathTestRecordID = ",
         Time = c(min(ts$Time),seq(stepMinutes,max(ts$Time*1.2),by=stepMinutes)))
   bcPars = parm[parm$Parameter %in% c("beta","k","m"),c("Parameter","Value")]
   rownames(bcPars)=bcPars$Parameter
-  pred$PDR = as.vector(BluckCoward(pred$Time,rec$Dose,bcPars["m","Value"],
+  Dose = rec$Dose
+  pred$PDR = as.vector(BluckCoward(pred$Time,Dose,bcPars["m","Value"],
                          bcPars["k","Value"],bcPars["beta","Value"]) )
-
-  ylim = c(min(ts$PDR), max(ts$PDR)*1.02)
-  showPars$itext = as.integer(as.factor(showPars$text))*ylim[2]*0.03
+  ylim = c(min(c(ts$PDR,0)), max(ts$PDR)*1.02) # Autoscaling
+  if (!is.null(ymax))  # Manual scaling overrides
+    ylim[2] = max(ylim[2],ymax)
+  
+  xlim = c(0, pred$Time) # Autoscaling
+  if (!is.null(xmax))  # Manual scaling overrides
+    xlim[2] = max(xlim[2],xmax)
+  
+  showPars$itext = (1:nrow(showPars))*ylim[2]*0.03
   showPars$yend = ylim[2]
 
   Time=PDR=Value=itext=yend=NULL # Avoid "no visible binding"
-  
-  g = ggplot(data=ts,aes(x=Time,y=PDR))+geom_point()+
-    ylim(ylim) +
+  title =   format(strptime(rec$StartTime, "%Y-%m-%d"),"%d.%m.%Y")
+  if (showName){
+    title = str_c(rec$FirstName," ",rec$Name, ", Test  ",title)
+  } else {
+    title = str_c(rec$PatientID, " (",rec$Initials, "),  Test  ",title)  
+  }
+  g = ggplot(data=ts,aes(x=Time,y=PDR))+geom_point()+  ggtitle(title)  +
+    ylim(ylim) + scale_x_continuous(breaks = seq(0,max(ts$Time)+60,by=60))+
     geom_line(data=pred,aes(x=Time,y=PDR),col=1,lwd=1.5) +
-    geom_segment(aes(x=Value, y=itext, xend=Value, yend=yend ,col=text),
-                   linetype=4, lwd=1, data=showPars, show_guide=FALSE) +
-    geom_text(aes(label=text, x=Value, y=itext, col=text),
+    geom_segment(aes(x=Value, y=itext, xend=Value, yend=yend ),
+                 col="gray",linetype=1, lwd=0.4, data=showPars, show_guide=FALSE) +
+    geom_text(aes(label=text, x=Value, y=itext), col="darkgreen",cex=4,
                 adj=-0.04,data=showPars,show_guide=FALSE)
   g + theme_bw() +
       scale_colour_manual( values=brewer.pal(6,"Dark2")) +
-      theme(panel.grid.major=element_blank())
+      theme(
+        axis.title.x=element_text(size=14),
+        axis.title.y=element_text(size=14, angle=90),  
+        axis.text.y = element_text(size=14),  
+        axis.text.x = element_text(size=14),  
+        plot.title=element_text(size=18),
+        panel.grid.major=element_blank(),
+        panel.background = element_rect(fill="#F7F5F1"),
+        plot.background = element_rect(fill="#E9E3D2"))
 }
   
 

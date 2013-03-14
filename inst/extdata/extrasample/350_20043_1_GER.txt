@@ -1,12 +1,12 @@
 Test and Patient parameters					
 
 					
-Date           -    12/11/12					
-End time       -    08:54					
+Date           -    10/10/10					
+End time       -    08:24					
 Start time     -    12:49					
 Patient # - 0					
-Patient ID   - Franz 					
-Test No.   -    20043					
+Patient ID   - Fritz 					
+Test No.   -    20053					
 Type       -    Octanoic-Acid					
 Dose[mg]   -    100					
 Height     -    0.00					
@@ -18,8 +18,8 @@ Gender     -    Male
 Results					
 
 					
-T 1/2  -   71.23					
-T lag   -  28.22					
+T 1/2  -   75.23					
+T lag   -  30.22					
 GEC    -   2.99					
 
 					

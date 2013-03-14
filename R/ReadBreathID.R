@@ -15,6 +15,7 @@
 #' str(bid)
 #' @export
 ReadBreathId = function(filename) {
+  filename = as.character(filename)
   if (!file.exists(filename)) 
     stop(str_c("File ",filename," does not exist."))
   bid = readLines(filename)
@@ -64,6 +65,7 @@ ReadBreathId = function(filename) {
        Data=data),class="breathIdData")
       
 }
+
 
 findSinglePattern = function(bid,pattern,required=TRUE){
   p = str_match(bid,str_c(pattern,"[^-]+-\\s*(\\S*)"))[,2]
