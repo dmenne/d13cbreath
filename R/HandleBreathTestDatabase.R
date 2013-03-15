@@ -33,7 +33,7 @@ CreateEmptyBreathTestDatabase = function(sqlitePath){
     Gender CHAR, 
     Study TEXT, 
     PatStudyID TEXT,
-    Status INTEGER)'
+    Status INTEGER DEFAULT 0)'
   
   createBreathTestRecord = '
   CREATE TABLE IF NOT EXISTS BreathTestRecord(
@@ -48,7 +48,7 @@ CreateEmptyBreathTestDatabase = function(sqlitePath){
     Dose REAL,
     Height REAL,
     Weight REAL,
-    Status INTEGER,
+    Status INTEGER DEFAULT 0,
     FOREIGN KEY (PatientID) REFERENCES Patient(PatientID) ON DELETE CASCADE
     )'
   
