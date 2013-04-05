@@ -150,9 +150,9 @@ BluckCoward = function(time,Dose,m,k,beta){
 #' @export
 #' @seealso \code{\link{BluckCoward}}
 BluckCoward2  = function(Time,Dose,cf){
-  ekt = 1-exp(-cf["k"]*Time)
-  beta = cf["beta"]
-  Dose*(beta*(ekt)^(beta-1)-(beta-1)*ekt^beta)
+  ekt = 1-exp(-unlist(cf["k"])*Time)
+  beta = unlist(cf["beta"])
+  as.numeric(Dose*(beta*(ekt)^(beta-1)-(beta-1)*ekt^beta))
 }
 
 #' @name t50BluckCoward2
@@ -162,12 +162,16 @@ BluckCoward2  = function(Time,Dose,cf){
 #' @seealso \code{\link{BluckCoward}}
 #' @export
 t50BluckCoward2 = function(cf){
-  ret = round(uniroot(function(t) {
-    BluckCoward2(t,1,cf)-0.5
-  },c(1,1000))$root,1)
-  names(ret)="t50BluckCoward"
-  ret
+  f = function(t,cf0) BluckCoward2(t,1,cf0)-0.5
+  g = function(cf0){
+    uniroot(f,interval= c(1,1000),cf0)$root
+  }
+  if (class(cf)=="numeric")
+    round(g(cf),1)
+  else 
+    data.frame(t50BluckCoward2=round(apply(cf[,c("k","beta")],1,g),1))
 }
+
 
 #' @name tLagBluckCoward
 #' @title Lag phase for BluckCoward self-correcting fit

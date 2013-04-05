@@ -26,6 +26,7 @@ test_that("ReadBreathID returns valid data set",{
   expect_equal(f$TestNo,20043)
   expect_equal(nrow(f$Data),87)
   expect_equal(ncol(f$Data),6)
+  expect_true("CPDRfit" %in% names(f$Data))
 })
 
 test_that("ReadBreathID on bad data file throws",{
@@ -35,5 +36,12 @@ test_that("ReadBreathID on bad data file throws",{
   expect_error( ReadBreathId(filename),"does not contain PDR")
   filename = d13File("350_20043_0_GERNoT50.txt")
   expect_error( ReadBreathId(filename),"No <<T 1/2>> found")
+} )
+
+test_that("ReadBreathID with NaN returns valid data, without NaN Columns",{
+  filename = d13File("350_20023_0_GERWithNan.txt")
+  f = ReadBreathId(filename)
+  expect_is(f,"breathIdData")
+  expect_true(!"CPDRfit" %in% names(f$Data))
 } )
 

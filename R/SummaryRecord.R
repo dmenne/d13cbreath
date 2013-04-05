@@ -33,4 +33,4 @@ Summary13CRecord = function(con, breathTestRecordID) {
   rec = dbGetQuery(con,q)
 
   list(Record = rec[1,],Parameters = parm)
-}            
+}

@@ -46,6 +46,7 @@ ReadBreathId = function(filename) {
   if (length(bid)<2)
     stop(str_c("File ",filename," does not contain PDR data"))
   data = read.table(textConnection(bid),header=TRUE)
+  data = RemoveNAColumns(data)
   structure(list(
        FileName=basename(filename),
        EndTime=EndTime,
@@ -66,6 +67,9 @@ ReadBreathId = function(filename) {
       
 }
 
+RemoveNAColumns = function(x) {
+  x[,!unlist(lapply(x,function(y) all(is.na(y)| is.nan(y)|str_trim(y)=="" )))]
+} 
 
 findSinglePattern = function(bid,pattern,required=TRUE){
   p = str_match(bid,str_c(pattern,"[^-]+-\\s*(\\S*)"))[,2]

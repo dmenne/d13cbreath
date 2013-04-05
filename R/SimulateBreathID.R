@@ -18,8 +18,8 @@ SimulateBreathId = function(){
   bid$EndTime = bid$StartTime+ rnorm(1,60*100,20)
   bid$PatientNumber = sample(c("Alpha","Beta","Gamma","Delta"),1)
   bid$TestNo = sample(20000:30000,1)
-  bid$Height = rnorm(1,180,5)
-  bid$Weight = rnorm(1,70,5)
+  bid$Height = round(rnorm(1,180,5))
+  bid$Weight = round(rnorm(1,70,5))
   bid$Device = "BreathID"
   start = list(m=20,k=1/100,beta=2)
   m = rnorm(1,start$m,start$m*0.1)

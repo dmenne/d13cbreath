@@ -44,17 +44,37 @@ test_that("Reading of multiple files returns dataframe with status",{
     system.file("extdata", "350_20043_0_GER.txt", package = "D13CBreath"))
   # Test
   res = AddAllBreathTestRecords(path,con)
-  res1 = AddAllBreathTestRecords(path,con)
+  res1 = AddAllBreathTestRecords(path,con) # Try again, same records
+  pars = dbGetQuery(con,"SELECT DISTINCT Parameter from BreathTestTimeSeries order by Parameter") 
   dbDisconnect(con)
   unlink(sqlitePath)
   # Assert
   tab = table(res$status)
   tab1 = table(res1$status)
-  expect_equal(unique(res$recordID),c(1,NA,2))
+  expect_equal(pars[,1],c("CPDR","CPDRfit","DOB","PDR","PDRfit"))
+  # !!! Change this if additional test are added
+  ExpectUnique = c(NA,1,2,3)
+  ExpectTab = c(6,3)
+  expect_true(all(unique(res$recordID) %in% ExpectUnique))
   expect_equal(names(tab),c("invalid","saved"))
   expect_equal(names(tab1),c("invalid","skipped"))
-  expect_equal(as.integer(tab1),c(6,2))
-  expect_equal(as.integer(tab1),c(6,2))
-  expect_equal(as.integer(tab1),c(6,2))
+  expect_equal(as.integer(tab),ExpectTab)
+  expect_equal(as.integer(tab1),ExpectTab)
+})
+
+test_that("Data columns with NaN are not stored",{
+  # Setup
+  if (exists("con")) suppressWarnings(dbDisconnect(con))
+  sqlitePath = tempfile(pattern = "Gastrobase", tmpdir = tempdir(), fileext = ".sqlite")
+  unlink(sqlitePath)
+  CreateEmptyBreathTestDatabase(sqlitePath)
+  con = OpenSqliteConnection(sqlitePath)
+  filename = system.file("extdata", "350_20023_0_GERWithNan.txt", 
+                         package = "D13CBreath")
+  AddBreathTestRecord(filename,con)
+  pars = dbGetQuery(con,"SELECT DISTINCT Parameter from BreathTestTimeSeries order by Parameter") 
+  expect_equal(pars[,1],c("CPDR","DOB","PDR","PDRfit"))
+  dbDisconnect(con)
+  unlink(sqlitePath)
 })
 

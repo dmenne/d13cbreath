@@ -4,4 +4,3 @@
   options(Gastrobase2SqlitePath=file.path(Sys.getenv("HOME"),
           "Gastrobase2/Gastrobase2.sqlite"))
 }
-  

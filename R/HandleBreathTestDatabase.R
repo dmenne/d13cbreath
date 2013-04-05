@@ -56,7 +56,7 @@ CreateEmptyBreathTestDatabase = function(sqlitePath){
   CREATE TABLE IF NOT EXISTS BreathTestTimeSeries(
     BreathTestTimeSeriesID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     BreathTestRecordID INTEGER NOT NULL,
-    Time INTEGER NOT NULL, -- In minutes after start
+    Time REAL NOT NULL, -- In minutes after start
     Parameter TEXT NOT NULL, -- cDOB, DOB, PDR,cPDR
     Value REAL NOT NULL,
     CONSTRAINT unq UNIQUE (BreathTestRecordID, Time, Parameter),
@@ -71,6 +71,7 @@ CreateEmptyBreathTestDatabase = function(sqlitePath){
     Parameter TEXT NOT NULL, -- t50, tlag, GEC, k, m, beta
     Method TEXT NOT NULL, -- How the value was computed: bluckSC, ghoos, BreathID, ghoosScinti
     Value REAL NOT NULL,
+    CONSTRAINT unq UNIQUE (BreathTestRecordID, Method, Parameter),
     FOREIGN KEY (BreathTestRecordID) 
        REFERENCES BreathTestRecord(BreathTestRecordID) ON DELETE CASCADE
   )'
@@ -147,6 +148,9 @@ OpenSqliteConnection = function(sqlitePath=NULL){
 #' AddBreathTestRecord(filename,con)
 #' dbDisconnect(con)
 #' @export
+##con = OpenSqliteConnection()
+##filename = "C:/Users/Dieter/Documents/RPackages/D13CBreath/inst/extdata/350_20023_0_GERWithNan.txt"
+
 AddBreathTestRecord = function(filename,con){
   bid = ReadBreathId(filename)
   BreathTestRecordToDatabase(bid,con)
@@ -177,6 +181,8 @@ AddBreathTestRecord = function(filename,con){
 AddAllBreathTestRecords = function(path,con){
   files = data.frame(file = dir(path,pattern="*.txt",ignore.case=TRUE,
                      recursive=TRUE,full.names=TRUE),stringsAsFactors=FALSE)
+  if (nrow(files)==0) 
+    stop("No file found in path")
   files$basename = basename(files$file)
   files$recordID = NA
   files$status = NA
@@ -220,7 +226,8 @@ BreathTestRecordToDatabase = function(bid, con){
   Device = "BreathID" # Make this generic 
   BreathTestRecordID = SavePatientRecord(bid,con,Device)
   # Device specific (factor out later)
-  pars = data.frame(BreathTestParameterID=as.integer(NA), BreathTestRecordID,
+  pars = data.frame(BreathTestParameterID=as.integer(NA), 
+                    BreathTestRecordID,
                     Parameter = c("t50","tlag","GEC"),
                     Method = rep(Device,3),
                     Values = c(bid$T50, bid$TLag,bid$GEC)
@@ -230,7 +237,7 @@ BreathTestRecordToDatabase = function(bid, con){
   if (!success)
     stop(str_c("Could not write Device parameters for patient ",bid["PatientNumber"]))
 
-  # Compute and save fit
+  # Compute and save fit (will do nothing if not successful)
   ComputeAndSaveFit(bid,con,BreathTestRecordID)  
   BreathTestRecordID
 }
@@ -266,6 +273,8 @@ SavePatientRecord = function(bid,con,Device) {
   }
   BreathTestRecordID = LastInsertRowid(con)
   bts = melt(bid$Data,"Time",variable.name="Parameter",value.name="Value")
+  # Remove NA and NaN
+  bts = bts[!(is.nan(bts$Value) |is.na(bts$Value)),]
   bts$BreathTestRecordID = BreathTestRecordID
   bts$BreathTestTimeSeriesID = NA
   # Retrieve column names to get the order right, skipping autoincrement
@@ -281,8 +290,11 @@ ComputeAndSaveFit = function(bid,con,BreathTestRecordID)  {
   start = list(m=20,k=1/100,beta=2)
   Dose = bid$Dose
   # Fit Model and compute prediction
-  bid.nls = nls(PDR~BluckCoward(Time,Dose,m,k,beta),
-                data=bid$Data[bid$Data$Time > 0,], start=start)
+  bid.nls = try(suppressWarnings(
+    nls(PDR~BluckCoward(Time,Dose,m,k,beta),
+          data=bid$Data[bid$Data$Time > 0,], start=start)),silent=TRUE)
+  if (inherits(bid.nls,"try-error"))
+    return(NULL) # Skip this
   cf = coef(bid.nls)
   
   # Write parameters and coefficients
@@ -291,9 +303,10 @@ ComputeAndSaveFit = function(bid,con,BreathTestRecordID)  {
     Method = c("BluckCoward","BluckCoward","BluckCoward",
                "BluckCoward","Ghoos","GhoosScint",
                "BluckCoward","Ghoos"),
-    Values = c(cf["m"],cf["k"],cf["beta"],
-               t50BluckCoward2(cf),t50Ghoos(cf),t50GhoosScintigraphy(cf),
-               tLagBluckCoward(cf),tLagGhoos(cf))
+    Value = unlist(c(cf["m"],cf["k"],cf["beta"],
+               t50BluckCoward2(cf),
+               t50Ghoos(cf),t50GhoosScintigraphy(cf),
+               tLagBluckCoward(cf),tLagGhoos(cf)))
     )
   success = dbWriteTable(con,"BreathTestParameter",pars,append=TRUE,
                          row.names=FALSE)
