@@ -12,12 +12,17 @@ test_that("Data can be read for population fit",{
 
 test_that("Population fit can be computed and written to database",{
   pd = GetPopulationData(con)  
+  # Make one stupid outlier
+  pp = pd$PDR[pd$BreathTestRecordID=="1"]
+  pp = pp+(1:length(pp))*0.5
+  pd$PDR[pd$BreathTestRecordID==1] = pp
   cf = BreathTestPopulationFit(pd)  
-  expect_equal(nrow(cf),10)
+  expect_equal(nrow(cf),9)
   expect_equal(names(cf),c("BreathTestRecordID","m","k","beta"))
   sp = SavePopulationFit(cf,con)
   expect_is(sp,"data.frame")
-  expect_equal(levels(sp$status), "kept")
+  tb = as.numeric(table(sp$status))
+  expect_equal(tb, c(9,1)) # 9 kept, 1 removed
 })
 
 

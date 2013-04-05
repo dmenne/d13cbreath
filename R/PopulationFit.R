@@ -18,12 +18,12 @@ BreathTestPopulationFit = function(x=NULL){
   if (is.null(x))   x = GetPopulationData()
   if (nrow(x)== 0) return(NULL)
   start = c(m=30,k=0.01,beta=2.4)
-  bc.nls = suppressWarnings(
+  bc.nls <- suppressWarnings(
     nlsList(PDR~BluckCoward(Time,100,m,k,beta)|BreathTestRecordID,
             data=x,start=start))
   removed = attr(attr( na.omit(coef(bc.nls)),"na.action"),"names")
   if (length(removed)>0)
-    x = x[,!(x$BreathTestRecordID %in% removed)]
+    x = x[!(x$BreathTestRecordID %in% removed),]
   bc.nlme = nlme(PDR~BluckCoward(Time,100,m,k,beta),
                  data=x,
                  fixed = m+k+beta~1,
