@@ -6,6 +6,7 @@ dieter.menne@menne-biomed.de
 * IRIS format only partially implemented
 * Create sample data, and sqlite database, and writes sample SQLite database
 * Fits Bluck/Coward, Ghoos self-correcting formula using nls.
+* Computes population fit with nlme using all data in database
 * See documentation of bluckCoward for examples, including how to use
   nlme for stuborn or highly incomplete cases.
 

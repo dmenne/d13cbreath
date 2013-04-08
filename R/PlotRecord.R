@@ -35,8 +35,28 @@
 #' @export
 Plot13CRecord = function(con, breathTestRecordID, showParameters=NULL,ymax=NULL,
                          xmax = NULL,  showName=FALSE) {
+  # Compute prediction
+  stepMinutes = 2 # 
+  ## Local Function 
+  GetPrediction = function(method){
+    bcPars = parm[parm$Parameter %in% c("beta","k","m") & parm$Method==method,
+                  c("Parameter","Value")]
+    pred = NULL
+    if (nrow(bcPars)==3){
+      pred = data.frame(what = str_c("Pred",str_sub(method,12,14)),
+                        Time = c(rangeTs[1],seq(stepMinutes,rangeTs[2],by=stepMinutes)))
+      rownames(bcPars)=bcPars$Parameter
+      Dose = rec$Dose
+      pred[,method] = as.vector(BluckCoward(pred$Time,Dose,bcPars["m","Value"],
+                                            bcPars["k","Value"],bcPars["beta","Value"]) )
+    } 
+    pred
+  }
+  ## End Local function
+  
+
   q = str_c("SELECT Time, Value as PDR from BreathTestTimeSeries where 
-Time > 0 and Parameter = 'PDR' and BreathTestRecordID = ",
+  Time > 0 and Parameter = 'PDR' and BreathTestRecordID = ",
             breathTestRecordID)
   ts = dbGetQuery(con,q)
   if (nrow(ts)==0)
@@ -65,22 +85,18 @@ Time > 0 and Parameter = 'PDR' and BreathTestRecordID = ",
   showPars = rbind(merge(parm,showParameters1),merge(parm,showParameters2))
   showPars = showPars[order(showPars$Value),]
   showPars$text = str_c(showPars$Parameter," ",showPars$Method)
-  # Compute prediction
-  stepMinutes = 2 # 
-  pred = data.frame(what = "Pred", 
-        Time = c(min(ts$Time),seq(stepMinutes,max(ts$Time*1.2),by=stepMinutes)))
-  bcPars = parm[parm$Parameter %in% c("beta","k","m"),c("Parameter","Value")]
-  rownames(bcPars)=bcPars$Parameter
-  Dose = rec$Dose
-  pred$PDR = as.vector(BluckCoward(pred$Time,Dose,bcPars["m","Value"],
-                         bcPars["k","Value"],bcPars["beta","Value"]) )
+  rangeTs = c(min(ts$Time),max(ts$Time*1.2))
+  pred = GetPrediction("BluckCoward")
+  predPop = GetPrediction("BluckCowardPop")
+  
   ylim = c(min(c(ts$PDR,0)), max(ts$PDR)*1.02) # Autoscaling
   if (!is.null(ymax))  # Manual scaling overrides
-    ylim[2] = max(ylim[2],ymax)
+    ylim = c(0,max(ylim[2],ymax))
   
-  xlim = c(0, pred$Time) # Autoscaling
+  
+  xlim = c(0, ifelse(is.null(pred), 240,max(pred$Time))) # Autoscaling
   if (!is.null(xmax))  # Manual scaling overrides
-    xlim[2] = max(xlim[2],xmax)
+    xlim[2] = xmax
   
   showPars$itext = (1:nrow(showPars))*ylim[2]*0.03
   showPars$yend = ylim[2]
@@ -92,13 +108,21 @@ Time > 0 and Parameter = 'PDR' and BreathTestRecordID = ",
   } else {
     title = str_c(rec$PatientID, " (",rec$Initials, "),  Test  ",title)  
   }
-  g = ggplot(data=ts,aes(x=Time,y=PDR))+geom_point()+  ggtitle(title)  +
-    ylim(ylim) + scale_x_continuous(breaks = seq(0,max(ts$Time)+60,by=60))+
-    geom_line(data=pred,aes(x=Time,y=PDR),col=1,lwd=1.5) +
+  g = ggplot(data=ts,aes(x=Time,y=PDR))+
+    geom_point()+  
+    ggtitle(title)  +
+    scale_x_continuous(breaks = seq(0,xlim[2]+60,by=60))+
+    coord_cartesian(ylim=ylim,xlim=xlim)+
     geom_segment(aes(x=Value, y=itext, xend=Value, yend=yend ),
                  col="gray",linetype=1, lwd=0.4, data=showPars, show_guide=FALSE) +
     geom_text(aes(label=text, x=Value, y=itext), col="darkgreen",cex=4,
                 adj=-0.04,data=showPars,show_guide=FALSE)
+  BluckCoward = BluckCowardPop = 0 # avoid note on build, not used
+  if (!is.null(pred))
+    g = g+ geom_line(data=pred,aes(x=Time,y=BluckCoward),col=1,lwd=1.5) 
+    
+  if (!is.null(predPop))
+    g = g+ geom_line(data=predPop,aes(x=Time,y=BluckCowardPop),col=2,lwd=1) 
   g + theme_bw() +
       scale_colour_manual( values=brewer.pal(6,"Dark2")) +
       theme(

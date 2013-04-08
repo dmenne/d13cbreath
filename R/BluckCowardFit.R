@@ -222,6 +222,6 @@ tLagGhoos = function(cf){
 #' @export
 t50GhoosScintigraphy = function(cf){
   ret = (t50Ghoos(cf)-66.09)/1.12
-  names(ret)="t50Ghoos"
+  names(ret)="t50GhoosScintigraphy"
   ret
 }

@@ -12,6 +12,21 @@
 #' \code{GetPopulationsData}.
 #' @return data frame with columns \code{BreathTestRecordID, m, k,beta} 
 #' of the population fit. Use function \code{SavePopulationFit} to save to database.
+#' @examples
+#' sqliteFile = CreateSimulatedBreathTestDatabase()
+#' con = OpenSqliteConnection(sqliteFile)
+#' pd = GetPopulationData(con)
+#' # Make one stupid outlier
+#' pp = pd$PDR[pd$BreathTestRecordID=="1"]
+#' pp = pp+(1:length(pp))*0.5
+#' pd$PDR[pd$BreathTestRecordID==1] = pp
+#' head(pd)
+#' # The following line produces one "qr.default" error message that cannot
+#' # easily be suppressed
+#' cf = BreathTestPopulationFit(pd)
+#' head(cf)
+#' SavePopulationFit(cf,con) # Return a data frame with kept/removed
+#' dbDisconnect(con)
 #' @import nlme
 #' @export 
 BreathTestPopulationFit = function(x=NULL){
@@ -27,7 +42,7 @@ BreathTestPopulationFit = function(x=NULL){
   bc.nlme = nlme(PDR~BluckCoward(Time,100,m,k,beta),
                  data=x,
                  fixed = m+k+beta~1,
-                 random = m+k+beta~1,
+                 random = pdDiag(m+k+beta~1),
                  groups= ~BreathTestRecordID,
                  start=start)
   cf = coef(bc.nlme)
