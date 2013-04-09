@@ -5,7 +5,7 @@ Dieter Menne
 Menne Biomed Consulting Tübingen, Germany    
 http://www.menne-biomed.de   
 
-dieter.menne at menne-biomed.de 
+dieter.menne@menne-biomed.de 
 
 This software was developed in cooperation with the ETH and Department of Gastroenterology of the University Hospital of Zürich, Switzerland.  
 Thanks to Andreas Steingötter and Werner Schwizer.
