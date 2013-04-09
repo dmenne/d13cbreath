@@ -1,6 +1,13 @@
 D13CBreath: Processing C13 breath test data
 ===========================================
-dieter.menne@menne-biomed.de
+
+Dieter Menne
+Menne Biomed Consulting Tübingen, Germany 
+http://www.menne-biomed.de
+
+dieter.menne at menne-biomed.de 
+
+This software was developed in cooperation with the ETH and Department of Gastroenterology of the University Hospital of Zürich, Switzerland (Andreas Steingötter, Werner Schwizer)
 
 * Reads several formats of 13C data (IRIS/Wagner, BreathID)
 * IRIS format only partially implemented
