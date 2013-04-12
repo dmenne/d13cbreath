@@ -291,7 +291,7 @@ ComputeAndSaveFit = function(bid,con,BreathTestRecordID)  {
   Dose = bid$Dose
   # Fit Model and compute prediction
   bid.nls = try(suppressWarnings(
-    nls(PDR~BluckCoward(Time,Dose,m,k,beta),
+    nls(PDR~ExpBeta(Time,Dose,m,k,beta),
           data=bid$Data[bid$Data$Time > 0,], start=start)),silent=TRUE)
   if (inherits(bid.nls,"try-error"))
     return(NULL) # Skip this
@@ -300,13 +300,13 @@ ComputeAndSaveFit = function(bid,con,BreathTestRecordID)  {
   # Write parameters and coefficients
   pars = data.frame(BreathTestParameterID=as.integer(NA), BreathTestRecordID,
     Parameter = c("m","k","beta","t50","t50","t50","tlag","tlag"),
-    Method = c("BluckCoward","BluckCoward","BluckCoward",
+    Method = c("ExpBeta","ExpBeta","ExpBeta",
                "BluckCoward","Ghoos","GhoosScint",
                "BluckCoward","Ghoos"),
     Value = unlist(c(cf["m"],cf["k"],cf["beta"],
-               t50BluckCoward2(cf),
+               t50BluckCoward(cf),
                t50Ghoos(cf),t50GhoosScintigraphy(cf),
-               tLagBluckCoward(cf),tLagGhoos(cf)))
+               t50BluckCoward(cf),tLagGhoos(cf)))
     )
   success = dbWriteTable(con,"BreathTestParameter",pars,append=TRUE,
                          row.names=FALSE)

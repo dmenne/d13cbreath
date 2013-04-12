@@ -19,4 +19,8 @@ Thanks to Andreas Steingötter and Werner Schwizer.
   nlme for stuborn or highly incomplete cases.
 * For additional examples, see the folder inst/tests of the source package
 
-__Reference__: Bluck L J C and Coward W A 2006 Measurement of gastric emptying by the C-13-octanoate breath test --- rationalization with scintigraphy Physiol. Meas. 27 279-89
+__Reference__: 
+* Bluck LJC and Coward WA 2006 Measurement of gastric emptying by the C-13-octanoate breath test --- rationalization with scintigraphy Physiol. Meas. 27 279-89
+
+* Bluck LJC 2009 Recent advances in the interpretation of the 13C octanoate breath test for gastric
+emptying. J. Breath Res. 3, http://iopscience.iop.org/1752-7163/3/3/034002/

@@ -35,6 +35,9 @@
 #' @export
 Plot13CRecord = function(con, breathTestRecordID, showParameters=NULL,ymax=NULL,
                          xmax = NULL,  showName=FALSE) {
+  # Debug
+  #breathTestRecordID = 2; showName = FALSE; showParameters = NULL; ymax=NULL; ymax=0;
+  # 
   # Compute prediction
   stepMinutes = 2 # 
   ## Local Function 
@@ -47,7 +50,7 @@ Plot13CRecord = function(con, breathTestRecordID, showParameters=NULL,ymax=NULL,
                         Time = c(rangeTs[1],seq(stepMinutes,rangeTs[2],by=stepMinutes)))
       rownames(bcPars)=bcPars$Parameter
       Dose = rec$Dose
-      pred[,method] = as.vector(BluckCoward(pred$Time,Dose,bcPars["m","Value"],
+      pred[,method] = as.vector(ExpBeta(pred$Time,Dose,bcPars["m","Value"],
                                             bcPars["k","Value"],bcPars["beta","Value"]) )
     } 
     pred
@@ -86,8 +89,8 @@ Plot13CRecord = function(con, breathTestRecordID, showParameters=NULL,ymax=NULL,
   showPars = showPars[order(showPars$Value),]
   showPars$text = str_c(showPars$Parameter," ",showPars$Method)
   rangeTs = c(min(ts$Time),max(ts$Time*1.2))
-  pred = GetPrediction("BluckCoward")
-  predPop = GetPrediction("BluckCowardPop")
+  pred = GetPrediction("ExpBeta")
+  predPop = GetPrediction("ExpBetaPop")
   
   ylim = c(min(c(ts$PDR,0)), max(ts$PDR)*1.02) # Autoscaling
   if (!is.null(ymax))  # Manual scaling overrides
@@ -117,12 +120,12 @@ Plot13CRecord = function(con, breathTestRecordID, showParameters=NULL,ymax=NULL,
                  col="gray",linetype=1, lwd=0.4, data=showPars, show_guide=FALSE) +
     geom_text(aes(label=text, x=Value, y=itext), col="darkgreen",cex=4,
                 adj=-0.04,data=showPars,show_guide=FALSE)
-  BluckCoward = BluckCowardPop = 0 # avoid note on build, not used
+  ExpBeta= ExpBetaPop = 0 # avoid note on build, not used
   if (!is.null(pred))
-    g = g+ geom_line(data=pred,aes(x=Time,y=BluckCoward),col=1,lwd=1.5) 
+    g = g+ geom_line(data=pred,aes(x=Time,y=ExpBeta),col=1,lwd=1.5) 
     
   if (!is.null(predPop))
-    g = g+ geom_line(data=predPop,aes(x=Time,y=BluckCowardPop),col=2,lwd=1) 
+    g = g+ geom_line(data=predPop,aes(x=Time,y=ExpBetaPop),col=2,lwd=1) 
   g + theme_bw() +
       scale_colour_manual( values=brewer.pal(6,"Dark2")) +
       theme(

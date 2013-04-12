@@ -34,17 +34,41 @@ BreathTestPopulationFit = function(x=NULL){
   if (nrow(x)== 0) return(NULL)
   start = c(m=30,k=0.01,beta=2.4)
   bc.nls <- suppressWarnings(
-    nlsList(PDR~BluckCoward(Time,100,m,k,beta)|BreathTestRecordID,
+    nlsList(PDR~ExpBeta(Time,100,m,k,beta)|BreathTestRecordID,
             data=x,start=start))
   removed = attr(attr( na.omit(coef(bc.nls)),"na.action"),"names")
+  lastSuccess = TRUE
+
   if (length(removed)>0)
-    x = x[!(x$BreathTestRecordID %in% removed),]
-  bc.nlme = nlme(PDR~BluckCoward(Time,100,m,k,beta),
-                 data=x,
+    x1 = x[!(x$BreathTestRecordID %in% removed),]
+  bc.nlme = try(nlme(PDR~ExpBeta(Time,100,m,k,beta),
+                 data=x1,
                  fixed = m+k+beta~1,
                  random = pdDiag(m+k+beta~1),
                  groups= ~BreathTestRecordID,
-                 start=start)
+                 start=start),silent=TRUE)
+  success = !inherits(bc.nlme,"try-error")
+  if (!success) stop("Populationsfit nicht erfolgreich")
+
+  while(success){
+    actRemoved = removed[-1]
+    if (length(actRemoved)>0)
+      x1 = x[!(x$BreathTestRecordID %in% actRemoved),]
+    bc1.nlme = try(update(bc.nlme))  
+    success = !inherits(bc1.nlme,"try-error")
+    if (success){
+      removed = actRemoved
+      bc.nlme = bc1.nlme
+    } else
+    {
+        
+    }
+    
+  }
+  # When successful, try to add one of the removed
+  if (success & length(actRemoved) > 0) actRemoved = actRemoved[-1]
+  
+  
   cf = coef(bc.nlme)
   cf = cbind(BreathTestRecordID = rownames(cf),cf)
   attr(cf,"removed")= removed
@@ -64,7 +88,7 @@ SavePopulationFit = function(cf,con=NULL){
   if (localCon)
     con = OpenSqliteConnection()
 
-  Method = c("BluckCowardPop","BluckCowardPop","BluckCowardPop",
+  Method = c("ExpBetaPop","ExpBetaPop","ExpBetaPop",
              "BluckCowardPop","GhoosPop","GhoosScintPop",
              "BluckCowardPop","GhoosPop")
   # Delete all old entries
@@ -80,7 +104,7 @@ SavePopulationFit = function(cf,con=NULL){
                       Parameter = c("m","k","beta","t50","t50","t50","tlag","tlag"),
                       Method = Method,
                       Values = unlist(c(cf1["m"],cf1["k"],cf1["beta"],
-                                 t50BluckCoward2(cf1),
+                                 t50BluckCoward(cf1),
                                  t50Ghoos(cf1),
                                  t50GhoosScintigraphy(cf1),
                                  tLagBluckCoward(cf1),tLagGhoos(cf1)))

@@ -1,19 +1,23 @@
-#' @title Fit Bluck/Coward self-corrected function to 13C breath test PDR
+#' @title Fit exponential beta function to 13C breath test PDR
 #' 
 #' @description Functions to fit PDR/DOB data to exponential-beta formula given in 
 #' Sanaka M, Nakada K (2010) Stable isotope breath test for assessing gastric emptying:
-#' A comprehensive review
-#' J. Smooth Muscle Research 46(6): 267-280
-#'
+#' A comprehensive review.  J. Smooth Muscle Research 46(6): 267-280
+#' 
 #' Bluck L J C and Coward W A 2006 Measurement of gastric
 #' emptying by the C-13-octanoate breath test --- rationalization
 #' with scintigraphy Physiol. Meas. 27 279?89
 #' For a review, see 
 #' Bluck LJC (2009) Recent advances in the interpretation of the 13C octanoate 
 #' breath test for gastric emptying. Journal of Breath Research, 3 1-8 
-#' @name BluckCoward
-# BluckCoward = expression(m*D*k*beta*(1-exp(-k*time))^(beta-1)*exp(-k*time))
-# deriv(bluck,c("m","k","beta"))
+#' This is the same equation as (4)  in 
+#' The Wagner-Nelson Method Can Generate an Accurate Gastric Emptying Flow Curve from 
+#' 13CO2 Data Obtained by a 13C-Labeled Substrate Breath Test
+#' Masaki Sanaka, Takatsugu Yamamoto, Tarou Ishii, Yasushi Kuyama
+#'
+#' @name ExpBeta
+# ExpBeta= expression(m*D*k*beta*(1-exp(-k*time))^(beta-1)*exp(-k*time))
+# deriv(ExpBeta,c("m","k","beta"))
 #' @author Dieter Menne, \email{dieter.menne@@menne-biomed.de}
 #' 
 #' @param time vector of time in minutes
@@ -30,12 +34,12 @@
 #' # Time 0 must be removed to avoid singularity
 #' breathID = ReadBreathId(sampleFile)
 #' data = subset(breathID$Data,Time >0)
-#' sample.nls = nls(PDR~BluckCoward(Time,100,m,k,beta),data=data,start=start)
+#' sample.nls = nls(PDR~ExpBeta(Time,100,m,k,beta),data=data,start=start)
 #' data$PDRFitBluck=predict(sample.nls)
 #' plot(data$Time,data$PDR,pch=16,cex=0.7,xlab="time (min)",ylab="PDR",
 #'   main="t50 with different methods")
 #' lines(data$Time,data$PDRFitBluck,col="blue")
-#' t50 = t50BluckCoward2(coef(sample.nls))
+#' t50 = t50BluckCoward(coef(sample.nls))
 #' t50Ghoos = t50Ghoos(coef(sample.nls))
 #' t50Scint = t50GhoosScintigraphy(coef(sample.nls))
 #' abline(v=t50,col="red")
@@ -55,12 +59,12 @@
 #' # Create simulated data
 #' pdr  = data.frame(time=seq(2,200,by=10))
 #' pdr$PDR = 
-#'   BluckCoward(pdr$time,100,start$m,start$k,start$beta)+rnorm(nrow(pdr),0,1)
+#'   ExpBeta(pdr$time,100,start$m,start$k,start$beta)+rnorm(nrow(pdr),0,1)
 #' par(mfrow=c(2,1))
 #' # Plot raw data
 #' plot(pdr$time,pdr$PDR,pch=16,cex=0.5,xlab="time (min)",ylab="PDR")
 #' # Compute fit
-#' pdr.nls = nls(PDR~BluckCoward(time,100,m,k,beta),data=pdr,start=start)
+#' pdr.nls = nls(PDR~ExpBeta(time,100,m,k,beta),data=pdr,start=start)
 #' # Compute prediction
 #' pdr$PDRfit= predict(pdr.nls)
 #' lines(pdr$time,pdr$PDRfit,col="red",lwd=2)
@@ -69,7 +73,7 @@
 #' plot(pdr$time,BluckCoward2(pdr$time,100,coef(pdr.nls)),type="l",
 #'      xlab="time (min)", ylab="cPDR")
 #' # Show t50
-#' t50 = t50BluckCoward2(coef(pdr.nls))
+#' t50 = t50BluckCoward(coef(pdr.nls))
 #' tlag = tLagBluckCoward(coef(pdr.nls))
 #' abline(v=t50,col="gray")
 #' abline(v=tlag,col="green")
@@ -88,11 +92,11 @@
 #' pdr1 = pdr1[!(pdr1$patient=="A" & pdr1$time > 50),]
 #' set.seed(4711)
 #' pdr1$PDR =
-#'   with(pdr1, BluckCoward(time,100,m,k,beta)+rnorm(nrow(pdr1),0,1))
+#'   with(pdr1, ExpBeta(time,100,m,k,beta)+rnorm(nrow(pdr1),0,1))
 #'
 #' # Compute nls fit for patient A only: fails
 #' # The following line will produce an error message
-#' pdr.nls = try(nls(PDR~BluckCoward(time,100,m,k,beta),data=pdr1,start=start,
+#' pdr.nls = try(nls(PDR~ExpBeta(time,100,m,k,beta),data=pdr1,start=start,
 #'                   subset=patient=="A"))
 #' stopifnot(class(pdr.nls)=="try-error")
 #'
@@ -100,7 +104,7 @@
 #' library(nlme)
 #' library(lattice)
 #' library(latticeExtra)
-#' pdr.nlme = nlme(PDR~BluckCoward(time,100,m,k,beta),data=pdr1,
+#' pdr.nlme = nlme(PDR~ExpBeta(time,100,m,k,beta),data=pdr1,
 #'                 fixed= m+k+beta~1,
 #'                 random = m+k+beta~1,
 #'                 groups=~patient,
@@ -118,7 +122,7 @@
 #'     Borrowing strength in action!")
 #' @export
 
-BluckCoward = function(time,Dose,m,k,beta){
+ExpBeta= function(time,Dose,m,k,beta){
   .expr1 <- m * Dose
   .expr2 <- .expr1 * k
   .expr3 <- .expr2 * beta
@@ -140,88 +144,3 @@ BluckCoward = function(time,Dose,m,k,beta){
   .value
 }
 
-#' @name BluckCoward2
-#' @title Equation 2 from Bluck Review
-#'
-#' @param Time in minutes
-#' @param Dose in mg
-#' @param cf named vector of coefficients; only \code{k} and \code{beta} are required
-#' @return vector of predicted cumulative PDR
-#' @export
-#' @seealso \code{\link{BluckCoward}}
-BluckCoward2  = function(Time,Dose,cf){
-  ekt = 1-exp(-unlist(cf["k"])*Time)
-  beta = unlist(cf["beta"])
-  as.numeric(Dose*(beta*(ekt)^(beta-1)-(beta-1)*ekt^beta))
-}
-
-#' @name t50BluckCoward2
-#' @title Newton's method to solve BluckCoward2 for 1/2 to compute t_50
-#' @param cf named vector of coefficients; only \code{k} and \code{beta} are required
-#' @return time where value is 1/2 of maximum, i.e. t50 in minutes
-#' @seealso \code{\link{BluckCoward}}
-#' @export
-t50BluckCoward2 = function(cf){
-  f = function(t,cf0) BluckCoward2(t,1,cf0)-0.5
-  g = function(cf0){
-    uniroot(f,interval= c(1,1000),cf0)$root
-  }
-  if (class(cf)=="numeric")
-    round(g(cf),1)
-  else 
-    data.frame(t50BluckCoward2=round(apply(cf[,c("k","beta")],1,g),1))
-}
-
-
-#' @name tLagBluckCoward
-#' @title Lag phase for BluckCoward self-correcting fit
-#' @param cf named vector of coefficients; only \code{k} and \code{beta} are required
-#' @return lag phase in minutes (time t at which the maximum in the rate of change 
-#' of G(t) occurs)
-#' @seealso \code{\link{BluckCoward}}
-#' @export
-tLagBluckCoward = function(cf){
-  ret = log(cf["beta"]/2)/cf["k"]  
-  names(ret)="tLagBluckCoward"
-  ret
-}
-
-#' @name t50Ghoos
-#' @title Determine t50 the original way (Sanaka Nakada eq 6)
-#' @param cf named vector of coefficients; only \code{k} and \code{beta} are required
-#' @return time where value is 1/2 of maximum, i.e. t50 in minutes
-#' @seealso \code{\link{BluckCoward}}
-#' @export
-t50Ghoos = function(cf){
-  ret = -log(1-2^(-1/cf["beta"]))/cf["k"]
-  names(ret)="t50Ghoos"
-  ret
-}
-
-#' @name tLagGhoos
-#' @title Determine tlag from Ghoos formula
-#' @param cf named vector of coefficients; only \code{k} and \code{beta} are required
-#' @return lag time as defined from Ghoos fit
-#' @seealso \code{\link{BluckCoward}}
-#' @export
-tLagGhoos = function(cf){
-  ret = log(cf["beta"])/cf["k"]
-  names(ret)="tlagGhoos"
-  ret
-}
-
-#' @name t50GhoosScintigraphy
-#' @title t50 from Ghoos with scintigrapic correction
-#' @description Computes t50 the original Ghoos way (Sanaka Nakada eq 6),
-#' and apply the correction from Ghoos et. al 1993 to come close to 
-#' scintigraphic values. This is for comparison with published data only;
-#' there is little justification for using it.
-#' @param cf named vector of coefficients; only \code{k} and \code{beta} are required
-#' @return time where value is 1/2 of maximum, i.e. t50 in minutes
-#' @seealso \code{\link{BluckCoward}}
-#' @export
-t50GhoosScintigraphy = function(cf){
-  ret = (t50Ghoos(cf)-66.09)/1.12
-  names(ret)="t50GhoosScintigraphy"
-  ret
-}
