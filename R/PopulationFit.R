@@ -10,9 +10,12 @@
 #' @param x data frame with columns \code{BreathTestRecordID,Time,Value}.
 #' When no parameter is given, reads from default database via with function
 #' \code{GetPopulationsData}.
+#' @param RemoveItemsFunction leave this function at its default value; it is relevant for 
+#' testing only.
 #' @return data frame with columns \code{BreathTestRecordID, m, k,beta} 
 #' of the population fit. Use function \code{SavePopulationFit} to save to database.
 #' @examples
+#' set.seed(14024)
 #' sqliteFile = CreateSimulatedBreathTestDatabase()
 #' con = OpenSqliteConnection(sqliteFile)
 #' pd = GetPopulationData(con)
@@ -29,51 +32,73 @@
 #' dbDisconnect(con)
 #' @import nlme
 #' @export 
-BreathTestPopulationFit = function(x=NULL){
-  if (is.null(x))   x = GetPopulationData()
-  if (nrow(x)== 0) return(NULL)
+#' 
+BreathTestPopulationFit = function(x=NULL, RemoveItemsFunction=RemoveNACoefficients){
+  if (is.null(x))   
+    x = GetPopulationData()
+  #x=pd
+  if (nrow(x)== 0) 
+    return(NULL)
   start = c(m=30,k=0.01,beta=2.4)
   bc.nls <- suppressWarnings(
     nlsList(PDR~ExpBeta(Time,100,m,k,beta)|BreathTestRecordID,
             data=x,start=start))
-  removed = attr(attr( na.omit(coef(bc.nls)),"na.action"),"names")
-  lastSuccess = TRUE
-
-  if (length(removed)>0)
-    x1 = x[!(x$BreathTestRecordID %in% removed),]
-  bc.nlme = try(nlme(PDR~ExpBeta(Time,100,m,k,beta),
+  # For testing, we make RemoveItems a function
+  removed = RemoveItemsFunction(coef(bc.nls))
+  if(is.null(removed)) 
+    x1 = x else
+    x1 = x[!(x$BreathTestRecordID %in% removed),] 
+  bc.nlme = suppressWarnings(try(nlme(PDR~ExpBeta(Time,100,m,k,beta),
                  data=x1,
                  fixed = m+k+beta~1,
                  random = pdDiag(m+k+beta~1),
                  groups= ~BreathTestRecordID,
-                 start=start),silent=TRUE)
+                 start=start),silent=TRUE))
   success = !inherits(bc.nlme,"try-error")
-  if (!success) stop("Populationsfit nicht erfolgreich")
+  if (!success) # This should work in most cases, since we removed all nlsList failures    
+    stop("Populationsfit nicht erfolgreich")
 
-  while(success){
-    actRemoved = removed[-1]
-    if (length(actRemoved)>0)
-      x1 = x[!(x$BreathTestRecordID %in% actRemoved),]
-    bc1.nlme = try(update(bc.nlme))  
+  nextRemoved = 1
+  while(length(removed) >0){
+    actRemoved = removed[-nextRemoved]
+    if(length(actRemoved) > 0) 
+      x1 = x[!(x$BreathTestRecordID %in% removed),] else 
+      x1 = x
+    bc1.nlme = suppressWarnings(try(update(bc.nlme),silent=TRUE))
     success = !inherits(bc1.nlme,"try-error")
     if (success){
       removed = actRemoved
       bc.nlme = bc1.nlme
+      nextRemoved = 1
     } else
     {
-        
+      nextRemoved = nextRemoved +1
     }
-    
+    #cat("Success ", success, "act ",actRemoved," removed ",removed," nextRemoved ",nextRemoved,"\n")
+    if (length(removed) ==0 || nextRemoved > length(removed)) 
+      break
   }
-  # When successful, try to add one of the removed
-  if (success & length(actRemoved) > 0) actRemoved = actRemoved[-1]
-  
-  
+  #cat(removed,"\n")
   cf = coef(bc.nlme)
   cf = cbind(BreathTestRecordID = rownames(cf),cf)
   attr(cf,"removed")= removed
   cf
 }
+
+
+#' @title Remove coefficients from \code{nlsList} for subsequent \code{nlme} run.
+#' @description
+#' Returns a character vector of the levels to be deleted from nlme. 
+#' Used in function \code{\link{BreathTestPopulationFit}} as the default function.
+#' In general, leave this function at its default value. 
+#' Overriding this function is required for testing only
+#' @param cf coefficients from a nlsList fit. 
+#' @return character vector of levels to be deleted
+#' @name RemoveNACoefficients
+RemoveNACoefficients = function(cf){
+  attr(attr( na.omit(cf),"na.action"),"names")
+}
+
 #' @title Save population fit to breath test data
 #' @description
 #' Deletes all old population entries, and saves new population fits to database.
