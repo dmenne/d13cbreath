@@ -10,8 +10,9 @@
 #' @param x data frame with columns \code{BreathTestRecordID,Time,Value}.
 #' When no parameter is given, reads from default database via with function
 #' \code{GetPopulationsData}.
-#' @param RemoveItemsFunction leave this function at its default value; it is relevant for 
-#' testing only.
+#' @param RemoveItemsFunction leave this function at its default NULL value; with 
+#' this choice, items that were not successfully fitted with nlsList are removed.
+#' To force retries  of case that were not successfully fit by nlsList.
 #' @return data frame with columns \code{BreathTestRecordID, m, k,beta} 
 #' of the population fit. Use function \code{SavePopulationFit} to save to database.
 #' @examples
@@ -33,10 +34,13 @@
 #' @import nlme
 #' @export 
 #' 
-BreathTestPopulationFit = function(x=NULL, RemoveItemsFunction=RemoveNACoefficients){
+BreathTestPopulationFit = function(x=NULL, RemoveItemsFunction=NULL){
+  retryFits = !is.null(RemoveItemsFunction)
+  if (!retryFits) RemoveItemsFunction = RemoveNACoefficients
+  # Get data from default directory if not given
   if (is.null(x))   
     x = GetPopulationData()
-  #x=pd
+  #x=pd # Testing
   if (nrow(x)== 0) 
     return(NULL)
   start = c(m=30,k=0.01,beta=2.4)
@@ -51,32 +55,34 @@ BreathTestPopulationFit = function(x=NULL, RemoveItemsFunction=RemoveNACoefficie
   bc.nlme = suppressWarnings(try(nlme(PDR~ExpBeta(Time,100,m,k,beta),
                  data=x1,
                  fixed = m+k+beta~1,
-                 random = pdDiag(m+k+beta~1),
+                 random = m+pdDiag(k+beta)~1,
                  groups= ~BreathTestRecordID,
                  start=start),silent=TRUE))
   success = !inherits(bc.nlme,"try-error")
   if (!success) # This should work in most cases, since we removed all nlsList failures    
     stop("Populationsfit nicht erfolgreich")
-
-  nextRemoved = 1
-  while(length(removed) >0){
-    actRemoved = removed[-nextRemoved]
-    if(length(actRemoved) > 0) 
-      x1 = x[!(x$BreathTestRecordID %in% removed),] else 
-      x1 = x
-    bc1.nlme = suppressWarnings(try(update(bc.nlme),silent=TRUE))
-    success = !inherits(bc1.nlme,"try-error")
-    if (success){
-      removed = actRemoved
-      bc.nlme = bc1.nlme
-      nextRemoved = 1
-    } else
-    {
-      nextRemoved = nextRemoved +1
+  # retrying Fits is rarely successfull
+  if (retryFits){
+    nextRemoved = 1
+    while(length(removed) >0){
+      actRemoved = removed[-nextRemoved]
+      if(length(actRemoved) > 0) 
+        x1 = x[!(x$BreathTestRecordID %in% actRemoved),] else 
+        x1 = x
+      bc1.nlme = suppressWarnings(try(update(bc.nlme,data=x1),silent=TRUE))
+      success = !inherits(bc1.nlme,"try-error")
+      if (success){
+        removed = actRemoved
+        bc.nlme = bc1.nlme
+        nextRemoved = 1
+      } else
+      {
+        nextRemoved = nextRemoved +1
+      }
+  #    cat("Success ", success, "act ",actRemoved," removed ",removed," nextRemoved ",nextRemoved,"\n")
+      if (length(removed) ==0 || nextRemoved > length(removed)) 
+        break
     }
-    #cat("Success ", success, "act ",actRemoved," removed ",removed," nextRemoved ",nextRemoved,"\n")
-    if (length(removed) ==0 || nextRemoved > length(removed)) 
-      break
   }
   #cat(removed,"\n")
   cf = coef(bc.nlme)

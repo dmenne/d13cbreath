@@ -30,17 +30,16 @@ test_that("Population fit can be computed and written to database",{
   expect_equal(tb, c(9,1)) # 9 kept, 1 removed
 })
 
-
-
-if (FALSE){
 RandomizeRemoveNACoefficient = function(cf){
   r = D13CBreath:::RemoveNACoefficients(cf)  
   sample(r,length(r))
 }
 
-
 test_that("NLME fit must return the same results when nlsList invalid results are randomized",{
   # This test is only run when there is a default database with real data
+  # The success of this test depends on actual data from measurements, not on simulated
+  # data. In case it fails, it can be discarded, because the inclusion of results from 
+  # non-successful nlsList runs anyway is not very promising.
   if (!file.exists(getOption("Gastrobase2SqlitePath"))) 
     return();
   set.seed(4711)
@@ -48,11 +47,9 @@ test_that("NLME fit must return the same results when nlsList invalid results ar
   x1 = BreathTestPopulationFit(NULL,RemoveItemsFunction=RandomizeRemoveNACoefficient)
   x2 = BreathTestPopulationFit(NULL,RemoveItemsFunction=RandomizeRemoveNACoefficient)
   x3 = BreathTestPopulationFit(NULL,RemoveItemsFunction=RandomizeRemoveNACoefficient)
-  ## To bad the results are not equal and depend on the sequence
-  ##expect_equal(x1$m,x2$m)
-  ##expect_equal(x1$m,x3$m)
+  ## This test may fail, because the method is not very reliable
+  expect_equal(x1$m,x2$m)
+  expect_equal(x1$m,x3$m)
 })
-
-}
 
 dbDisconnect(con)
