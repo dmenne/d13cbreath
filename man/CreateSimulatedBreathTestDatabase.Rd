@@ -1,0 +1,19 @@
+\name{CreateSimulatedBreathTestDatabase}
+\alias{CreateSimulatedBreathTestDatabase}
+\title{Creates a database with simulated breath tests}
+\usage{
+  CreateSimulatedBreathTestDatabase(sqlitePath = NULL)
+}
+\arguments{
+  \item{sqlitePath}{Path to created sqlite file.}
+}
+\value{
+  File name of simulated database
+}
+\description{
+  Creates a database withsimulated breath test records. If
+  sqLitePath is NULL, it is created in temporary directory.
+  To create a file in the default path, use
+  \code{CreateSimulatedBreathTestDatabase(getOption("Gastrobase2SqlitePath"))}
+}
+

@@ -1,0 +1,22 @@
+\name{SavePopulationFit}
+\alias{SavePopulationFit}
+\title{Save population fit to breath test data}
+\usage{
+  SavePopulationFit(cf, con = NULL)
+}
+\arguments{
+  \item{cf}{data frame with columns
+  \code{BreathTestRecordID, m, k,beta}}
+
+  \item{con}{database connection. When omitted, uses
+  default database}
+}
+\value{
+  data frame with \code{BreathTestRecordID} and column
+  \code{status} with values \code{kept} and \code{removed}.
+}
+\description{
+  Deletes all old population entries, and saves new
+  population fits to database.
+}
+

@@ -1,0 +1,32 @@
+\name{Summary13CRecord}
+\alias{Summary13CRecord}
+\title{Summary data from a 13C Record}
+\usage{
+  Summary13CRecord(con, breathTestRecordID)
+}
+\arguments{
+  \item{con}{Open connection to SQLite database; use
+  \code{OpenSqliteConnection} to connect.}
+
+  \item{breathTestRecordID}{BreathTestRecordID in database;
+  used in tables}
+}
+\value{
+  List with named vector \code{Record} (Patient and Record)
+  and data frame \code{Parameters}
+}
+\description{
+  Reads record from database and returns extracted
+  parameters
+}
+\examples{
+sqlitePath = CreateSimulatedBreathTestDatabase()
+con = OpenSqliteConnection(sqlitePath)
+breathTestRecordID=1
+Summary13CRecord(con,breathTestRecordID)
+dbDisconnect(con)
+}
+\author{
+  Dieter Menne, \email{dieter.menne@menne-biomed.de}
+}
+

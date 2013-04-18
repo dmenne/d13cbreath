@@ -1,0 +1,19 @@
+\name{SimulateBreathId}
+\alias{SimulateBreathId}
+\title{Creates a simulated BreathID record for testing}
+\usage{
+  SimulateBreathId()
+}
+\value{
+  A record that is a modified version of the provided
+  sample record, with additional fields \code{Name,
+  FirstName, Initials, FileName}
+}
+\description{
+  Creates a simulated BreathID record for testing
+}
+\seealso{
+  \code{\link{ReadBreathId}},
+  \code{\link{AddSimulatedBreathTestRecord}}
+}
+

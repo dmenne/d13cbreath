@@ -1,0 +1,53 @@
+\name{BreathTestPopulationFit}
+\alias{BreathTestPopulationFit}
+\title{Breathtest population fit}
+\usage{
+  BreathTestPopulationFit(x = NULL,
+    RemoveItemsFunction = NULL)
+}
+\arguments{
+  \item{x}{data frame with columns
+  \code{BreathTestRecordID,Time,Value}. When no parameter
+  is given, reads from default database via with function
+  \code{GetPopulationsData}.}
+
+  \item{RemoveItemsFunction}{leave this function at its
+  default NULL value; with this choice, items that were not
+  successfully fitted with nlsList are removed. To force
+  retries of case that were not successfully fit by
+  nlsList.}
+}
+\value{
+  data frame with columns \code{BreathTestRecordID, m,
+  k,beta} of the population fit. Use function
+  \code{SavePopulationFit} to save to database.
+}
+\description{
+  Fits an population \code{nlme} model to multiple records.
+  First, separate nls fits are done to determine those
+  records that do not give a valid fit. Technically it
+  would be possible to fit these outliers with a population
+  fit, but this leads to failure of the method quite often,
+  so the simple outlier removal method was chosen.
+}
+\examples{
+set.seed(14024)
+sqliteFile = CreateSimulatedBreathTestDatabase()
+con = OpenSqliteConnection(sqliteFile)
+pd = GetPopulationData(con)
+# Make one stupid outlier
+pp = pd$PDR[pd$BreathTestRecordID=="1"]
+pp = pp+(1:length(pp))*0.5
+pd$PDR[pd$BreathTestRecordID==1] = pp
+head(pd)
+# The following line produces one "qr.default" error message that cannot
+# easily be suppressed
+cf = BreathTestPopulationFit(pd)
+head(cf)
+SavePopulationFit(cf,con) # Return a data frame with kept/removed
+dbDisconnect(con)
+}
+\author{
+  Dieter Menne, \email{dieter.menne@menne-biomed.de}
+}
+
