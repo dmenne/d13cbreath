@@ -35,6 +35,7 @@ RandomizeRemoveNACoefficient = function(cf){
   sample(r,length(r))
 }
 
+if (FALSE) # This test need long time to run and produces a lot of error messages
 test_that("NLME fit must return the same results when nlsList invalid results are randomized",{
   # This test is only run when there is a default database with real data
   # The success of this test depends on actual data from measurements, not on simulated

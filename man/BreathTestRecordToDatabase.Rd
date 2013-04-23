@@ -1,6 +1,6 @@
 \name{BreathTestRecordToDatabase}
 \alias{BreathTestRecordToDatabase}
-\title{Writes a 13C record to the database}
+\title{Computes fit and writes a 13C record and extracted parameters to databse}
 \usage{
   BreathTestRecordToDatabase(bid, con)
 }
@@ -15,10 +15,12 @@
   written.
 }
 \description{
-  Appends a record to the database. Skips saving if the
-  file is already in the database. To overwrite an existing
-  file, the old record must be manually deleted from the
-  database.
+  Appends measured values of a record to the database.
+  Skips saving if the file is already in the database. To
+  overwrite an existing file, the old record must be
+  manually deleted from the database. Computes and saves
+  the extracted parameters from ExpBeta and Wagner-Nelson
+  Fit.
 
   Table Patient: Creates patient if required.
 

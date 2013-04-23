@@ -12,8 +12,8 @@ test_that("Writing sample BreathID database returns valid set of fit parameters 
   
   dbDisconnect(con)
   unlink(sqlitePath)
-  # BreathID, ExpBeta, BluckCoward, Ghoos, GhoosScint
-  expect_equal(length(unique(nParameters$Method)),5,
+  # BreathID, ExpBeta, BluckCoward, Ghoos, GhoosScint,WN
+  expect_equal(length(unique(nParameters$Method)),6,
                info = paste(unique(nParameters$Method),collapse=", "))           
   expect_equal(length(unique(nParameters$Parameter)),6,
                info = paste(unique(nParameters$Parameter),collapse=", "))
@@ -33,7 +33,6 @@ test_that("Summary returns list of Record and Parameters",{
  expect_that( nrow(sum$Parameters)>5,is_true())
 })
 
-
 test_that("Reading of multiple files returns dataframe with status",{
   # Setup
   if (exists("con")) suppressWarnings(dbDisconnect(con))
@@ -52,7 +51,9 @@ test_that("Reading of multiple files returns dataframe with status",{
   # Assert
   tab = table(res$status)
   tab1 = table(res1$status)
-  expect_equal(pars[,1],c("CPDR","CPDRfit","DOB","PDR","PDRfit"))
+  #### Change thie when additional parameters are added
+  expectParams = c("CPDR","CPDRfit","DOB","PDR","PDRfit","WN")
+  expect_equal(pars[,1],expectParams)
   # !!! Change this if additional test are added
   ExpectUnique = c(NA,1,2,3)
   ExpectTab = c(6,3)
@@ -74,8 +75,25 @@ test_that("Data columns with NaN are not stored",{
                          package = "D13CBreath")
   AddBreathTestRecord(filename,con)
   pars = dbGetQuery(con,"SELECT DISTINCT Parameter from BreathTestTimeSeries order by Parameter") 
-  expect_equal(pars[,1],c("CPDR","DOB","PDR","PDRfit"))
+  ### Change this !!
+  expectParams = c("CPDR","DOB","PDR","PDRfit","WN")
+  expect_equal(pars[,1],expectParams)
   dbDisconnect(con)
   unlink(sqlitePath)
+})
+
+test_that("Wagner-Nelson creates a valid predicted time series",{
+   sqliteFile = CreateSimulatedBreathTestDatabase()
+   con = OpenSqliteConnection(sqliteFile)
+   BreathTestRecordID = 1
+   wn = dbGetQuery(con,"SELECT * from BreathTestParameter where Method = 'WN'")
+   expect_equal(nrow(wn),10)
+   expect_true(max(wn$Value) < 40)
+   expect_true(min(wn$Value) > 25)
+   ts = dbGetQuery(con,"SELECT * from BreathTestTimeSeries where Parameter = 'WN'")
+   expect_equal(range(ts$Time),c(0,225))
+   expect_true(max(ts$Value)<=1)
+   expect_true(min(ts$Value)>=-0.05)
+   dbDisconnect(con)
 })
 

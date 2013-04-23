@@ -139,11 +139,10 @@ OpenSqliteConnection = function(sqlitePath=NULL){
 #' @param filename Name of BreathID file
 #' @param con Connection to sqlite database
 #' @examples
-#' if (exists("con")) suppressWarnings(dbDisconnect(con))
-#' sqlitePath = tempfile(pattern = "Gastrobase", tmpdir = tempdir(), fileext = ".sqlite")
-#' unlink(sqlitePath)
-#' CreateEmptyBreathTestDatabase(sqlitePath)
-#' con = OpenSqliteConnection(sqlitePath)
+#' sqliteFile = tempfile(pattern = "Gastrobase", tmpdir = tempdir(), fileext = ".sqlite")
+#' unlink(sqliteFile)
+#' sqlitePath = CreateEmptyBreathTestDatabase(sqliteFile)
+#' con = OpenSqliteConnection(sqliteFile)
 #' filename = system.file("extdata", "350_20043_0_GER.txt", package = "D13CBreath")
 #' AddBreathTestRecord(filename,con)
 #' dbDisconnect(con)
@@ -177,6 +176,8 @@ AddBreathTestRecord = function(filename,con){
 #'   system.file("extdata", "350_20043_0_GER.txt", package = "D13CBreath"))
 #' AddAllBreathTestRecords(path,con)
 #' dbDisconnect(con)
+## con = OpenSqliteConnection(getOption("Gastrobase2SqlitePath"))
+## path = "C:/Users/Dieter/Documents/Gastrobase2/breathIDNeu"
 #' @export
 AddAllBreathTestRecords = function(path,con){
   files = data.frame(file = dir(path,pattern="*.txt",ignore.case=TRUE,
@@ -206,11 +207,12 @@ AddAllBreathTestRecords = function(path,con){
   files[,c(2,3,4,1)]
 }
 
-#' @title Writes a 13C record to the database
+#' @title Computes fit and writes a 13C record and extracted parameters to databse
 #' @name BreathTestRecordToDatabase
-#' @description Appends a record to the database. Skips saving if the
+#' @description Appends measured values of a record to the database. Skips saving if the
 #' file is already in the database. To overwrite an existing file, 
 #' the old record must be manually deleted from the database.
+#' Computes and saves the extracted parameters from ExpBeta and Wagner-Nelson Fit.
 #' 
 #' Table Patient:  Creates patient if required.
 #' 
@@ -238,7 +240,8 @@ BreathTestRecordToDatabase = function(bid, con){
     stop(str_c("Could not write Device parameters for patient ",bid["PatientNumber"]))
 
   # Compute and save fit (will do nothing if not successful)
-  ComputeAndSaveFit(bid,con,BreathTestRecordID)  
+  ComputeAndSaveParameterizedFit(con,BreathTestRecordID)  
+  ComputeAndSaveWNFit(con,BreathTestRecordID) # This requires the parameterized fit
   BreathTestRecordID
 }
 
@@ -284,35 +287,6 @@ SavePatientRecord = function(bid,con,Device) {
   if (!success)
     stop(str_c("Could not write raw time series record for patient",PatientID))
   BreathTestRecordID
-}
-
-ComputeAndSaveFit = function(bid,con,BreathTestRecordID)  {
-  start = list(m=20,k=1/100,beta=2)
-  Dose = bid$Dose
-  # Fit Model and compute prediction
-  bid.nls = try(suppressWarnings(
-    nls(PDR~ExpBeta(Time,Dose,m,k,beta),
-          data=bid$Data[bid$Data$Time > 0,], start=start)),silent=TRUE)
-  if (inherits(bid.nls,"try-error"))
-    return(NULL) # Skip this
-  cf = coef(bid.nls)
-  
-  # Write parameters and coefficients
-  pars = data.frame(BreathTestParameterID=as.integer(NA), BreathTestRecordID,
-    Parameter = c("m","k","beta","t50","t50","t50","tlag","tlag"),
-    Method = c("ExpBeta","ExpBeta","ExpBeta",
-               "BluckCoward","Ghoos","GhoosScint",
-               "BluckCoward","Ghoos"),
-    Value = unlist(c(cf["m"],cf["k"],cf["beta"],
-               t50BluckCoward(cf),
-               t50Ghoos(cf),t50GhoosScintigraphy(cf),
-               t50BluckCoward(cf),tLagGhoos(cf)))
-    )
-  success = dbWriteTable(con,"BreathTestParameter",pars,append=TRUE,
-                         row.names=FALSE)
-  if (!success)
-    stop(str_c("Could not write fit parameters for patient ",,bid["PatientNumber"]))
-  
 }
 
 RandomName = function(nLetters=6){

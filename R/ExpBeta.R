@@ -144,3 +144,4 @@ ExpBeta= function(time,Dose,m,k,beta){
   .value
 }
 
+

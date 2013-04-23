@@ -14,11 +14,10 @@
   parameters and a fit, and writes these to the database.
 }
 \examples{
-if (exists("con")) suppressWarnings(dbDisconnect(con))
-sqlitePath = tempfile(pattern = "Gastrobase", tmpdir = tempdir(), fileext = ".sqlite")
-unlink(sqlitePath)
-CreateEmptyBreathTestDatabase(sqlitePath)
-con = OpenSqliteConnection(sqlitePath)
+sqliteFile = tempfile(pattern = "Gastrobase", tmpdir = tempdir(), fileext = ".sqlite")
+unlink(sqliteFile)
+sqlitePath = CreateEmptyBreathTestDatabase(sqliteFile)
+con = OpenSqliteConnection(sqliteFile)
 filename = system.file("extdata", "350_20043_0_GER.txt", package = "D13CBreath")
 AddBreathTestRecord(filename,con)
 dbDisconnect(con)

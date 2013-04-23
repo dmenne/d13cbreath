@@ -1,0 +1,30 @@
+\name{ComputeAndSaveWNFit}
+\alias{ComputeAndSaveWNFit}
+\title{Compute and save Wagner-Nelson fit}
+\usage{
+  ComputeAndSaveWNFit(con, BreathTestRecordID)
+}
+\arguments{
+  \item{con}{connection to SQlite database}
+
+  \item{BreathTestRecordID}{these data will be read from
+  BreathTestTimeSeries}
+}
+\description{
+  Reads record with given BreathTestRecordID from database
+  and computes Wagner-Nelsoen fit parameter which are
+  written back to table BreathTestParameter Existing
+  parameters are overwritten. See Sanaka, Yamamoto, Ishii,
+  Kuyama, Digestion 2004 (69), 71-78
+}
+\examples{
+sqliteFile = CreateSimulatedBreathTestDatabase()
+con = OpenSqliteConnection(sqliteFile)
+BreathTestRecordID = 1
+ComputeAndSaveWNFit(con,BreathTestRecordID)
+dbDisconnect(con)
+}
+\author{
+  Dieter Menne, \email{dieter.menne@menne-biomed.de}
+}
+

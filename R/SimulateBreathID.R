@@ -65,8 +65,8 @@ AddSimulatedBreathTestRecord = function(con){
 
 #' @title Creates a database with simulated breath tests
 #' @name CreateSimulatedBreathTestDatabase
-#' @description Creates a database withsimulated breath test records. 
-#' If sqLitePath is NULL, it is created in temporary directory.
+#' @description Creates a database with simulated breath test records. 
+#' If sqlitePath is NULL, it is created in temporary directory.
 #' To create a file in the default path, use
 #' \code{CreateSimulatedBreathTestDatabase(getOption("Gastrobase2SqlitePath"))}
 #' @param sqlitePath Path to created sqlite file.
@@ -86,3 +86,5 @@ CreateSimulatedBreathTestDatabase = function(sqlitePath=NULL){
   dbDisconnect(con)
   sqlitePath
 }
+
+
