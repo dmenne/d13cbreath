@@ -22,8 +22,8 @@
 #' sqlitePath = tempfile(pattern = "Gastrobase", tmpdir = tempdir(), fileext = ".sqlite")
 #' unlink(sqlitePath)
 #' CreateEmptyBreathTestDatabase(sqlitePath)
-#' filename = system.file("extdata", "350_20043_0_GER.txt", package = "D13CBreath")
 #' con = OpenSqliteConnection(sqlitePath)
+#' filename = system.file("extdata", "350_20043_0_GER.txt", package = "D13CBreath")
 #' breathTestRecordID = AddBreathTestRecord(filename,con)
 #' showParameters = data.frame(Parameter="t50",Method = c("BreathID","BluckCoward"))
 #' Plot13CRecord(con,breathTestRecordID)
@@ -57,7 +57,6 @@ Plot13CRecord = function(con, breathTestRecordID, showParameters=NULL,ymax=NULL,
   }
   ## End Local function
   
-
   q = str_c("SELECT Time, Value as PDR from BreathTestTimeSeries where 
   Time > 0 and Parameter = 'PDR' and BreathTestRecordID = ",
             breathTestRecordID)
@@ -87,7 +86,9 @@ Plot13CRecord = function(con, breathTestRecordID, showParameters=NULL,ymax=NULL,
   showParameters2 = showParameters[!is.na(showParameters$Method),]
   showPars = rbind(merge(parm,showParameters1),merge(parm,showParameters2))
   showPars = showPars[order(showPars$Value),]
-  showPars$text = str_c(showPars$Parameter," ",showPars$Method)
+  showPars$text = str_c(showPars$Parameter," ",showPars$Method,": ",
+                        round(showPars$Value), " min")
+  showPars$text = str_replace(showPars$text,"WN","Wagner-Nelson")
   rangeTs = c(min(ts$Time),max(ts$Time*1.2))
   pred = GetPrediction("ExpBeta")
   predPop = GetPrediction("ExpBetaPop")

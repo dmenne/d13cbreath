@@ -14,6 +14,7 @@ Thanks to Andreas Steingötter and Werner Schwizer.
 * IRIS format only partially implemented
 * Creates sample data, and sqlite database, and writes sample SQLite database
 * Fits Bluck/Coward, Ghoos self-correcting formula using nls.
+* Fits Wagner-Nelson, with terminal slope estimated from Bluck/Coward fit.
 * Computes population fit with nlme using all data in database
 * See documentation of function _bluckCoward_ for examples, including how to use
   nlme for stuborn or highly incomplete cases.
