@@ -1,5 +1,6 @@
 context("Database write test")
 
+
 test_that("Writing sample BreathID database returns valid set of fit parameters ",{
   if (exists("con")) suppressWarnings(dbDisconnect(con))
   sqlitePath = tempfile(pattern = "Gastrobase", tmpdir = tempdir(), fileext = ".sqlite")

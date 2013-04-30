@@ -32,6 +32,9 @@ ReadBreathId = function(filename) {
   PatientID = findSinglePattern(bid,"Patient ID",FALSE)
   TestNo = as.integer(findSinglePattern(bid,"Test No."))
   Type = findSinglePattern(bid,"Type")
+  Gender = findSinglePattern(bid,"Gender")
+  if (nchar(Gender)> 0) 
+    Gender = str_sub(tolower(Gender),1,1)
   Dose = as.numeric(findSinglePattern(bid,"Dose"))
   Height = as.numeric(findSinglePattern(bid,"Height"))
   Weight = as.numeric(findSinglePattern(bid,"Weight"))  
@@ -56,6 +59,7 @@ ReadBreathId = function(filename) {
        FirstName = as.character(NA),
        Initials = as.character(NA),
        TestNo=TestNo,
+       Gender = Gender,
        Type=Type,
        Dose=Dose,
        Height=Height,
