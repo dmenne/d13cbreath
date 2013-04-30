@@ -15,6 +15,7 @@
 #' @param ymax Vertical scaling; default of NULL is for autoscaling
 #' @param xmax Time axis scaling; default of NULL is for autoscaling
 #' @param showName Show full patient name and DOB, initials otherwise
+#' @param showPopulationFit If available, show population fit as a red curve
 #' @return A ggplot2 graphics 
 #' @author Dieter Menne, \email{dieter.menne@@menne-biomed.de}
 #' @examples
@@ -34,9 +35,9 @@
 #' @import RColorBrewer
 #' @export
 Plot13CRecord = function(con, breathTestRecordID, showParameters=NULL,ymax=NULL,
-                         xmax = NULL,  showName=FALSE) {
+                         xmax = NULL,  showName=FALSE,showPopulationFit=FALSE) {
   # Debug
-  #breathTestRecordID = 2; showName = FALSE; showParameters = NULL; ymax=NULL; ymax=0;
+  #breathTestRecordID = 1; showName = FALSE; showParameters = NULL; ymax=NULL; ymax=0;showPopulationFit=TRUE
   # 
   # Compute prediction
   stepMinutes = 2 # 
@@ -91,7 +92,8 @@ Plot13CRecord = function(con, breathTestRecordID, showParameters=NULL,ymax=NULL,
   showPars$text = str_replace(showPars$text,"WN","Wagner-Nelson")
   rangeTs = c(min(ts$Time),max(ts$Time*1.2))
   pred = GetPrediction("ExpBeta")
-  predPop = GetPrediction("ExpBetaPop")
+  if (showPopulationFit)
+     predPop = GetPrediction("ExpBetaPop") else predPop = NULL
   
   ylim = c(min(c(ts$PDR,0)), max(ts$PDR)*1.02) # Autoscaling
   if (!is.null(ymax))  # Manual scaling overrides

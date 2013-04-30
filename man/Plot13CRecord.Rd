@@ -4,7 +4,7 @@
 \usage{
   Plot13CRecord(con, breathTestRecordID,
     showParameters = NULL, ymax = NULL, xmax = NULL,
-    showName = FALSE)
+    showName = FALSE, showPopulationFit = FALSE)
 }
 \arguments{
   \item{con}{Open connection to SQLite database; use
@@ -28,6 +28,9 @@
 
   \item{showName}{Show full patient name and DOB, initials
   otherwise}
+
+  \item{showPopulationFit}{If available, show population
+  fit as a red curve}
 }
 \value{
   A ggplot2 graphics

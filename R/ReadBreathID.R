@@ -81,7 +81,7 @@ findSinglePattern = function(bid,pattern,required=TRUE){
       stop(str_c("No <<" ,pattern, ">> found in BreathID file "))
     else 
       p=""
-  return(p)
+  return(str_trim(p))
 }
 
 
