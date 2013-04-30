@@ -254,9 +254,9 @@ SavePatientRecord = function(bid,con,Device) {
   if (dbGetQuery(con,q) == 0) 
   {
     # Must insert Patient
-    q = with(bid,sprintf("INSERT INTO Patient (PatientID,Name,FirstName,Initials)
-          VALUES ('%s','%s','%s','%s')",
-                         PatientID,Name,FirstName,Initials))
+    q = with(bid,sprintf("INSERT INTO Patient (PatientID,Name,FirstName,Initials,Gender)
+          VALUES ('%s','%s','%s','%s','%s')",
+                         PatientID,Name,FirstName,Initials,Gender))
     tryCatch( dbSendQuery(con,q), 
               error=function(e) stop(str_c("Error inserting PatientID",PatientID)))
   }

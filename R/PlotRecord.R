@@ -37,7 +37,8 @@
 Plot13CRecord = function(con, breathTestRecordID, showParameters=NULL,ymax=NULL,
                          xmax = NULL,  showName=FALSE,showPopulationFit=FALSE) {
   # Debug
-  #breathTestRecordID = 1; showName = FALSE; showParameters = NULL; ymax=NULL; ymax=0;showPopulationFit=TRUE
+  #showParameters=data.frame(Parameter="t50",Method="BluckCoward")
+  #breathTestRecordID = 25; showName = FALSE; ymax=NULL; ymax=0;showPopulationFit=FALSE
   # 
   # Compute prediction
   stepMinutes = 2 # 
@@ -86,10 +87,7 @@ Plot13CRecord = function(con, breathTestRecordID, showParameters=NULL,ymax=NULL,
   showParameters1 = showParameters[is.na(showParameters$Method),"Parameter",drop=FALSE]
   showParameters2 = showParameters[!is.na(showParameters$Method),]
   showPars = rbind(merge(parm,showParameters1),merge(parm,showParameters2))
-  showPars = showPars[order(showPars$Value),]
-  showPars$text = str_c(showPars$Parameter," ",showPars$Method,": ",
-                        round(showPars$Value), " min")
-  showPars$text = str_replace(showPars$text,"WN","Wagner-Nelson")
+
   rangeTs = c(min(ts$Time),max(ts$Time*1.2))
   pred = GetPrediction("ExpBeta")
   if (showPopulationFit)
@@ -99,13 +97,10 @@ Plot13CRecord = function(con, breathTestRecordID, showParameters=NULL,ymax=NULL,
   if (!is.null(ymax))  # Manual scaling overrides
     ylim = c(0,max(ylim[2],ymax))
   
-  
   xlim = c(0, ifelse(is.null(pred), 240,max(pred$Time))) # Autoscaling
   if (!is.null(xmax))  # Manual scaling overrides
     xlim[2] = xmax
   
-  showPars$itext = (1:nrow(showPars))*ylim[2]*0.03
-  showPars$yend = ylim[2]
 
   Time=PDR=Value=itext=yend=NULL # Avoid "no visible binding"
   title =   format(strptime(rec$StartTime, "%Y-%m-%d"),"%d.%m.%Y")
@@ -118,11 +113,23 @@ Plot13CRecord = function(con, breathTestRecordID, showParameters=NULL,ymax=NULL,
     geom_point()+  
     ggtitle(title)  +
     scale_x_continuous(breaks = seq(0,xlim[2]+60,by=60))+
-    coord_cartesian(ylim=ylim,xlim=xlim)+
-    geom_segment(aes(x=Value, y=itext, xend=Value, yend=yend ),
-                 col="gray",linetype=1, lwd=0.4, data=showPars, show_guide=FALSE) +
-    geom_text(aes(label=text, x=Value, y=itext), col="darkgreen",cex=4,
+    coord_cartesian(ylim=ylim,xlim=xlim)
+    
+    # Position pars
+    if (nrow(showPars)>0){
+      showPars = showPars[order(showPars$Value),]
+      showPars$text = str_c(showPars$Parameter," ",showPars$Method,": ",
+                            round(showPars$Value), " min")
+      showPars$text = str_replace(showPars$text,"WN","Wagner-Nelson")
+      showPars$itext = (1:nrow(showPars))*ylim[2]*0.03
+      showPars$yend = ylim[2]
+      g = g +
+        geom_segment(aes(x=Value, y=itext, xend=Value, yend=yend ),
+                     col="gray",linetype=1, lwd=0.4, data=showPars, show_guide=FALSE) +
+        geom_text(aes(label=text, x=Value, y=itext), col="darkgreen",cex=4,
                 adj=-0.04,data=showPars,show_guide=FALSE)
+      
+    }
   ExpBeta= ExpBetaPop = 0 # avoid note on build, not used
   if (!is.null(pred))
     g = g+ geom_line(data=pred,aes(x=Time,y=ExpBeta),col=1,lwd=1.5) 

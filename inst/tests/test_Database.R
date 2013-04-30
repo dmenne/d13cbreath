@@ -9,6 +9,16 @@ test_that("Writing sample BreathID database returns valid set of fit parameters 
   con = OpenSqliteConnection(sqlitePath)
   filename = system.file("extdata", "350_20043_0_GER.txt", package = "D13CBreath")
   AddBreathTestRecord(filename,con)
+  # Check Patient record
+  pat = dbGetQuery(con,"SELECT * from Patient")
+  expect_equal(pat$PatientID,"0")
+  expect_equal(pat$Gender,"m")
+  rec = dbGetQuery(con,"SELECT * from BreathTestRecord")
+  expect_equal(nrow(rec),1)
+  expect_equal(rec$TestNo,20043)
+  expect_equal(rec$FileName,"350_20043_0_GER.txt")
+  expect_equal(rec$PatientID,"0")
+  # Check parameter record
   nParameters = dbGetQuery(con,"SELECT Parameter, Method from BreathTestParameter")
   
   dbDisconnect(con)
