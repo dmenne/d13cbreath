@@ -15,7 +15,8 @@
 #' @param ymax Vertical scaling; default of NULL is for autoscaling
 #' @param xmax Time axis scaling; default of NULL is for autoscaling
 #' @param showName Show full patient name and DOB, initials otherwise
-#' @param showPopulationFit If available, show population fit as a red curve
+#' @param showPopulationFit If available, show population fit as a red curve. If the 
+#' single fit fails, and there is a valid population fit, this is always shown.
 #' @return A ggplot2 graphics 
 #' @author Dieter Menne, \email{dieter.menne@@menne-biomed.de}
 #' @examples
@@ -90,7 +91,8 @@ Plot13CRecord = function(con, breathTestRecordID, showParameters=NULL,ymax=NULL,
 
   rangeTs = c(min(ts$Time),max(ts$Time*1.2))
   pred = GetPrediction("ExpBeta")
-  if (showPopulationFit)
+  # We show population fit even if not requested when the single fit fails
+  if (is.null(pred) || showPopulationFit)
      predPop = GetPrediction("ExpBetaPop") else predPop = NULL
   
   ylim = c(min(c(ts$PDR,0)), max(ts$PDR)*1.02) # Autoscaling
@@ -126,7 +128,7 @@ Plot13CRecord = function(con, breathTestRecordID, showParameters=NULL,ymax=NULL,
       g = g +
         geom_segment(aes(x=Value, y=itext, xend=Value, yend=yend ),
                      col="gray",linetype=1, lwd=0.4, data=showPars, show_guide=FALSE) +
-        geom_text(aes(label=text, x=Value, y=itext), col="darkgreen",cex=4,
+        geom_text(aes(label=text, x=Value, y=itext), col="darkgreen",cex=5,
                 adj=-0.04,data=showPars,show_guide=FALSE)
       
     }
@@ -144,9 +146,11 @@ Plot13CRecord = function(con, breathTestRecordID, showParameters=NULL,ymax=NULL,
         axis.text.y = element_text(size=14),  
         axis.text.x = element_text(size=14),  
         plot.title=element_text(size=18),
-        panel.grid.major=element_blank(),
-        panel.background = element_rect(fill="#F7F5F1"),
-        plot.background = element_rect(fill="#E9E3D2"))
+        panel.grid.major=element_blank()
+        #,
+        #panel.background = element_rect(fill="#F7F5F1"),
+        #plot.background = element_rect(fill="#E9E3D2")
+        )
 }
   
 

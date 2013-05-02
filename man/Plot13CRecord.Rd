@@ -30,7 +30,8 @@
   otherwise}
 
   \item{showPopulationFit}{If available, show population
-  fit as a red curve}
+  fit as a red curve. If the single fit fails, and there is
+  a valid population fit, this is always shown.}
 }
 \value{
   A ggplot2 graphics
