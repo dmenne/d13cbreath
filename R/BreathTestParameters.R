@@ -1,6 +1,7 @@
 #' @name BluckCoward2
-#' @title Equation (2), page 4 from Bluck, Recent advances in the interpretation of
-#' the 13C octanoate breath test for gastric emptying
+#' @title Bluck-Coward self-correcting t50 from 13C breath test
+#' @description Equation (2), page 4 from Bluck, "Recent advances in the interpretation of
+#' the 13C octanoate breath test for gastric emptying", solved for time of 50%
 #'
 #' @param Time in minutes
 #' @param Dose in mg

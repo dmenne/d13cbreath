@@ -114,6 +114,8 @@ Plot13CRecord = function(con, breathTestRecordID, showParameters=NULL,ymax=NULL,
   g = ggplot(data=ts,aes(x=Time,y=PDR))+
     geom_point()+  
     ggtitle(title)  +
+    xlab("Zeit (min)")+
+    ylab("% 13C-dose recovered (PDR)")+    
     scale_x_continuous(breaks = seq(0,xlim[2]+60,by=60))+
     coord_cartesian(ylim=ylim,xlim=xlim)
     

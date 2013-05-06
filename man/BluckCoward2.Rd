@@ -1,7 +1,6 @@
 \name{BluckCoward2}
 \alias{BluckCoward2}
-\title{Equation (2), page 4 from Bluck, Recent advances in the interpretation of
-the 13C octanoate breath test for gastric emptying}
+\title{Bluck-Coward self-correcting t50 from 13C breath test}
 \usage{
   BluckCoward2(Time, Dose, cf)
 }
@@ -17,9 +16,9 @@ the 13C octanoate breath test for gastric emptying}
   vector of predicted cumulative PDR
 }
 \description{
-  Equation (2), page 4 from Bluck, Recent advances in the
+  Equation (2), page 4 from Bluck, "Recent advances in the
   interpretation of the 13C octanoate breath test for
-  gastric emptying
+  gastric emptying", solved for time of 50%
 }
 \seealso{
   \code{\link{ExpBeta}}

@@ -9,11 +9,11 @@
 }
 \value{
   list with fields \code{FileName, StartTime, EndTime,
-  PatientNumber, TestNo, Type, Dose, Height, Weight, T50,
-  TLag, GEC}, and \code{Data} as a data frame of
-  \code{Time, DOB, PDR, PDRfit, CPDR, CPDRfit}. Fields
-  \code{Name, FirstName and Initials} are returned as NA
-  for manual filling
+  PatientNumber, Name (NA), FirstName (NA), Initials (NA),
+  TestNo, Type, Dose, Height, Weight, T50, TLag, GEC}, and
+  \code{Data} as a data frame of \code{Time, DOB, PDR,
+  PDRfit, CPDR, CPDRfit}. Fields \code{Name, FirstName and
+  Initials} are returned as NA for manual filling
 }
 \description{
   Reads 13C data from a BreathId file.

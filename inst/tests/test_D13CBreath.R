@@ -48,3 +48,9 @@ test_that("ReadBreathID with NaN returns valid data, without NaN Columns",{
   expect_true(!"CPDRfit" %in% names(f$Data))
 } )
 
+test_that("DOBToPDR is not too far from what BreathID says",{
+  filename = system.file("extdata/extrasample", "350_20049_0_GERWithWeight.txt", package = "D13CBreath")
+  bid = ReadBreathId(filename)
+  bid$Data$PDR1 = DOBToPDR(bid$Data$DOB,weight=bid$Weight,height=bid$Height)
+  expect_true(sqrt(var(bid$Data$PDR1-bid$Data$PDR))<0.032)
+})

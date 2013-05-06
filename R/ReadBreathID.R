@@ -4,6 +4,7 @@
 #' 
 #' @param filename Name of TXT-file to be read
 #' @return list with fields \code{FileName, StartTime, EndTime, PatientNumber, 
+#' Name (NA), FirstName (NA), Initials (NA),
 #' TestNo, Type, Dose, Height, Weight, T50, TLag, GEC}, and \code{Data} as a data frame of
 #' \code{Time, DOB, PDR, PDRfit,	CPDR, CPDRfit}. Fields \code{Name, FirstName and Initials}
 #' are returned as NA for manual filling

@@ -62,12 +62,12 @@ test_that("Reading of multiple files returns dataframe with status",{
   # Assert
   tab = table(res$status)
   tab1 = table(res1$status)
-  #### Change thie when additional parameters are added
+  #### Change this when additional parameters are added
   expectParams = c("CPDR","CPDRfit","DOB","PDR","PDRfit","WN")
   expect_equal(pars[,1],expectParams)
   # !!! Change this if additional test are added
-  ExpectUnique = c(NA,1,2,3)
-  ExpectTab = c(6,3)
+  ExpectUnique = c(NA,1,2,3,4)
+  ExpectTab = c(6,4)
   expect_true(all(unique(res$recordID) %in% ExpectUnique))
   expect_equal(names(tab),c("invalid","saved"))
   expect_equal(names(tab1),c("invalid","skipped"))
