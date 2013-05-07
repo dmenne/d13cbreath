@@ -2,18 +2,21 @@
 \alias{DOBToPDR}
 \title{Convert DOB to PDR}
 \usage{
-  DOBToPDR(DOB, weight, height, MW = 167,
+  DOBToPDR(DOB, weight = 75, height = 180, MW = 167,
     purityPercent = 99.1, mgSubstrate = 100)
 }
 \arguments{
   \item{DOB}{vector in 0/00}
 
-  \item{weight}{body weight in kg}
+  \item{weight}{body weight in kg; assumed 75 kg if
+  missing}
 
-  \item{height}{body height in cm}
+  \item{height}{body height in cm; assume 180 cm if
+  missing}
 
   \item{MW}{Molecular weight, 83.023388 g/mol for acetate,
-  167 g/mol for octanoate}
+  167 g/mol for octanoate. Can also be given as string
+  "acetate" or "ocatanoate".}
 
   \item{purityPercent}{purity in percent}
 

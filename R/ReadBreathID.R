@@ -1,13 +1,10 @@
-#' @title Read 13C data from BreathID
+#' @title Read BreathID file
 #' 
-#' @description Reads 13C data from a BreathId file.
+#' @description Reads 13C data from a BreathId file, and returns a stucture for 
+#' use by \code{\link{BreathTestRecordToDatabase}}.
 #' 
 #' @param filename Name of TXT-file to be read
-#' @return list with fields \code{FileName, StartTime, EndTime, PatientNumber, 
-#' Name (NA), FirstName (NA), Initials (NA),
-#' TestNo, Type, Dose, Height, Weight, T50, TLag, GEC}, and \code{Data} as a data frame of
-#' \code{Time, DOB, PDR, PDRfit,	CPDR, CPDRfit}. Fields \code{Name, FirstName and Initials}
-#' are returned as NA for manual filling
+#' @return structure of class \code{\link{BreathTestData}}
 #' @author Dieter Menne, \email{dieter.menne@@menne-biomed.de}
 #' @import stringr
 #' @examples
@@ -23,16 +20,15 @@ ReadBreathId = function(filename) {
   header = str_trim(bid[1])
   if (header != "Test and Patient parameters")
     stop(str_c("File ",filename," is not a valid BreathID file."))
-  Date = findSinglePattern(bid,"Date")
-  EndTime = strptime(str_c(Date, " ",findSinglePattern(bid,"End time") ),
+  RecordDate = findSinglePattern(bid,"Date")
+  EndTime = strptime(str_c(RecordDate, " ",findSinglePattern(bid,"End time") ),
                      "%m/%d/%y %H:%M")
     
-  StartTime =strptime(str_c(Date, " ",findSinglePattern(bid,"Start time") ),
+  StartTime =strptime(str_c(RecordDate, " ",findSinglePattern(bid,"Start time") ),
                       "%m/%d/%y %H:%M")
-  PatientNumber = findSinglePattern(bid,"Patient #")
-  PatientID = findSinglePattern(bid,"Patient ID",FALSE)
+  PatientID = findSinglePattern(bid,"Patient #")
   TestNo = as.integer(findSinglePattern(bid,"Test No."))
-  Type = findSinglePattern(bid,"Type")
+  Substrate = findSinglePattern(bid,"Type")
   Gender = findSinglePattern(bid,"Gender")
   if (nchar(Gender)> 0) 
     Gender = str_sub(tolower(Gender),1,1)
@@ -51,24 +47,23 @@ ReadBreathId = function(filename) {
     stop(str_c("File ",filename," does not contain PDR data"))
   data = read.table(textConnection(bid),header=TRUE)
   data = RemoveNAColumns(data)
-  structure(list(
+  BreathTestData(
        FileName=basename(filename),
-       EndTime=EndTime,
-       StartTime=StartTime,
-       PatientNumber=PatientNumber,
-       Name = as.character(NA),
-       FirstName = as.character(NA),
-       Initials = as.character(NA),
+       PatientID=PatientID,
        TestNo=TestNo,
        Gender = Gender,
-       Type=Type,
+       RecordDate = RecordDate,
+       StartTime = StartTime,
+       EndTime = EndTime,
+       Substrate = Substrate,
+       Device = "BreathID",
        Dose=Dose,
        Height=Height,
        Weight=Weight,
        T50=T50,
        TLag=TLag,
        GEC=GEC,
-       Data=data),class="breathIdData")
+       Data=data)
       
 }
 

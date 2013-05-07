@@ -175,5 +175,7 @@ GetPopulationData = function(con=NULL){
   x = dbGetQuery(con,q)
   if (localCon) dbDisconnect(con)
   x$BreathTestRecordID = as.factor(x$BreathTestRecordID)
+  if (nrow(x)==0)
+    stop("GetPopulationData: No data found")
   x
 }

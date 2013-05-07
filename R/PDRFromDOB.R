@@ -11,9 +11,10 @@
 #' of 0.1123 instead of 0.01123 is used, without the factor 10. Which one is correct?
 #' 
 #' @param  DOB vector in 0/00
-#' @param  weight body weight in kg
-#' @param  height body height in cm
-#' @param  MW Molecular weight,  83.023388 g/mol for acetate, 167 g/mol for octanoate
+#' @param  weight body weight in kg; assumed 75 kg if missing
+#' @param  height body height in cm; assume 180 cm if missing
+#' @param  MW Molecular weight,  83.023388 g/mol for acetate, 167 g/mol for octanoate.
+#' Can also be given as string "acetate" or "ocatanoate".
 #' @param  purityPercent purity in percent
 #' @param  mgSubstrate substrate in mg
 #' @return PDR percent dose/h
@@ -27,8 +28,15 @@
 #' var(bid$Data$PDR1-bid$Data$PDR)
 #' @author Dieter Menne, \email{dieter.menne@@menne-biomed.de}
 #' @export
-DOBToPDR = function(DOB,weight,height,MW=167,purityPercent=99.1,
+DOBToPDR = function(DOB,weight=75,height=180,MW=167,purityPercent=99.1,
                       mgSubstrate=100){
+  if (is.na(weight) || is.null(weight)) weight=75
+  if (is.na(height) || is.null(height)) height=180
+  if (is.character(MW))  {
+    if (MW =="octanoate") MW = 167 else
+    if (MW == "acetate") MW = 83.0233388 else
+    stop("DOBToPDR: MW must be 'octanoate' or 'acetate' or numeric")
+  }
   surface= 0.024265* weight^0.5378*height^0.3964
   CO2PerMinute = 300*surface # 
   rpdb = 0.0112372 # isotope ratio in  reference

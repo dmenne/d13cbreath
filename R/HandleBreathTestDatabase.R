@@ -16,6 +16,10 @@
 #' sqlitePath = tempfile(pattern = "Gastrobase", tmpdir = tempdir(), fileext = ".sqlite")
 #' unlink(sqlitePath)
 #' CreateEmptyBreathTestDatabase(sqlitePath)
+#' \dontrun{
+#' # This creates a default database, but does not overwrite existing files
+#' CreateEmptyBreathTestDatabase(getOption("Gastrobase2SqlitePath"))
+#' }
 #' @export 
 CreateEmptyBreathTestDatabase = function(sqlitePath){
   if (file.exists(sqlitePath))
@@ -40,6 +44,7 @@ CreateEmptyBreathTestDatabase = function(sqlitePath){
     BreathTestRecordID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     FileName TEXT NOT NULL UNIQUE,
     Device TEXT,
+    Substrate TEXT,
     PatientID TEXT NOT NULL,
     RecordDate DateTime,
     StartTime DateTime,
@@ -225,53 +230,76 @@ AddAllBreathTestRecords = function(path,con){
 #' @param con Connection to sqlite database
 #' @export
 BreathTestRecordToDatabase = function(bid, con){
-  Device = "BreathID" # Make this generic 
-  BreathTestRecordID = SavePatientRecord(bid,con,Device)
-  # Device specific (factor out later)
-  pars = data.frame(BreathTestParameterID=as.integer(NA), 
-                    BreathTestRecordID,
-                    Parameter = c("t50","tlag","GEC"),
-                    Method = rep(Device,3),
-                    Values = c(bid$T50, bid$TLag,bid$GEC)
-  )
-  success = dbWriteTable(con,"BreathTestParameter",pars,append=TRUE,
-                         row.names=FALSE)
-  if (!success)
-    stop(str_c("Could not write Device parameters for patient ",bid["PatientNumber"]))
+  if (! inherits(bid,"BreathTestData"))
+    stop("BreathTestRecordToDatabase: bid must be generated with function 'BreathTestData'")
+  # Wrap everything in a transaction
+  #dbSendQuery(con,"SAVEPOINT breathtest")
+  ret =try(BreathTestRecordToDatabaseInternal(bid,con), silent = TRUE)
+  if (inherits(ret,"try-error")){
+  #  dbSendQuery(con,"ROLLBACK TO breathtest")
+    stop(attr(ret,"condition")$message)  
+  }
+  #dbSendQuery(con,"RELEASE breathtest")
+  ret
+}
 
+## This internal function does the work, and is wrapped by try in the exported
+## function BreatTestRecordToDatabase
+BreathTestRecordToDatabaseInternal = function(bid, con){
+  BreathTestRecordID = SavePatientRecord(bid,con)
+  # Device specific (not always present)
+  pars = na.omit(data.frame(BreathTestRecordID,
+                    Parameter = c("t50","tlag","GEC"),
+                    Method = rep(bid$Device,3),
+                    Values = c(bid$T50, bid$TLag,bid$GEC)
+  ))
+  if (nrow(pars)> 0 ){
+    pars = cbind(BreathTestParameterID=as.integer(NA),pars)
+    success = dbWriteTable(con,"BreathTestParameter",pars,append=TRUE,
+                           row.names=FALSE)
+    if (!success)
+      stop(str_c("Could not write Device parameters for patient ",bid$PatientID))
+  }
+  
   # Compute and save fit (will do nothing if not successful)
   ComputeAndSaveParameterizedFit(con,BreathTestRecordID)  
   ComputeAndSaveWNFit(con,BreathTestRecordID) # This requires the parameterized fit
   BreathTestRecordID
 }
 
-SavePatientRecord = function(bid,con,Device) {
+sn = function(x){
+  ifelse (is.null(x) || is.na(x),"NULL",str_c("'",as.character(x),"'"))
+}
+
+SavePatientRecord = function(bid,con) {
   # returns last inserted RecordID
   # Check if patient exists
-  PatientID = bid$PatientNumber
+  PatientID = bid$PatientID
   q = sprintf("SELECT COUNT(*) from Patient where PatientID='%s'",
-              bid$PatientNumber)
+              bid$PatientID)
   if (dbGetQuery(con,q) == 0) 
   {
     # Must insert Patient
-    q = with(bid,sprintf("INSERT INTO Patient (PatientID,Name,FirstName,Initials,Gender)
-          VALUES ('%s','%s','%s','%s','%s')",
-                         PatientID,Name,FirstName,Initials,Gender))
+    q = with(bid,sprintf("INSERT INTO Patient 
+     (PatientID,Name,FirstName,Initials,DOB,BirthYear,Gender,Study,PatStudyID)
+     VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)",
+     sn(PatientID),sn(Name),sn(FirstName),sn(Initials),sn(DOB),sn(BirthYear),
+                         sn(Gender),sn(Study),sn(PatStudyID)))
     tryCatch( dbSendQuery(con,q), 
-              error=function(e) stop(str_c("Error inserting PatientID",PatientID)))
+              error=function(e) stop(str_c("Error inserting PatientID ",PatientID)))
   }
-  q = with(bid,sprintf("INSERT INTO BreathTestRecord (Filename, Device,
+  q = with(bid,sprintf("INSERT INTO BreathTestRecord (Filename, Device,Substrate,
       PatientID,RecordDate,StartTime,EndTime,TestNo,Dose,Height,Weight,Status) VALUES (
-      '%s','%s','%s','%s','%s','%s',%d,%d,%f,%f,%d)",
-      FileName, Device, PatientNumber,StartTime,StartTime,EndTime,TestNo,Dose,
-                       Height,Weight,0))
-  ret = try(dbGetQuery(con,q),TRUE)
+      %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
+      sn(FileName), sn(Device), sn(Substrate),sn(PatientID),sn(RecordDate),
+      sn(StartTime),sn(EndTime), sn(TestNo), sn(Dose), sn(Height), sn(Weight),0))
+  ret = try(dbSendQuery(con,q),TRUE)
   if (inherits(ret,"try-error"))
   {
     if (str_detect(ret,"unique")){  
       stop(str_c("A record for file ",bid$FileName," already exists. Skipped."))
     } else {
-      stop(ret)
+      stop(attr(ret,"condition")$message)
     }
   }
   BreathTestRecordID = LastInsertRowid(con)
@@ -285,7 +313,7 @@ SavePatientRecord = function(bid,con,Device) {
   success = dbWriteTable(con,"BreathTestTimeSeries",bts[,flds],append=TRUE,
                          row.names=FALSE)
   if (!success)
-    stop(str_c("Could not write raw time series record for patient",PatientID))
+    stop(str_c("Could not write raw time series record for patient ",PatientID))
   BreathTestRecordID
 }
 

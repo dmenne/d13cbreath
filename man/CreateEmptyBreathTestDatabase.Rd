@@ -23,6 +23,10 @@
 sqlitePath = tempfile(pattern = "Gastrobase", tmpdir = tempdir(), fileext = ".sqlite")
 unlink(sqlitePath)
 CreateEmptyBreathTestDatabase(sqlitePath)
+\dontrun{
+# This creates a default database, but does not overwrite existing files
+CreateEmptyBreathTestDatabase(getOption("Gastrobase2SqlitePath"))
+}
 }
 \author{
   Dieter Menne, \email{dieter.menne@menne-biomed.de}

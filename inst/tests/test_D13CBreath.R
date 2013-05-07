@@ -21,11 +21,11 @@ test_that("ReadIris of invalid data throws",{
 test_that("ReadBreathID returns valid data set",{
   breathfilename = d13File("350_20043_0_GER.txt")
   f = ReadBreathId(breathfilename)
-  expect_is(f,"breathIdData")
+  expect_is(f,"BreathTestData")
   expect_equal(f$FileName,basename(breathfilename))
   expect_equal(f$TestNo,20043)
   expect_equal(f$T50,71.23)
-  expect_equal(f$PatientNumber,"0")
+  expect_equal(f$PatientID,"0")
   expect_equal(f$Gender,"m")
   expect_equal(nrow(f$Data),87)
   expect_equal(ncol(f$Data),6)
@@ -44,7 +44,7 @@ test_that("ReadBreathID on bad data file throws",{
 test_that("ReadBreathID with NaN returns valid data, without NaN Columns",{
   filename = d13File("350_20023_0_GERWithNan.txt")
   f = ReadBreathId(filename)
-  expect_is(f,"breathIdData")
+  expect_is(f,"BreathTestData")
   expect_true(!"CPDRfit" %in% names(f$Data))
 } )
 
