@@ -19,12 +19,15 @@ ReadBreathId = function(filename) {
   bid = readLines(filename)
   header = str_trim(bid[1])
   if (header != "Test and Patient parameters")
-    stop(str_c("File ",filename," is not a valid BreathID file."))
-  RecordDate = findSinglePattern(bid,"Date")
-  EndTime = strptime(str_c(RecordDate, " ",findSinglePattern(bid,"End time") ),
+    stop(str_c("File ",filename," is not a valid BreathID file.")) 
+  recordDate = findSinglePattern(bid,"Date")
+  RecordDate = strptime(recordDate,"%m/%d/%y")
+  ## Note : End Time and Start Time are reversed in the data file, we correct
+  ## this here, no typo!!
+  EndTime = strptime(str_c(recordDate, " ",findSinglePattern(bid,"Start time") ),
                      "%m/%d/%y %H:%M")
     
-  StartTime =strptime(str_c(RecordDate, " ",findSinglePattern(bid,"Start time") ),
+  StartTime =strptime(str_c(recordDate, " ",findSinglePattern(bid,"End time") ),
                       "%m/%d/%y %H:%M")
   PatientID = findSinglePattern(bid,"Patient #")
   TestNo = as.integer(findSinglePattern(bid,"Test No."))

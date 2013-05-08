@@ -1,7 +1,7 @@
 #' @title Data structure for saving into database
 #' @description Generates structure of class BreathTestData with required fields
 #' and optional fields as an intermediate between file data and the SQlite database. 
-#' All optional fields by default are NULL
+#' All optional fields by default are NA
 #' @param PatientID required, string or number for unique identification in database
 #' @param Name optional
 #' @param FirstName optional 
@@ -34,12 +34,12 @@
 #' or both of \code{DOB} or \code{PDR}
 #' @export
 BreathTestData = function(
-  PatientID, Name=NULL, FirstName=NULL, 
-  Initials=NULL, DOB=NULL, BirthYear=NULL,
-  Gender=NULL, Study=NULL, PatStudyID=NULL,  
+  PatientID, Name=NA, FirstName=NA, 
+  Initials=NA, DOB=NA, BirthYear=NA,
+  Gender=NA, Study=NA, PatStudyID=NA,  
   FileName, Device = "generic", Substrate, RecordDate, StartTime=RecordDate,
-  EndTime = RecordDate, TestNo ,Dose=100, Height=NULL, Weight=NULL, 
-  T50 = NULL, GEC = NULL, TLag=NULL, # Only if already stored in file, e.g BreathID
+  EndTime = RecordDate, TestNo ,Dose=100, Height=NA, Weight=NA, 
+  T50 = NA, GEC = NA, TLag=NA, # Only if already stored in file, e.g BreathID
   Data=Data){
   
   if (!inherits(Data,"data.frame")) 
@@ -66,8 +66,8 @@ BreathTestData = function(
     DOB=DOB, BirthYear=BirthYear,
     Gender=Gender, Study=Study, PatStudyID=PatStudyID,  
     FileName=FileName, Device = Device, Substrate= substrate, 
-    RecordDate=RecordDate, StartTime=RecordDate,
-    EndTime = RecordDate, TestNo=TestNo ,Dose=100, Height=Height, Weight=Weight, 
+    RecordDate=as.character(RecordDate), StartTime=as.character(StartTime),
+    EndTime = as.character(EndTime), TestNo=TestNo ,Dose=100, Height=Height, Weight=Weight, 
     T50 = T50, GEC = GEC, TLag=TLag, 
     Data=Data),class="BreathTestData")
 }

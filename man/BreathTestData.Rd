@@ -2,13 +2,13 @@
 \alias{BreathTestData}
 \title{Data structure for saving into database}
 \usage{
-  BreathTestData(PatientID, Name = NULL, FirstName = NULL,
-    Initials = NULL, DOB = NULL, BirthYear = NULL,
-    Gender = NULL, Study = NULL, PatStudyID = NULL,
-    FileName, Device = "generic", Substrate, RecordDate,
+  BreathTestData(PatientID, Name = NA, FirstName = NA,
+    Initials = NA, DOB = NA, BirthYear = NA, Gender = NA,
+    Study = NA, PatStudyID = NA, FileName,
+    Device = "generic", Substrate, RecordDate,
     StartTime = RecordDate, EndTime = RecordDate, TestNo,
-    Dose = 100, Height = NULL, Weight = NULL, T50 = NULL,
-    GEC = NULL, TLag = NULL, Data = Data)
+    Dose = 100, Height = NA, Weight = NA, T50 = NA,
+    GEC = NA, TLag = NA, Data = Data)
 }
 \arguments{
   \item{PatientID}{required, string or number for unique
@@ -80,6 +80,6 @@
   Generates structure of class BreathTestData with required
   fields and optional fields as an intermediate between
   file data and the SQlite database. All optional fields by
-  default are NULL
+  default are NA
 }
 

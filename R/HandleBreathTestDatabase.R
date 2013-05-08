@@ -233,13 +233,13 @@ BreathTestRecordToDatabase = function(bid, con){
   if (! inherits(bid,"BreathTestData"))
     stop("BreathTestRecordToDatabase: bid must be generated with function 'BreathTestData'")
   # Wrap everything in a transaction
-  #dbSendQuery(con,"SAVEPOINT breathtest")
+  dbBeginTransaction(con)
   ret =try(BreathTestRecordToDatabaseInternal(bid,con), silent = TRUE)
   if (inherits(ret,"try-error")){
-  #  dbSendQuery(con,"ROLLBACK TO breathtest")
+    dbRollback(con)
     stop(attr(ret,"condition")$message)  
   }
-  #dbSendQuery(con,"RELEASE breathtest")
+  dbCommit(con)
   ret
 }
 
@@ -255,10 +255,10 @@ BreathTestRecordToDatabaseInternal = function(bid, con){
   ))
   if (nrow(pars)> 0 ){
     pars = cbind(BreathTestParameterID=as.integer(NA),pars)
-    success = dbWriteTable(con,"BreathTestParameter",pars,append=TRUE,
-                           row.names=FALSE)
-    if (!success)
-      stop(str_c("Could not write Device parameters for patient ",bid$PatientID))
+    ret = try(dbGetPreparedQuery(con,
+      "INSERT INTO BreathTestParameter VALUES(?,?,?,?,?)",pars),silent=TRUE)
+    if (inherits(ret,"try-error"))
+      stop(str_c("Error writing Device parameters for patient ",bid$PatientID))
   }
   
   # Compute and save fit (will do nothing if not successful)
@@ -308,11 +308,13 @@ SavePatientRecord = function(bid,con) {
   bts = bts[!(is.nan(bts$Value) |is.na(bts$Value)),]
   bts$BreathTestRecordID = BreathTestRecordID
   bts$BreathTestTimeSeriesID = NA
-  # Retrieve column names to get the order right, skipping autoincrement
+  # Retrieve column names to get the order right
   flds = dbListFields(con,"BreathTestTimeSeries")
-  success = dbWriteTable(con,"BreathTestTimeSeries",bts[,flds],append=TRUE,
-                         row.names=FALSE)
-  if (!success)
+  q = str_c("INSERT INTO BreathTestTimeSeries VALUES(",
+        paste(rep("?",length(flds)),collapse=","),")")
+  ret = try(dbGetPreparedQuery(con, q,bind.data= bts[,flds]), silent=TRUE)
+
+  if (inherits(ret,"try-error"))
     stop(str_c("Could not write raw time series record for patient ",PatientID))
   BreathTestRecordID
 }

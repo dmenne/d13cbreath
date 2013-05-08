@@ -34,15 +34,17 @@ ComputeAndSaveWNFit = function(con,BreathTestRecordID)  {
   # compute 0.5-crossing
   spl = smooth.spline(data$Time,frac)
   t50 = uniroot(function(t) predict(spl,t)$y-0.5,c(0,max(data$Time)))$root
-  dbSendQuery(con, paste(
+  ret = dbSendQuery(con, paste(
     "DELETE FROM BreathTestParameter where BreathTestRecordID=",
     BreathTestRecordID ," and Method ='WN'",sep=""))
+  dbClearResult(ret)
   # Write parameters and coefficients
   pars = data.frame(BreathTestParameterID=as.integer(NA), BreathTestRecordID,
                     Parameter = "t50",Method = "WN",Value = t50)
-  success = dbWriteTable(con,"BreathTestParameter",pars,append=TRUE,
-                         row.names=FALSE)
-  if (!success)
+  q = str_c("INSERT INTO BreathTestParameter VALUES(",
+            paste(rep("?",ncol(pars)),collapse=","),")")
+  ret = try(dbGetPreparedQuery(con, q,bind.data= pars), silent=TRUE)
+  if (inherits(ret,"try-error"))
     stop(str_c("Could not write fit parameters for Record",BreathTestRecordID))
   # Compute predicted WN fit
   Time = seq(0,max(data$Time), by=5)
@@ -53,12 +55,15 @@ ComputeAndSaveWNFit = function(con,BreathTestRecordID)  {
     Parameter = "WN",
     Value = predict(spl,Time)$y  )  
   # Delete old values
-  dbSendQuery(con, paste(
+  ret = dbSendQuery(con, paste(
     "DELETE FROM BreathTestTimeSeries where BreathTestRecordID=",
     BreathTestRecordID ," and Parameter ='WN'",sep=""))
-  success = dbWriteTable(con,"BreathTestTimeSeries",wn,append=TRUE,
-                         row.names=FALSE)
-  if (!success)
+  dbClearResult(ret)
+  q = str_c("INSERT INTO BreathTestTimeSeries VALUES(",
+            paste(rep("?",ncol(wn)),collapse=","),")")
+  ret = try(dbGetPreparedQuery(con, q,bind.data= wn), silent=TRUE)
+  
+  if (inherits(ret,"try-error"))
    stop(str_c("Could not write predicted Wagner-Nelson data for record ",
       BreathTestRecordID))
   t50              
