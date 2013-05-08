@@ -20,6 +20,12 @@ Thanks to Andreas Steingötter and Werner Schwizer.
   nlme for stuborn or highly incomplete cases.
 * For additional examples, see the folder inst/tests of the source package
 
+To install the functions, use
+```
+devtools::install_bitbucket("d13cbreath","dmenne")
+```
+
+
 __Reference__: 
 * Bluck LJC and Coward WA 2006 Measurement of gastric emptying by the C-13-octanoate breath test --- rationalization with scintigraphy Physiol. Meas. 27 279-89
 
