@@ -7,7 +7,7 @@ http://www.menne-biomed.de
 
 dieter.menne@menne-biomed.de 
 
-This software was developed in cooperation with the ETH and Department of Gastroenterology of the University Hospital of Zürich, Switzerland.  
+The software was developed in cooperation with the ETH and Department of Gastroenterology of the University Hospital of Zürich, Switzerland.  
 Thanks to Andreas Steingötter and Werner Schwizer.
 
 * Reads several formats of 13C data: IRIS/Wagner (partially supported), BreathID

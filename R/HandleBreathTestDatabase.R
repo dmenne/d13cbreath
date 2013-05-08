@@ -230,10 +230,14 @@ AddAllBreathTestRecords = function(path,con){
 #' @param con Connection to sqlite database
 #' @export
 BreathTestRecordToDatabase = function(bid, con){
+  # Nested transactions are not possible with dbBeginTransaction in SQlite,
+  # therefore within the transaction it is not allowed to use dbWriteTable
+  # which opens a transaction. Must use prepared queries instead.
   if (! inherits(bid,"BreathTestData"))
     stop("BreathTestRecordToDatabase: bid must be generated with function 'BreathTestData'")
   # Wrap everything in a transaction
   dbBeginTransaction(con)
+  ## Do not use dbWriteTable in any nested function
   ret =try(BreathTestRecordToDatabaseInternal(bid,con), silent = TRUE)
   if (inherits(ret,"try-error")){
     dbRollback(con)

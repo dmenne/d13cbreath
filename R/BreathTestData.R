@@ -53,11 +53,10 @@ BreathTestData = function(
     stop("Function BreathTestData: Data should have either DOB or PDR or both")
   ##### Add more substrates here
   substrates = c("octanoate","acetate")
-  substrate = substrates[
-    na.omit(pmatch( str_sub(substrates,1,4),tolower(Substrate)))]
-  if (is.na(substrate))
+  substrate = substrates[str_detect(tolower(Substrate),str_sub(substrates,1,4))][1]
+  if (length(substrate)==0)
     stop("Function BreathTestData: Substrate is '", Substrate,
-         "'; it should contain substrings'" ,paste(str_sub(substrates,1,4),collapse="' or '"),"'")
+         "'; it should contain substrings '" ,paste(str_sub(substrates,1,4),collapse="' or '"),"'")
   if (!is.na(Gender) & ! match(Gender,c("m","f")))
     stop("Function BreathTestData: Gender should be 'm' or 'f'")
   

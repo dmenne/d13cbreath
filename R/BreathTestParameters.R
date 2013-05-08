@@ -16,7 +16,8 @@ BluckCoward2  = function(Time,Dose,cf){
 }
 
 #' @name t50BluckCoward
-#' @title Newton's method to solve BluckCoward for 1/2 to compute t_50
+#' @title Newton's method to solve the self-corrected BluckCoward equation 
+#' for 1/2 to compute t_50
 #' @param cf named vector of coefficients; only \code{k} and \code{beta} are required
 #' @return time where value is 1/2 of maximum, i.e. t50 in minutes
 #' @seealso \code{\link{ExpBeta}}
@@ -32,7 +33,6 @@ t50BluckCoward = function(cf){
     data.frame(t50BluckCoward=round(apply(cf[,c("k","beta")],1,g),1))
 }
 
-
 #' @name tLagBluckCoward
 #' @title Lag phase for BluckCoward self-correcting fit
 #' @param cf named vector of coefficients; only \code{k} and \code{beta} are required
@@ -47,7 +47,10 @@ tLagBluckCoward= function(cf){
 }
 
 #' @name t50Ghoos
-#' @title Determine t50 the original way (Sanaka Nakada eq 6)
+#' @title Determine t50 the original way (Sanaka Nakada eq 6, also 
+#' Schommartz B, Ziegler D, Schadewaldt P: Significance of diagnostic 
+#' parameters in [C-13]octanoic acid gastric emptying breath tests. 
+#' Isotopes Environ Health Stud 1998; 34: 135–143.
 #' @param cf named vector of coefficients; only \code{k} and \code{beta} are required
 #' @return time where value is 1/2 of maximum, i.e. t50 in minutes
 #' @seealso \code{\link{ExpBeta}}
