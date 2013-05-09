@@ -74,7 +74,7 @@ CreateEmptyBreathTestDatabase = function(sqlitePath){
     BreathTestParameterID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     BreathTestRecordID INTEGER NOT NULL,
     Parameter TEXT NOT NULL, -- t50, tlag, GEC, k, m, beta
-    Method TEXT NOT NULL, -- How the value was computed: bluckSC, ghoos, BreathID, ghoosScinti
+    Method TEXT NOT NULL, -- How the value was computed: bluckSC, Maes, BreathID, MaesScinti
     Value REAL NOT NULL,
     CONSTRAINT unq UNIQUE (BreathTestRecordID, Method, Parameter),
     FOREIGN KEY (BreathTestRecordID) 

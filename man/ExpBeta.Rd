@@ -51,16 +51,16 @@ plot(data$Time,data$PDR,pch=16,cex=0.7,xlab="time (min)",ylab="PDR",
   main="t50 with different methods")
 lines(data$Time,data$PDRFitBluck,col="blue")
 t50 = t50BluckCoward(coef(sample.nls))
-t50Ghoos = t50Ghoos(coef(sample.nls))
-t50Scint = t50GhoosScintigraphy(coef(sample.nls))
+t50Maes = t50Maes(coef(sample.nls))
+t50Scint = t50MaesScintigraphy(coef(sample.nls))
 abline(v=t50,col="red")
-abline(v=t50Ghoos,col="darkgreen",lty=2)
+abline(v=t50Maes,col="darkgreen",lty=2)
 abline(v=breathID$T50,col="black",lty=4)
 abline(v=t50Scint,col="gray",lty=3)
 text(t50,0,"Self-corrected Bluck Coward",col="red",adj=-0.01)
 text(breathID$T50,0.5,"From BreathID device",col="black",adj=-0.01)
-text(t50Scint,1,"Ghoos scintigraphic",col="gray",adj=-0.01)
-text(t50Ghoos,1.5,"Classic Ghoos",col="darkgreen",adj=-0.01)
+text(t50Scint,1,"Maes scintigraphic",col="gray",adj=-0.01)
+text(t50Maes,1.5,"Classic Maes",col="darkgreen",adj=-0.01)
 
 # Simulated Data set
 Dose = 100

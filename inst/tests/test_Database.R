@@ -23,7 +23,7 @@ test_that("Writing sample BreathID database returns valid set of fit parameters 
   
   dbDisconnect(con)
   unlink(sqlitePath)
-  # BreathID, ExpBeta, BluckCoward, Ghoos, GhoosScint,WN
+  # BreathID, ExpBeta, BluckCoward, Maes, MaesScint,WN
   expect_equal(length(unique(nParameters$Method)),6,
                info = paste(unique(nParameters$Method),collapse=", "))           
   expect_equal(length(unique(nParameters$Parameter)),6,

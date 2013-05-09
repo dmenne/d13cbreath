@@ -9,7 +9,7 @@
 #' @param breathTestRecordID BreathTestRecordID in database; used in tables 
 #' BreathTestRecord (primary), BreathTestParameter, BreathTestTimeSeries (foreign).
 #' @param showParameters The parameters to display in the graph as a data frame with
-#' column \code{Parameter} (t50, tlag,GEC) and \code{Method} (BreathID, BluckCoward, Ghoos).
+#' column \code{Parameter} (t50, tlag,GEC) and \code{Method} (BreathID, BluckCoward, Maes).
 #' If Method is NA, all variants of Parameter are shown. By default, shows all
 #' variants of t50.
 #' @param ymax Vertical scaling; default of NULL is for autoscaling

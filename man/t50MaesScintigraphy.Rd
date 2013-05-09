@@ -1,0 +1,23 @@
+\name{t50MaesScintigraphy}
+\alias{t50MaesScintigraphy}
+\title{t50 from Maes with scintigrapic correction}
+\usage{
+  t50MaesScintigraphy(cf)
+}
+\arguments{
+  \item{cf}{named vector of coefficients; only \code{k} and
+  \code{beta} are required}
+}
+\value{
+  time where value is 1/2 of maximum, i.e. t50 in minutes
+}
+\description{
+  t50 from beta exponential function, with linear
+  correction for scintigraphic values. This is for
+  comparison with published data only; there is little
+  justification for using it.
+}
+\seealso{
+  \code{\link{ExpBeta}}
+}
+

@@ -17,7 +17,7 @@
   \item{showParameters}{The parameters to display in the
   graph as a data frame with column \code{Parameter} (t50,
   tlag,GEC) and \code{Method} (BreathID, BluckCoward,
-  Ghoos). If Method is NA, all variants of Parameter are
+  Maes). If Method is NA, all variants of Parameter are
   shown. By default, shows all variants of t50.}
 
   \item{ymax}{Vertical scaling; default of NULL is for

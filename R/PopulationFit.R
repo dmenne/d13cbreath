@@ -120,8 +120,8 @@ SavePopulationFit = function(cf,con=NULL){
     con = OpenSqliteConnection()
 
   Method = c("ExpBetaPop","ExpBetaPop","ExpBetaPop",
-             "BluckCowardPop","GhoosPop","GhoosScintPop",
-             "BluckCowardPop","GhoosPop")
+             "BluckCowardPop","MaesPop","MaesScintPop",
+             "BluckCowardPop","MaesPop")
   # Delete all old entries
   q = paste(
      "DELETE FROM BreathTestParameter where Method in ('",
@@ -136,9 +136,9 @@ SavePopulationFit = function(cf,con=NULL){
                       Method = Method,
                       Values = unlist(c(cf1["m"],cf1["k"],cf1["beta"],
                                  t50BluckCoward(cf1),
-                                 t50Ghoos(cf1),
-                                 t50GhoosScintigraphy(cf1),
-                                 tLagBluckCoward(cf1),tLagGhoos(cf1)))
+                                 t50Maes(cf1),
+                                 t50MaesScintigraphy(cf1),
+                                 tLagBluckCoward(cf1),tLagMaes(cf1)))
     )
     success = dbWriteTable(con,"BreathTestParameter",pars,append=TRUE,
                            row.names=FALSE)

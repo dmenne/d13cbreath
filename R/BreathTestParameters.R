@@ -46,45 +46,43 @@ tLagBluckCoward= function(cf){
   ret
 }
 
-#' @name t50Ghoos
-#' @title Determine t50 the original way (Sanaka Nakada eq 6, also 
-#' Schommartz B, Ziegler D, Schadewaldt P: Significance of diagnostic 
-#' parameters in [C-13]octanoic acid gastric emptying breath tests. 
-#' Isotopes Environ Health Stud 1998; 34: 135–143.
+#' @name t50Maes
+#' @title t50 as determined from an uncorrected fit to the beta exponential function.
+#' Maes B D, Ghoos Y F, Rutgeerts P J, Hiele M I, Geypens B and Vantrappen G 1994 Dig. Dis. Sci. 39 S104-6
 #' @param cf named vector of coefficients; only \code{k} and \code{beta} are required
 #' @return time where value is 1/2 of maximum, i.e. t50 in minutes
 #' @seealso \code{\link{ExpBeta}}
 #' @export
-t50Ghoos = function(cf){
+t50Maes = function(cf){
   ret = -log(1-2^(-1/cf["beta"]))/cf["k"]
-  names(ret)="t50Ghoos"
+  names(ret)="t50Maes"
   ret
 }
 
-#' @name tLagGhoos
-#' @title Determine tlag from Ghoos formula
+#' @name tLagMaes
+#' @title Determine tlag from uncorrected fit to the beta exponential function
+#' Maes B D, Ghoos Y F, Rutgeerts P J, Hiele M I, Geypens B and Vantrappen G 1994 Dig. Dis. Sci. 39 S104-6
 #' @param cf named vector of coefficients; only \code{k} and \code{beta} are required
-#' @return lag time as defined from Ghoos fit
+#' @return lag time as defined from Maes fit
 #' @seealso \code{\link{ExpBeta}}
 #' @export
-tLagGhoos = function(cf){
+tLagMaes = function(cf){
   ret = log(cf["beta"])/cf["k"]
-  names(ret)="tlagGhoos"
+  names(ret)="tlagMaes"
   ret
 }
 
-#' @name t50GhoosScintigraphy
-#' @title t50 from Ghoos with scintigrapic correction
-#' @description Computes t50 the original Ghoos way (Sanaka Nakada eq 6),
-#' and apply the correction from Ghoos et. al 1993 to come close to 
+#' @name t50MaesScintigraphy
+#' @title t50 from Maes with scintigrapic correction
+#' @description t50 from beta exponential function, with linear correction for 
 #' scintigraphic values. This is for comparison with published data only;
 #' there is little justification for using it.
 #' @param cf named vector of coefficients; only \code{k} and \code{beta} are required
 #' @return time where value is 1/2 of maximum, i.e. t50 in minutes
 #' @seealso \code{\link{ExpBeta}}
 #' @export
-t50GhoosScintigraphy = function(cf){
-  ret = (t50Ghoos(cf)-66.09)/1.12
-  names(ret)="t50GhoosScintigraphy"
+t50MaesScintigraphy = function(cf){
+  ret = (t50Maes(cf)-66.09)/1.12
+  names(ret)="t50MaesScintigraphy"
   ret
 }

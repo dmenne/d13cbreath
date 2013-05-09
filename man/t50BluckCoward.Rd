@@ -1,6 +1,7 @@
 \name{t50BluckCoward}
 \alias{t50BluckCoward}
-\title{Newton's method to solve BluckCoward for 1/2 to compute t_50}
+\title{Newton's method to solve the self-corrected BluckCoward equation
+for 1/2 to compute t_50}
 \usage{
   t50BluckCoward(cf)
 }
@@ -12,8 +13,8 @@
   time where value is 1/2 of maximum, i.e. t50 in minutes
 }
 \description{
-  Newton's method to solve BluckCoward for 1/2 to compute
-  t_50
+  Newton's method to solve the self-corrected BluckCoward
+  equation for 1/2 to compute t_50
 }
 \seealso{
   \code{\link{ExpBeta}}

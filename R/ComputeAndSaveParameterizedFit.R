@@ -32,8 +32,8 @@ ComputeAndSaveParameterizedFit = function(con,BreathTestRecordID)  {
     return(NULL) # Skip this
   cf = coef(bid.nls)
   # Delete old values
-  methods = c("ExpBeta","ExpBeta","ExpBeta","BluckCoward","Ghoos","GhoosScint",
-    "BluckCoward","Ghoos")
+  methods = c("ExpBeta","ExpBeta","ExpBeta","BluckCoward","Maes","MaesScint",
+    "BluckCoward","Maes")
   dbSendQuery(con, paste(
       "DELETE FROM BreathTestParameter where BreathTestRecordID=",
       BreathTestRecordID ," and Method in ('",
@@ -44,8 +44,8 @@ ComputeAndSaveParameterizedFit = function(con,BreathTestRecordID)  {
                     Method = methods,
                     Value = unlist(c(cf["m"],cf["k"],cf["beta"],
                                      t50BluckCoward(cf),
-                                     t50Ghoos(cf),t50GhoosScintigraphy(cf),
-                                     t50BluckCoward(cf),tLagGhoos(cf)))
+                                     t50Maes(cf),t50MaesScintigraphy(cf),
+                                     t50BluckCoward(cf),tLagMaes(cf)))
   )
   
   q = str_c("INSERT INTO BreathTestParameter VALUES(",
