@@ -11,7 +11,7 @@
   \code{getOption("Gastrobase2SqlitePath")}}
 }
 \description{
-  The population fit using nlme is computed, old results
-  are removed from database and coefficients are save.
+  The population fit using nlme is computed, and
+  coefficients are saved in database, overwriting old ones.
 }
 

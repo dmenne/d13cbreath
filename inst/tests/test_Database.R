@@ -25,8 +25,9 @@ test_that("Writing sample BreathID database returns valid set of fit parameters 
   unlink(sqlitePath)
   # BreathID, ExpBeta, BluckCoward, Maes, MaesScint,WN
   expect_equal(length(unique(nParameters$Method)),6,
-               info = paste(unique(nParameters$Method),collapse=", "))           
-  expect_equal(length(unique(nParameters$Parameter)),6,
+               info = paste(unique(nParameters$Method),collapse=", "))    
+  # t50 tlag GEC beta deviance k m       
+  expect_equal(length(unique(nParameters$Parameter)),7,
                info = paste(unique(nParameters$Parameter),collapse=", "))
 })
 
