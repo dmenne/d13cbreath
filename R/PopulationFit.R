@@ -179,3 +179,27 @@ GetPopulationData = function(con=NULL){
     stop("GetPopulationData: No data found")
   x
 }
+
+
+#' @title Recompute population fit and store results in database
+#' @description 
+#' The population fit using nlme is computed, and coefficients are saved in database, 
+#' overwriting old ones.
+#' @name RebuildPopulationFitDatabase
+#' @param con connection to SQlite database. If no connection given, opens connection
+#' to default database with path given by \code{getOption("Gastrobase2SqlitePath")}
+#' @export 
+RebuildPopulationFitDatabase = function(con=NULL){
+  localCon = is.null(con)
+  if (localCon)
+    con = OpenSqliteConnection()
+  x = GetPopulationData(con)
+  cf = BreathTestPopulationFit(x)
+  res = SavePopulationFit(cf,con) # Return a data frame with kept/removed
+  if (localCon) dbDisconnect(con)
+  kept = sum(res$status =="kept")
+  removed = sum(res$status =="removed")
+  paste("Population fit:", 
+        kept, " Records added\n",
+        removed," Records not added\n",sep="")
+}

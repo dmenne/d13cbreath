@@ -1,6 +1,6 @@
 Package: D13CBreath
 Title: Reads and evaluates gastric emptying 13C breath test data.
-Version: 1.2.1
+Version: 1.2.2
 Date: 2013-05-7
 Author: Dieter Menne
 Maintainer: Dieter Menne <dieter.menne@menne-biomed.de>

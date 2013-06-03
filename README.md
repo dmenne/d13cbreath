@@ -12,12 +12,15 @@ Thanks to Andreas Steingötter and Werner Schwizer.
 
 * Reads several formats of 13C data: IRIS/Wagner (partially supported), BreathID
 * Creates sample data and writes sample SQLite database; default database is in `<HOME>/Gastrobase2/Gastrobase2.sqlite`.
-* Fits Bluck/Coward, Ghoos self-correcting formula using `nls`.
+* Fits Beta-Exponential nonlinear function using `nls`.
 * Fits Wagner-Nelson, with terminal slope estimated from Bluck/Coward fit.
 * Computes population fit with `nlme` using all data in database
 * See documentation of function `bluckCoward` for examples, including how to use
   `nlme` for stuborn or highly incomplete cases.
 * For additional examples, see the folder `inst/tests` of the source package
+* [A comparison of results with nls, nlme](https://bitbucket.org/dmenne/d13cbreath/downloads/BreathTestBayes.html) and the Bayesian [Stan](http://www.mc-stan.org).
+
+
 
 To install the functions, use
 ```

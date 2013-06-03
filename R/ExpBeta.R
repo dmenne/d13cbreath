@@ -7,10 +7,14 @@
 #' Bluck L J C and Coward W A 2006 Measurement of gastric
 #' emptying by the C-13-octanoate breath test --- rationalization
 #' with scintigraphy Physiol. Meas. 27 279?89
+#' 
 #' For a review, see 
+#'
 #' Bluck LJC (2009) Recent advances in the interpretation of the 13C octanoate 
 #' breath test for gastric emptying. Journal of Breath Research, 3 1-8 
+#' 
 #' This is the same equation as (4)  in 
+#' 
 #' The Wagner-Nelson Method Can Generate an Accurate Gastric Emptying Flow Curve from 
 #' 13CO2 Data Obtained by a 13C-Labeled Substrate Breath Test
 #' Masaki Sanaka, Takatsugu Yamamoto, Tarou Ishii, Yasushi Kuyama

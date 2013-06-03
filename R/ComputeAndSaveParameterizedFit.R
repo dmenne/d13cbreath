@@ -31,18 +31,20 @@ ComputeAndSaveParameterizedFit = function(con,BreathTestRecordID)  {
   if (inherits(bid.nls,"try-error"))
     return(NULL) # Skip this
   cf = coef(bid.nls)
+  deviance = deviance(bid.nls)
   # Delete old values
-  methods = c("ExpBeta","ExpBeta","ExpBeta","BluckCoward","Maes","MaesScint",
+  methods = c("ExpBeta","ExpBeta","ExpBeta","ExpBeta","BluckCoward","Maes","MaesScint",
     "BluckCoward","Maes")
+  parameters = c("m","k","beta","deviance","t50","t50","t50","tlag","tlag")
   dbSendQuery(con, paste(
       "DELETE FROM BreathTestParameter where BreathTestRecordID=",
       BreathTestRecordID ," and Method in ('",
       paste(unique(methods),collapse="','",sep=""),"')",sep=""))
   # Write parameters and coefficients
   pars = data.frame(BreathTestParameterID=as.integer(NA), BreathTestRecordID,
-                    Parameter = c("m","k","beta","t50","t50","t50","tlag","tlag"),
+                    Parameter = parameters,
                     Method = methods,
-                    Value = unlist(c(cf["m"],cf["k"],cf["beta"],
+                    Value = unlist(c(cf["m"],cf["k"],cf["beta"],deviance,
                                      t50BluckCoward(cf),
                                      t50Maes(cf),t50MaesScintigraphy(cf),
                                      t50BluckCoward(cf),tLagMaes(cf)))

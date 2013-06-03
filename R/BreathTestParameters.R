@@ -48,6 +48,7 @@ tLagBluckCoward= function(cf){
 
 #' @name t50Maes
 #' @title t50 as determined from an uncorrected fit to the beta exponential function.
+#' @description
 #' Maes B D, Ghoos Y F, Rutgeerts P J, Hiele M I, Geypens B and Vantrappen G 1994 Dig. Dis. Sci. 39 S104-6
 #' @param cf named vector of coefficients; only \code{k} and \code{beta} are required
 #' @return time where value is 1/2 of maximum, i.e. t50 in minutes
