@@ -102,7 +102,6 @@ CreateEmptyBreathTestDatabase = function(sqlitePath){
   return (invisible(NULL))
 }  
 
-
 #' @title Opens sqlite database connection
 #' @name OpenSqliteConnection
 #' @description Opens an connection to sqlite database; creates the database
@@ -139,8 +138,10 @@ OpenSqliteConnection = function(sqlitePath=NULL){
 
 #' @title Reads record from file and writes it to the database
 #' @name AddBreathTestRecord
-#' @description Reads BreathID data record, computes several fit 
+#' @description 
+#' Reads BreathID data record, computes several fit 
 #' parameters and a fit, and writes these to the database.
+#' 
 #' @param filename Name of BreathID file
 #' @param con Connection to sqlite database
 #' @examples
@@ -162,10 +163,12 @@ AddBreathTestRecord = function(filename,con){
 
 #' @title Reads and saves multiple 13C Breath test records
 #' @name AddAllBreathTestRecords
-#' @description Reads BreathID data record in a path, 
+#' @description 
+#' Reads BreathID data record in a path, 
 #' computes several fit parameters and a fit, and writes these to the database. 
 #' Files that are already in the database are skipped. Note that files with 
 #' the same name in different directories are considered the same file.
+#' 
 #' @param path Start path for recursive search
 #' @param con Connection to sqlite database
 #' @return A dataframe with columns \code{file}, \code{basename}, 
@@ -210,6 +213,32 @@ AddAllBreathTestRecords = function(path,con){
   files$status = as.factor(files$status)
   # Rearrange for easier printout
   files[,c(2,3,4,1)]
+}
+
+
+#' @title Recompute all fit parameters
+#' @name RebuildFitDatabase
+#' @description Recomputes all fits parameters, including population fit. Use this 
+#' function to refresh coefficients when the algorithm has changed.
+#' @param con Connection to sqlite database; if missing, default database in 
+#' path \code{getOption("Gastrobase2SqlitePath")} is used.
+#' 
+#' @export
+RebuildFitDatabase = function(con=NULL){
+  localCon = is.null(con)
+  if (localCon)
+    con = OpenSqliteConnection()
+  rid = dbGetQuery(con,"SELECT BreathTestRecordID from BreathTestRecord")[,1]
+  # Faster delete, this is optimized to TRUNCATE by SQLite
+  dbSendQuery(con,"DELETE FROM BreathTestParameter")
+  dbSendQuery(con,"DELETE FROM sqlite_sequence where name='BreathTestParameter'")
+  lapply(rid,function(BreathTestRecordID){
+    ComputeAndSaveParameterizedFit(con,BreathTestRecordID)  
+    ComputeAndSaveWNFit(con,BreathTestRecordID) # This requires the parameterized fit
+    invisible(NULL)
+  })
+  RebuildPopulationFitDatabase(con)
+  if (localCon) dbDisconnect(con)
 }
 
 #' @title Computes fit and writes a 13C record and extracted parameters to databse
