@@ -54,7 +54,7 @@ CreateEmptyBreathTestDatabase = function(sqlitePath){
     Height REAL,
     Weight REAL,
     Status INTEGER DEFAULT 0,
-    FOREIGN KEY (PatientID) REFERENCES Patient(PatientID) ON DELETE CASCADE
+    FOREIGN KEY (PatientID) REFERENCES Patient(PatientID) ON DELETE CASCADE ON UPDATE CASCADE
     )'
   
   createBreathTestTimeSeries = '
