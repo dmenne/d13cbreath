@@ -74,8 +74,9 @@ RemoveNAColumns = function(x) {
   x[,!unlist(lapply(x,function(y) all(is.na(y)| is.nan(y)|str_trim(y)=="" )))]
 } 
 
+
 findSinglePattern = function(bid,pattern,required=TRUE){
-  p = str_match(bid,str_c(pattern,"[^-]+-\\s*(\\S*)"))[,2]
+  p = str_match(bid,str_c(pattern,"[^-]+-\\s*(\\S.*)"))[,2]
   p = p[!is.na(p)]
   if (length(p)>1) 
     stop(str_c("No unique <<", pattern,">> in BreathID file"))
