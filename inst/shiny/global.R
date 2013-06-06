@@ -14,7 +14,7 @@ pars = dbGetQuery(con,"SELECT * from BreathTestParameter")[,-1]
 #records = dbGetQuery(con,
 #  "SELECT BreathTestRecordID, PatientID, Substrate from BreathTestRecord")
 
-PlotPairs = function(parc){
+PlotPairs = function(parc,quantiles){
   parp = parComb[parComb$Pair %in% parc,1:2]
   if (nrow(parp)<2) return (NULL)
   sameParameters = nlevels(factor(parp$Parameter)) ==1
@@ -29,11 +29,12 @@ PlotPairs = function(parc){
   if (sameParameters ){
     p$Pair = p$Method 
     main = paste(main, parp$Parameter[1])    
+    q1 = c(quantiles/100.,1-quantiles/100.)
     prepanel.limits =  function(x,y,...) {
-      quantile(p[,-1],c(0.01,0.99),na.rm=TRUE) }
+      quantile(p[,-1],q1,na.rm=TRUE) }
   }  else { 
     p$Pair = paste(p$Parameter,p$Method,sep="/")
-    prepanel.limits =  lattice:::scale.limits
+    prepanel.limits = lattice:::scale.limits
   }
   p = dcast(p,BreathTestRecordID~Pair,  value.var="Value")
   splom(p[,-1],pch=16,cex=0.8,prepanel.limits=prepanel.limits,

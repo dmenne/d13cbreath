@@ -6,7 +6,7 @@ library(stringr)
 
 shinyServer(function(input, output) {
   output$splomPlot <- renderPlot({
-    p = PlotPairs(input$parComb)
+    p = PlotPairs(input$parComb,input$plotQuantile)
     if (!is.null(p)) print(p)
   },height=700)
   
