@@ -15,7 +15,7 @@
 #' @param BreathTestRecordID these data will be read from BreathTestTimeSeries
 #' @export 
 ComputeAndSaveParameterizedFit = function(con,BreathTestRecordID)  {
-  start = list(m=20,k=1/100,beta=2)
+  start = list(m=50,k=1/100,beta=2)
   Dose = try(dbGetQuery(con, paste(
     "SELECT Dose from BreathTestRecord where BreathTestRecordID=",
     BreathTestRecordID),  sep="")[1,1])

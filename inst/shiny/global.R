@@ -7,20 +7,23 @@ if (!exists("databasePath") )
   databasePath = getOption("Gastrobase2SqlitePath")
 
 con = OpenSqliteConnection(databasePath)
+parComb = dbGetQuery(con, "SELECT DISTINCT Parameter, Method, Parameter || '/' || Method as Pair
+ FROM BreathTestParameter order by Parameter, Method")
+
 pars = dbGetQuery(con,"SELECT * from BreathTestParameter")[,-1]
 #records = dbGetQuery(con,
 #  "SELECT BreathTestRecordID, PatientID, Substrate from BreathTestRecord")
-dbDisconnect(con)
-
-parComb = arrange(unique(pars[,c("Parameter","Method")]), Parameter,Method)
-parComb$Pair = paste(parComb$Parameter,parComb$Method,sep="/")
-
 
 PlotPairs = function(parc){
   parp = parComb[parComb$Pair %in% parc,1:2]
   if (nrow(parp)<2) return (NULL)
   sameParameters = nlevels(factor(parp$Parameter)) ==1
-  p = pars[pars$Parameter %in% parp$Parameter &  pars$Method %in% parp$Method ,]
+  q1 =  paste("(Method ='", parp$Method,
+        "' and Parameter = '",parp$Parameter,"')",collapse=" or ",sep="")
+  p = dbGetQuery(con,paste0(
+   "SELECT BreathTestRecordID, Parameter, Method,Value from BreathTestParameter ",
+   "WHERE ",q1))
+  
   if (nrow(p)==0) return (NULL)
   main = "Breath test parameters"
   if (sameParameters ){

@@ -34,7 +34,7 @@
   a valid population fit, this is always shown.}
 }
 \value{
-  A ggplot2 graphics
+  A ggplot2 graphics object
 }
 \description{
   Reads record from database and plots raw data, fit, and

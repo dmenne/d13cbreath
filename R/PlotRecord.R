@@ -17,7 +17,7 @@
 #' @param showName Show full patient name and DOB, initials otherwise
 #' @param showPopulationFit If available, show population fit as a red curve. If the 
 #' single fit fails, and there is a valid population fit, this is always shown.
-#' @return A ggplot2 graphics 
+#' @return A ggplot2 graphics object
 #' @author Dieter Menne, \email{dieter.menne@@menne-biomed.de}
 #' @examples
 #' if (exists("con")) suppressWarnings(dbDisconnect(con))
