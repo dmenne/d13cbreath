@@ -47,7 +47,7 @@ ComputeAndSaveParameterizedFit = function(con,BreathTestRecordID)  {
                     Value = unlist(c(cf["m"],cf["k"],cf["beta"],deviance,
                                      t50BluckCoward(cf),
                                      t50Maes(cf),t50MaesScintigraphy(cf),
-                                     t50BluckCoward(cf),tLagMaes(cf)))
+                                     tLagBluckCoward(cf),tLagMaes(cf)))
   )
   
   q = str_c("INSERT INTO BreathTestParameter VALUES(",
