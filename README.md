@@ -7,8 +7,10 @@ http://www.menne-biomed.de
 
 dieter.menne@menne-biomed.de 
 
-The software was developed in cooperation with the ETH and Department of Gastroenterology of the University Hospital of Zürich, Switzerland.  
+The software is being developed in cooperation with the ETH and Department of Gastroenterology of the University Hospital of Zürich, Switzerland.  
 Thanks to Andreas Steingötter and Werner Schwizer.
+
+__!! The package is under active development, and functions may change any time. Be warned !!__
 
 * Reads several formats of 13C data: IRIS/Wagner (partially supported), BreathID
 * Creates sample data and writes sample SQLite database; default database is in `<HOME>/Gastrobase2/Gastrobase2.sqlite`.
