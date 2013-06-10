@@ -25,26 +25,28 @@ MarkedRecords = function(){
   s = dbGetQuery(con,"SELECT * from Setting where SettingID like '%Item'")
   if (nrow(s)==0) return(NULL)
   s$isPatient = str_detect(s$Value,"Patient")
-  s$Record = as.integer(str_extract(s$Value,"(\\d+)"))
+  s$Record = str_match(s$Value,"\\D*_(.*)")[,2]
+
   s$Color = tolower(str_sub(s$SettingID,1,nchar(s$SettingID)-4))
   ddply(s,.(SettingID),function(x){
     if (x$isPatient){
-      q = paste(
-        "SELECT BreathTestRecordID from BreathTestRecord where PatientID=",
-        x$Record) 
+      q = paste0(
+        "SELECT BreathTestRecordID from BreathTestRecord where PatientID='",
+        x$Record,"'") 
       p = dbGetQuery(con,q)[,1]
       if (length(p)>0)
-        data.frame(color=x$Color,PatientID = x$Record, 
-                   BreathTestRecordID=p) else NULL
+        data.frame(color=x$Color,PatientID = as.character(x$Record), 
+                   BreathTestRecordID=as.integer(p)) else NULL
     }
     else{
       q = paste("SELECT PatientID from BreathTestRecord where BreathTestRecordID=",
                 x$Record)
       PatientID = dbGetQuery(con,q)[1,1]
-      data.frame(color=x$Color,PatientID = PatientID,
-                 BreathTestRecordID=x$Record)
+      data.frame(color=x$Color,PatientID = as.character(PatientID),
+                 BreathTestRecordID=as.integer(x$Record))
     }
   })
+
 }
 
 
@@ -91,7 +93,7 @@ PlotCurves = function(){
   d$BreathTestRecordID = as.factor(d$BreathTestRecordID)
   dPred$BreathTestRecordID = as.factor(dPred$BreathTestRecordID)
   qplot(x=Time,y=Value,data=d, col=BreathTestRecordID, ylab="PDR",xlab="Minuten")  +
-    scale_color_manual(values = levels(d$color))+  
+    scale_color_manual(values =recs$color)+  
     geom_line(data=dPred,aes(x=Time,y=ExpBeta,
                              col=BreathTestRecordID))
 }
@@ -101,8 +103,6 @@ PlotPairs = function(parc,quantiles){
   parp = parComb[parComb$Pair %in% parc,1:2]
   if (nrow(parp)<2) 
     return (NULL)
-  marked = MarkedRecords()
-  marked$color = as.character(marked$color)
   sameParameters = nlevels(factor(parp$Parameter)) ==1
   q1 =  paste("(Method ='", parp$Method,
               "' and Parameter = '",parp$Parameter,"')",collapse=" or ",sep="")
@@ -123,8 +123,13 @@ PlotPairs = function(parc,quantiles){
     prepanel.limits = lattice:::scale.limits
   }
   p = dcast(p,BreathTestRecordID~Pair,  value.var="Value")
-  p = join(p,marked[,c("color","BreathTestRecordID")],by="BreathTestRecordID")
-  p$color[is.na(p$color)] = "gray"
+  marked = MarkedRecords()
+  if (!is.null(marked)){
+    marked$color = as.character(marked$color)
+    p = join(p,marked[,c("color","BreathTestRecordID")],by="BreathTestRecordID")
+    p$color[is.na(p$color)] = "gray"
+  } else
+    p$color = "blue"
   pPlot = p[,-c(1,ncol(p))]
   splom(pPlot,pch=16,
         prepanel.limits=prepanel.limits,
@@ -140,6 +145,6 @@ PlotPairs = function(parc,quantiles){
         })
   
 }
-#parc = parComb[9:14,"Pair"]
-#quantiles = 1
+parc = parComb[9:11,"Pair"]
+quantiles = 1
 #PlotPairs(parc,quantiles)

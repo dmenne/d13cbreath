@@ -34,7 +34,7 @@ it with a sample database, use:
 ```
 library(D13CBreath)
 # remove the following line if there is a database in the default location
-# <HOME>/Gastrobase/Gastrobase2sqlite
+# <HOME>/Gastrobase2/Gastrobase2sqlite
 databasePath = CreateSimulatedBreathTestDatabase()
 RunShiny()
 ```

@@ -82,7 +82,15 @@ CreateSimulatedBreathTestDatabase = function(sqlitePath=NULL){
   add = try (
     for (i in 1:10)
       AddSimulatedBreathTestRecord(con),silent = TRUE)
-  if (inherits(add,"try-error")) dbRollback(con) else dbCommit(con)
+  setting = data.frame(
+      SettingID = c("BlueItem","GreenItem","OrangeItem","RedItem"),
+      Value = c("Record_1","Record_2","Record_3","Patient_2")      
+    )
+  q = str_c("INSERT INTO Setting VALUES(?,?)")        
+  ret = try(dbGetPreparedQuery(con, q,bind.data= setting), silent=TRUE)
+  
+  if (inherits(add,"try-error") | inherits(ret, "try-error") )
+    dbRollback(con) else   dbCommit(con)
   dbDisconnect(con)
   sqlitePath
 }
