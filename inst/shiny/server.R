@@ -1,4 +1,3 @@
-
 shinyServer(function(input, output,session) {
   output$splomPlot <- renderPlot({
     p = PlotPairs(input$parComb,input$plotQuantile)
@@ -10,13 +9,12 @@ shinyServer(function(input, output,session) {
     if (!is.null(p)) print(p)
   },height=500)
   
-  observe({
-    selectedTab <<-  input$tabs
-    print(selectedTab)
-  })
-  observe({
-    updateTabsetPanel(session, "tabs", selected = selectedTab)
-  })
+#  observe({
+#    selectedTab <<-  input$tabs
+#  })
+#  observe({
+#    updateTabsetPanel(session, "tabs", selected = selectedTab)
+#  })
   
 })
 

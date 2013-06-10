@@ -18,6 +18,7 @@
   justification for using it.
 }
 \seealso{
-  \code{\link{ExpBeta}}
+  \code{\link{ExpBeta}}, and \code{\link{t50BluckCoward}}
+  for an example.
 }
 

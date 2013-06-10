@@ -57,7 +57,8 @@ BreathTestPopulationFit = function(x=NULL, RemoveItemsFunction=NULL){
                  fixed = m+k+beta~1,
                  random = m+pdDiag(k+beta)~1,
                  groups= ~BreathTestRecordID,
-                 start=start),silent=TRUE))
+                 start=fixef(bc.nls)),silent=TRUE))
+  str(bc.nlme)
   success = !inherits(bc.nlme,"try-error")
   if (!success) # This should work in most cases, since we removed all nlsList failures    
     stop("Populationsfit nicht erfolgreich")

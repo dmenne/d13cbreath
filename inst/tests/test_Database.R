@@ -120,12 +120,12 @@ test_that("Wagner-Nelson creates a valid predicted time series",{
    BreathTestRecordID = 1
    wn = dbGetQuery(con,"SELECT * from BreathTestParameter where Method = 'WN'")
    expect_equal(nrow(wn),10)
-   expect_true(max(wn$Value) < 40)
-   expect_true(min(wn$Value) > 25)
+   expect_true(max(wn$Value) < 50)
+   expect_true(min(wn$Value) > 10)
    ts = dbGetQuery(con,"SELECT * from BreathTestTimeSeries where Parameter = 'WN'")
    expect_equal(range(ts$Time),c(0,225))
    expect_true(max(ts$Value)<=1)
-   expect_true(min(ts$Value)>=-0.05)
+   expect_true(min(ts$Value)>=-0.2)
    dbDisconnect(con)
 })
 

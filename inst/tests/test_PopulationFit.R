@@ -12,7 +12,7 @@ test_that("Data can be read for population fit",{
 
 test_that("Population fit can be computed and written to database",{
   pd = GetPopulationData(con)  
-  # Test all-good case
+  # Test all-good cases
   cf = BreathTestPopulationFit(pd)  
   expect_equal(nrow(cf),10)
   

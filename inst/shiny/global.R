@@ -4,9 +4,10 @@ library(ggplot2)
 library(lattice) # for splom
 library(reshape2)
 library(stringr)
+options(warn=2)
 
 theme_set(theme_bw()+theme(panel.margin=grid::unit(0,"lines")))
-selectedTab = "Splom"
+#selectedTab = "Splom"
 
 if (!exists("databasePath") )
   databasePath = getOption("Gastrobase2SqlitePath")
@@ -39,7 +40,7 @@ MarkedRecords = function(){
     else{
       q = paste("SELECT PatientID from BreathTestRecord where BreathTestRecordID=",
                 x$Record)
-      PatientID = as.integer(dbGetQuery(con,q)[1,1])
+      PatientID = dbGetQuery(con,q)[1,1]
       data.frame(color=x$Color,PatientID = PatientID,
                  BreathTestRecordID=x$Record)
     }
