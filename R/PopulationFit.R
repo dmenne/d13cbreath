@@ -43,7 +43,7 @@ BreathTestPopulationFit = function(x=NULL, RemoveItemsFunction=NULL){
   #x=pd # Testing
   if (nrow(x)== 0) 
     return(NULL)
-  start = c(m=30,k=0.01,beta=2.4)
+  start = c(m=30,k=0.01,beta=1.8)
   bc.nls <- suppressWarnings(
     nlsList(PDR~ExpBeta(Time,100,m,k,beta)|BreathTestRecordID,
             data=x,start=start))
@@ -53,12 +53,12 @@ BreathTestPopulationFit = function(x=NULL, RemoveItemsFunction=NULL){
     x1 = x else
     x1 = x[!(x$BreathTestRecordID %in% removed),] 
   bc.nlme = suppressWarnings(try(nlme(PDR~ExpBeta(Time,100,m,k,beta),
-                 data=x1,
+                 data=x1,                                      
+                 control= nlmeControl(pnlsTol = 3),
                  fixed = m+k+beta~1,
                  random = m+pdDiag(k+beta)~1,
                  groups= ~BreathTestRecordID,
                  start=fixef(bc.nls)),silent=TRUE))
-  str(bc.nlme)
   success = !inherits(bc.nlme,"try-error")
   if (!success) # This should work in most cases, since we removed all nlsList failures    
     stop("Populationsfit nicht erfolgreich")

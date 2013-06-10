@@ -23,11 +23,17 @@ ComputeAndSaveParameterizedFit = function(con,BreathTestRecordID)  {
   data = dbGetQuery(con,paste(
     "SELECT Time, Value as PDR from BreathTestTimeSeries where BreathTestRecordID=" ,
     BreathTestRecordID, " and Parameter = 'PDR' and Time > 0 order by Time",sep=""))
-  if (inherits("data","try-error")) 
+  if (inherits("data","try-error")  | nrow(data)==0) 
     stop(paste("No data found for BreathTestRecordID",BreathTestRecordID))
   # Fit Model and compute prediction
+  
   bid.nls = try(suppressWarnings(nls(PDR~ExpBeta(Time,Dose,m,k,beta),
         data=data, start=start)),silent=TRUE)
+  if (inherits(bid.nls,"try-error")){
+    start = list(m=50,k=1/100,beta=1) # Try different start values
+    bid.nls = try(suppressWarnings(nls(PDR~ExpBeta(Time,Dose,m,k,beta),
+                                     data=data, start=start)),silent=TRUE)
+  }
   if (inherits(bid.nls,"try-error"))
     return(NULL) # Skip this
   cf = coef(bid.nls)
