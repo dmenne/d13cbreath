@@ -14,5 +14,5 @@ Description: Reads several formats of 13C data (IRIS/Wagner, BreathID)
         Uses Shiny  to display selected parameter in the browser.
 Depends: R (>= 2.14.1),RSQLite
 Imports: stringr,reshape2,ggplot2,RColorBrewer,nlme, shiny
-Suggests: testthat,lattice,latticeExtra, plyr
+Suggests: testthat,lattice,latticeExtra, plyr,hdrcde
 License: MIT

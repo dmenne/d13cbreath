@@ -356,15 +356,6 @@ SavePatientRecord = function(bid,con) {
   BreathTestRecordID
 }
 
-RandomName = function(nLetters=6){
-  paste(sample(LETTERS[1:26],1,TRUE),
-        paste(sample(letters[1:26],nLetters-1,TRUE),collapse=""),sep="")
-}
-RandomFile = function(ext="txt"){
-  paste(paste(sample(100:999,1,TRUE),sample(10000:99999,1,TRUE),
-              sample(1:9,1),sep="_"),".",ext,sep="")
-}  
-
 LastInsertRowid = function(con){
   as.integer(dbGetQuery(con,"SELECT last_insert_rowid()")[1,1])
 }

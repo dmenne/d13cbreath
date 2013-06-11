@@ -15,6 +15,7 @@ SimulateBreathId = function(){
                        str_sub(bid$Name,1,1))
   bid$FileName = RandomFile()
   bid$StartTime = Sys.time() -  60*60*24*200*runif(1)
+  bid$RecordDate = as.Date(bid$StartTime)
   bid$EndTime = bid$StartTime+ rnorm(1,60*100,20)
   bid$PatientID = sample(c("Alpha","Beta","Gamma","Delta"),1)
   bid$TestNo = sample(20000:30000,1)
@@ -76,6 +77,8 @@ CreateSimulatedBreathTestDatabase = function(sqlitePath=NULL){
   set.seed(4711)
   if (is.null(sqlitePath))
     sqlitePath = tempfile(pattern = "Gastrobase", tmpdir = tempdir(), fileext = ".sqlite")
+  # ***************** Debug ***********************************
+  #     sqlitePath = "C:/tmp/GastrobaseTest.sqlite"
   unlink(sqlitePath)
   CreateEmptyBreathTestDatabase(sqlitePath)
   con = OpenSqliteConnection(sqlitePath)
@@ -84,7 +87,7 @@ CreateSimulatedBreathTestDatabase = function(sqlitePath=NULL){
       AddSimulatedBreathTestRecord(con),silent = TRUE)
   setting = data.frame(
       SettingID = c("BlueItem","GreenItem","OrangeItem","RedItem"),
-      Value = c("Record_1","Record_2","Record_3","Patient_2")      
+      Value = c("Record_1","Record_2","Record_3","Patient_Gamma")      
     )
   q = str_c("INSERT INTO Setting VALUES(?,?)")        
   ret = try(dbGetPreparedQuery(con, q,bind.data= setting), silent=TRUE)
@@ -95,4 +98,12 @@ CreateSimulatedBreathTestDatabase = function(sqlitePath=NULL){
   sqlitePath
 }
 
+RandomName = function(nLetters=6){
+  paste(sample(LETTERS[1:26],1,TRUE),
+        paste(sample(letters[1:26],nLetters-1,TRUE),collapse=""),sep="")
+}
+RandomFile = function(ext="txt"){
+  paste(paste(sample(100:999,1,TRUE),sample(10000:99999,1,TRUE),
+              sample(1:9,1),sep="_"),".",ext,sep="")
+}  
 

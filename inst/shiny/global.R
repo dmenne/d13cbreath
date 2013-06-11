@@ -6,7 +6,6 @@ library(reshape2)
 library(stringr)
 library(RColorBrewer)
 suppressPackageStartupMessages(library(hdrcde))
-library(Cairo)
 options(warn=2)
 maxOutlier = 3
 
@@ -37,12 +36,13 @@ MarkedRecords = function(){
         "SELECT BreathTestRecordID,RecordDate from BreathTestRecord where PatientID='",
         x$Record,"'") 
       p = dbGetQuery(con,q)[,1:2,drop=FALSE]
-      if (length(p)>0)
+      if (nrow(p)>0){
+        RecordDate = as.Date(p$RecordDate)
         data.frame(color=x$Color,PatientID = as.character(x$Record), 
                    BreathTestRecordID=as.integer(p[,1]), 
-                   RecordDate = as.Date(p[,2])) else NULL
-    }
-    else{
+                   RecordDate = RecordDate) 
+      } else NULL
+    }  else{
       q = paste("SELECT PatientID,RecordDate from BreathTestRecord where BreathTestRecordID=",
                 x$Record)
       p = dbGetQuery(con,q)[1,,drop=FALSE]
@@ -53,7 +53,7 @@ MarkedRecords = function(){
   })
 }
 
-PlotCurves = function(){
+PlotCurves = function(showColors){
   stepMinutes = 2
   ## Local function
   GetPrediction = function(method,BreathTestRecordID,rangeTs,Dose){
@@ -74,6 +74,8 @@ PlotCurves = function(){
   
   # Get color-marked curves
   recs = MarkedRecords()
+  recs = droplevels(recs[recs$color %in% showColors,])
+  
   recSQL = paste(recs$BreathTestRecordID,collapse=",")
   q = paste0("SELECT BreathTestRecordID, Time,Value from BreathTestTimeSeries ",
              "where Parameter ='PDR' and BreathTestRecordID in (",
@@ -148,7 +150,7 @@ PlotPairs = function(parc,quantiles){
   
 }
 
-DecisionPlot = function(con=OpenSqliteConnection(), 
+DecisionPlot = function(con, 
                         pars = dbGetQuery(con,"SELECT * from BreathTestParameter")[,-1],                      
                         method = "MaesPop", 
                         parameters = c("t50","tlag"),
@@ -164,14 +166,14 @@ DecisionPlot = function(con=OpenSqliteConnection(),
   qPar = dcast(pp,BreathTestRecordID~Parameter,value.var="Value")
   # Remove outliers
   nOutliers = 0
+  p1 = parameters[1]
+  p2 = parameters[2]
   if (outlierFak > 0){
     range = ldply(qPar[,parameters], function(x) { 
       sd = outlierFak*sqrt(var(x,na.rm=TRUE))
       m = median(x,na.rm=TRUE)
       data.frame(lower=m-sd ,upper=m+sd)})
     rownames(range) = range[,".id"]
-    p1 = parameters[1]
-    p2 = parameters[2]
     inRange = qPar[,p1] > range[p1,"lower"] & qPar[,p1] < range[p1,"upper"]   &
       qPar[,p2] > range[p2,"lower"] & qPar[,3] < range[p2,"upper"]
     nOutliers = nrow(qPar[!inRange,])
@@ -180,11 +182,14 @@ DecisionPlot = function(con=OpenSqliteConnection(),
   qPar$index = 1:nrow(qPar)
   # plot HDI graph
   sub = NULL
-  if (nOutliers>0)
-    sub = paste0(nOutliers, " outlier", ifelse(nOutliers==1,"","s")," removed")
-  hdr.boxplot.2d(qPar[,2],qPar[,3],prob, show.points=showPoints, pch=16,
-                 xlab=paste(method, parameters[1]),
-                 ylab=paste(method, parameters[2]), 
+  if (nOutliers==1){    
+   sub = paste0(nOutliers, "outlier removed")
+  } else {
+    sub = paste0(nOutliers, "outliers removed")    
+  }
+  hdr.boxplot.2d(qPar[,p1],qPar[,p2],prob, show.points=showPoints, pch=16,
+                 xlab=paste(method, p1),
+                 ylab=paste(method, p2), 
                  kde.package=kde.package,
                  shadecols = brewer.pal(length(prob),"RdYlGn" ),
                  main = main,
@@ -199,31 +204,34 @@ DecisionPlot = function(con=OpenSqliteConnection(),
                        by="BreathTestRecordID")
     showPar = join(qPar[qPar$index %in% colorRecords$index,],colorRecords,
                  by="BreathTestRecordID")
-    points(showPar[,parameters],col=as.character(showPar[,"color"]),cex=2,pch=16)
+    col = as.character(showPar[,"color"])
+    col[col=="orange"] = "darkorange" # otherwise not visible
+    col[col=="red"] = "darkred" # otherwise not visible
+    points(showPar[,parameters],col=col,cex=2,pch=16)
     # Plot arrows between those items that have a 
     colorCount = table(colorRecords$color)
     arrowColors = names(colorCount)[colorCount>1]
   
     arrowRecords = arrange(colorRecords[colorRecords$color %in% arrowColors,],RecordDate)
     arrowRecords = join(arrowRecords,qPar,by="BreathTestRecordID")
-    
-    ddply(arrowRecords,.(color), function(arrowRecord){
-      for (i in 2:(nrow(arrowRecord))){
-        x0 = arrowRecord[i-1,parameters[1]]  
-        y0 = arrowRecord[i-1,parameters[2]]  
-        x1 = arrowRecord[i,parameters[1]]  
-        y1 = arrowRecord[i,parameters[2]]  
+    d_ply(arrowRecords,.(color), function(arrowRecord){
+      for (i in 2:(nrow(arrowRecords))){
+        x0 = arrowRecord[i-1,p1]  
+        y0 = arrowRecord[i-1,p2]  
+        x1 = arrowRecord[i,p1]  
+        y1 = arrowRecord[i,p2]  
         arrows(x0,y0,x1,y1,lwd=3,angle=20,code=2,col="gray95")
       }
     })
-    if (showDateLabels)
-      text(showPar[,parameters],labels=showPar[,"RecordDate"],cex=0.6,adj=-0.2)
+    if (showDateLabels && nrow(showPar) > 0)
+      text(showPar[,parameters],labels=showPar[,"RecordDate"],cex=0.8,adj=-0.2)
   }
   list(nOutliers=nOutliers)
 }
 
 #png(file="c:/tmp/a.png",width=700,height=700)
-DecisionPlot( method = "ExpBeta", parameter=c("k","beta") , outlierFak=3,showColors ="green")
-#DecisionPlot( method = "BluckCoward", parameter=c("t50","tlag"),outlierFak=3, 
+#DecisionPlot(con,pars, method = "ExpBeta", parameter=c("k","beta") , outlierFak=3,
+#              showColors ="green",showDateLabels=TRUE)
+#DecisionPlot(con,pars,  method = "BluckCoward", parameter=c("t50","tlag"),outlierFak=3, 
 #              showColors =NULL)
 #dev.off()
