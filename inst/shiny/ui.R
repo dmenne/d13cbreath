@@ -41,8 +41,7 @@ shinyUI(pageWithSidebar(
 Parametern charakterisiert. Einer der beiden ist üblicherweise ein Wert für die 
 Halbwertszeit t50 oder t1/2, wobei je nach Methode um den Faktor 3 unterschiedliche Werte 
 herauskommen können. Der andere ist ein Parameter, der als 'Lag' interpretiert
-wird, dessen Bedeutung aber sehr diffus und der je nach Methode unterschiedliche Ergebnisse 
-gibt."), 
+wird, dessen Bedeutung jedoch sehr diffus ist."), 
       helpText("Im dunkelgrünen Bereich liegen 50% der gemessenen Atemtestwerte. Man kann annehmen,
 dass die 'mittlere Mehrheit' eher normal ist; diese Annahme ist vermutlich falsch, aber
 eine bessere ist mangels Gold-Standard nicht vorhanen. Im hellgrünen und dunkelgrünen 
