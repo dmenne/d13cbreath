@@ -19,11 +19,18 @@ shinyServer(function(input, output,session) {
   })
   
   output$decisionPlot <- renderPlot({
-    pd = str_match(input$par2D,"(\\w*) +(\\w*)/(\\w*)")
-    if (length(pd)!=4) return(NULL);
+    pd = str_match(input$par2D,"(\\w*) +(\\w*)/(\\w*) *(\\w*)")  
+    if (length(pd)!=5) return(NULL);
+    if (pd[5] == ""){
+      methods = pd[2]
+      parameters = pd[3:4]
+    } else {
+      methods = c(pd[2], pd[4])
+      parameters = c(pd[3], pd[5])
+    }   
     DecisionPlot(con, pars,
-                 method=pd[2], 
-                 parameters = pd[3:4],
+                 methods = methods, 
+                 parameters = parameters,
                  showColors = colorsToShow(),
                  showPoints= input$showPoints,
                  kde.package = input$kde.package,
@@ -37,7 +44,6 @@ shinyServer(function(input, output,session) {
 #  observe({
 #    updateTabsetPanel(session, "tabs", selected = selectedTab)
 #  })
-  
-})
 
+})
 

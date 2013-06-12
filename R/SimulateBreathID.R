@@ -94,6 +94,7 @@ CreateSimulatedBreathTestDatabase = function(sqlitePath=NULL){
   
   if (inherits(add,"try-error") | inherits(ret, "try-error") )
     dbRollback(con) else   dbCommit(con)
+  RebuildPopulationFitDatabase(con)
   dbDisconnect(con)
   sqlitePath
 }

@@ -1,4 +1,3 @@
-library(plyr)
 suppressPackageStartupMessages(library(D13CBreath))
 library(ggplot2)
 library(lattice) # for splom
@@ -6,11 +5,20 @@ library(reshape2)
 library(stringr)
 library(RColorBrewer)
 suppressPackageStartupMessages(library(hdrcde))
-options(warn=2)
+options(shiny.usecairo = FALSE)
+
 maxOutlier = 3
 
 theme_set(theme_bw()+theme(panel.margin=grid::unit(0,"lines")))
 #selectedTab = "Splom"
+methodParameters =  c("BluckCoward t50/tlag", "BluckCowardPop t50/tlag",
+    "Maes t50/tlag","MaesPop t50/tlag","ExpBeta k/m","ExpBeta k/beta",
+                      "WN t50/BluckCoward t50")
+helpMethodConditions = list()
+for (s in methodParameters){
+  helpMethodConditions[s] =  paste0(
+   "input.tabs=='Bewertung' && input.par2D=='",s,"'")
+}
 
 if (!exists("databasePath") )
   databasePath = getOption("Gastrobase2SqlitePath")
@@ -23,85 +31,6 @@ pars = dbGetQuery(con,"SELECT * from BreathTestParameter")[,-1]
 #records = dbGetQuery(con,
 #  "SELECT BreathTestRecordID, PatientID, Substrate from BreathTestRecord")
 
-MarkedRecords = function(){
-  s = dbGetQuery(con,"SELECT * from Setting where SettingID like '%Item'")
-  if (nrow(s)==0) return(NULL)
-  s$isPatient = str_detect(s$Value,"Patient")
-  s$Record = str_match(s$Value,"\\D*_(.*)")[,2]
-
-  s$Color = tolower(str_sub(s$SettingID,1,nchar(s$SettingID)-4))
-  ddply(s,.(SettingID),function(x){
-    if (x$isPatient){
-      q = paste0(
-        "SELECT BreathTestRecordID,RecordDate from BreathTestRecord where PatientID='",
-        x$Record,"'") 
-      p = dbGetQuery(con,q)[,1:2,drop=FALSE]
-      if (nrow(p)>0){
-        RecordDate = as.Date(p$RecordDate)
-        data.frame(color=x$Color,PatientID = as.character(x$Record), 
-                   BreathTestRecordID=as.integer(p[,1]), 
-                   RecordDate = RecordDate) 
-      } else NULL
-    }  else{
-      q = paste("SELECT PatientID,RecordDate from BreathTestRecord where BreathTestRecordID=",
-                x$Record)
-      p = dbGetQuery(con,q)[1,,drop=FALSE]
-      data.frame(color=x$Color,PatientID = as.character(p$PatientID),
-                 BreathTestRecordID=as.integer(x$Record),
-                 RecordDate = as.Date(p$RecordDate))
-    }
-  })
-}
-
-PlotCurves = function(showColors){
-  stepMinutes = 2
-  ## Local function
-  GetPrediction = function(method,BreathTestRecordID,rangeTs,Dose){
-    bcPars = parm[parm$Parameter %in% c("beta","k","m") & parm$Method==method
-                  & parm$BreathTestRecordID == BreathTestRecordID,
-                  c("Parameter","Value")]
-    pred = NULL
-    if (nrow(bcPars)==3){
-      pred = data.frame(
-        BreathTestRecordID = BreathTestRecordID,
-        Time = c(rangeTs[1],seq(stepMinutes,rangeTs[2],by=stepMinutes)))
-      rownames(bcPars)=bcPars$Parameter
-      pred[,method] = as.vector(ExpBeta(pred$Time,Dose,bcPars["m","Value"],
-                                        bcPars["k","Value"],bcPars["beta","Value"]) )
-    } 
-    pred
-  }
-  
-  # Get color-marked curves
-  recs = MarkedRecords()
-  recs = droplevels(recs[recs$color %in% showColors,])
-  
-  recSQL = paste(recs$BreathTestRecordID,collapse=",")
-  q = paste0("SELECT BreathTestRecordID, Time,Value from BreathTestTimeSeries ",
-             "where Parameter ='PDR' and BreathTestRecordID in (",
-             recSQL,")")
-  d = dbGetQuery(con,q)
-  if (nrow(d)== 0) return (NULL)
-  d = join(d,recs[,-1],by="BreathTestRecordID")
-  
-  q = str_c(
-    "SELECT BreathTestRecordID, Parameter, Method, Value ",
-    "from BreathTestParameter where BreathTestRecordID in (",
-    recSQL,") ORDER BY Parameter, Method")
-  parm = dbGetQuery(con,q)
-  ###### Use Fixed dose ''''''''''
-  dPred = ldply(recs$BreathTestRecordID, function(BreathTestRecordID){
-    GetPrediction("ExpBeta",BreathTestRecordID,c(0,max(d$Time)),100)
-  })
-  dPred = join(dPred,recs[,-1],by="BreathTestRecordID")
-  
-  d$BreathTestRecordID = as.factor(d$BreathTestRecordID)
-  dPred$BreathTestRecordID = as.factor(dPred$BreathTestRecordID)
-  qplot(x=Time,y=Value,data=d, col=BreathTestRecordID, ylab="PDR",xlab="Minuten")  +
-    scale_color_manual(values =as.character(recs$color))+  
-    geom_line(data=dPred,aes(x=Time,y=ExpBeta,
-                             col=BreathTestRecordID))
-}
 
 PlotPairs = function(parc,quantiles){
   parp = parComb[parComb$Pair %in% parc,1:2]
@@ -150,84 +79,63 @@ PlotPairs = function(parc,quantiles){
   
 }
 
-DecisionPlot = function(con, 
-                        pars = dbGetQuery(con,"SELECT * from BreathTestParameter")[,-1],                      
-                        method = "MaesPop", 
-                        parameters = c("t50","tlag"),
-                        prob = c(0.01,0.05,0.25,0.5),
-                        main = "Atemtest Magenleerung",
-                        kde.package="ash",
-                        outlierFak = 3,
-                        showColors = NULL,
-                        showPoints=TRUE,
-                        showDateLabels = TRUE){
-  stopifnot(length(parameters)==2)
-  pp = pars[pars$Method==method & pars$Parameter %in% parameters,-3]
-  qPar = dcast(pp,BreathTestRecordID~Parameter,value.var="Value")
-  # Remove outliers
-  nOutliers = 0
-  p1 = parameters[1]
-  p2 = parameters[2]
-  if (outlierFak > 0){
-    range = ldply(qPar[,parameters], function(x) { 
-      sd = outlierFak*sqrt(var(x,na.rm=TRUE))
-      m = median(x,na.rm=TRUE)
-      data.frame(lower=m-sd ,upper=m+sd)})
-    rownames(range) = range[,".id"]
-    inRange = qPar[,p1] > range[p1,"lower"] & qPar[,p1] < range[p1,"upper"]   &
-      qPar[,p2] > range[p2,"lower"] & qPar[,3] < range[p2,"upper"]
-    nOutliers = nrow(qPar[!inRange,])
-    qPar = qPar[inRange,  ]
+PlotCurves = function(showColors){
+  stepMinutes = 2
+  ## Local function
+  GetPrediction = function(method,BreathTestRecordID,rangeTs,Dose){
+    bcPars = parm[parm$Parameter %in% c("beta","k","m") & parm$Method==method
+                  & parm$BreathTestRecordID == BreathTestRecordID,
+                  c("Parameter","Value")]
+    pred = NULL
+    if (nrow(bcPars)==3){
+      pred = data.frame(
+        BreathTestRecordID = BreathTestRecordID,
+        Time = c(rangeTs[1],seq(stepMinutes,rangeTs[2],by=stepMinutes)))
+      rownames(bcPars)=bcPars$Parameter
+      pred[,method] = as.vector(ExpBeta(pred$Time,Dose,bcPars["m","Value"],
+                                        bcPars["k","Value"],bcPars["beta","Value"]) )
+    } 
+    pred
   }
-  qPar$index = 1:nrow(qPar)
-  # plot HDI graph
-  sub = NULL
-  if (nOutliers==1){    
-   sub = paste0(nOutliers, "outlier removed")
-  } else {
-    sub = paste0(nOutliers, "outliers removed")    
-  }
-  hdr.boxplot.2d(qPar[,p1],qPar[,p2],prob, show.points=showPoints, pch=16,
-                 xlab=paste(method, p1),
-                 ylab=paste(method, p2), 
-                 kde.package=kde.package,
-                 shadecols = brewer.pal(length(prob),"RdYlGn" ),
-                 main = main,
-                 pointcol="gray70",
-                 sub = paste0(nOutliers, " outliers removed"),
-                 )
-  # Display the points in color
-  markedRecords = MarkedRecords()[,-1]
-  if (!is.null(showColors)){
-    markedRecords = droplevels(markedRecords[markedRecords$color %in% showColors,])
-    colorRecords =  join(markedRecords,qPar[,c("BreathTestRecordID","index")], 
-                       by="BreathTestRecordID")
-    showPar = join(qPar[qPar$index %in% colorRecords$index,],colorRecords,
-                 by="BreathTestRecordID")
-    col = as.character(showPar[,"color"])
-    col[col=="orange"] = "darkorange" # otherwise not visible
-    col[col=="red"] = "darkred" # otherwise not visible
-    points(showPar[,parameters],col=col,cex=2,pch=16)
-    # Plot arrows between those items that have a 
-    colorCount = table(colorRecords$color)
-    arrowColors = names(colorCount)[colorCount>1]
   
-    arrowRecords = arrange(colorRecords[colorRecords$color %in% arrowColors,],RecordDate)
-    arrowRecords = join(arrowRecords,qPar,by="BreathTestRecordID")
-    d_ply(arrowRecords,.(color), function(arrowRecord){
-      for (i in 2:(nrow(arrowRecords))){
-        x0 = arrowRecord[i-1,p1]  
-        y0 = arrowRecord[i-1,p2]  
-        x1 = arrowRecord[i,p1]  
-        y1 = arrowRecord[i,p2]  
-        arrows(x0,y0,x1,y1,lwd=3,angle=20,code=2,col="gray95")
-      }
-    })
-    if (showDateLabels && nrow(showPar) > 0)
-      text(showPar[,parameters],labels=showPar[,"RecordDate"],cex=0.8,adj=-0.2)
-  }
-  list(nOutliers=nOutliers)
+  # Get color-marked curves
+  recs = MarkedRecords(con)
+  if (nrow(recs)==0) 
+    return (NULL)
+  recs = droplevels(recs[recs$color %in% showColors,])
+  if (nrow(recs)==0) 
+    return (NULL)
+  recSQL = paste(recs$BreathTestRecordID,collapse=",")
+  q = paste0("SELECT BreathTestRecordID, Time,Value from BreathTestTimeSeries ",
+             "where Parameter ='PDR' and BreathTestRecordID in (",
+             recSQL,")")
+  d = dbGetQuery(con,q)
+  if (nrow(d)== 0) 
+    return (NULL)
+  d = join(d,recs[,-1],by="BreathTestRecordID")
+  
+  q = str_c(
+    "SELECT BreathTestRecordID, Parameter, Method, Value ",
+    "from BreathTestParameter where BreathTestRecordID in (",
+    recSQL,") ORDER BY Parameter, Method")
+  parm = dbGetQuery(con,q)
+  ###### Use Fixed dose ''''''''''
+  dPred = NULL
+  dPred = ldply(recs$BreathTestRecordID, function(BreathTestRecordID){  
+    GetPrediction("ExpBeta",BreathTestRecordID,c(0,max(d$Time)),100)
+  })
+  if (nrow(dPred)>0)
+    dPred = join(dPred,recs[,-1],by="BreathTestRecordID")
+  
+  d$BreathTestRecordID = as.factor(d$BreathTestRecordID)
+  dPred$BreathTestRecordID = as.factor(dPred$BreathTestRecordID)
+  q = qplot(x=Time,y=Value,data=d, col=BreathTestRecordID, ylab="PDR",xlab="Minuten")  +
+    scale_color_manual(values =as.character(recs$color))
+  if ((nrow(dPred)>0))
+    q  = q + geom_line(data=dPred,aes(x=Time,y=ExpBeta, col=BreathTestRecordID))
+  q
 }
+
 
 #png(file="c:/tmp/a.png",width=700,height=700)
 #DecisionPlot(con,pars, method = "ExpBeta", parameter=c("k","beta") , outlierFak=3,

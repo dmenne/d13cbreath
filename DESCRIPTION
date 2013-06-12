@@ -1,7 +1,7 @@
 Package: D13CBreath
 Title: Reads and evaluates gastric emptying 13C breath test data.
-Version: 1.2.7
-Date: 2013-06-11
+Version: 1.2.8
+Date: 2013-06-12
 Author: Dieter Menne
 Maintainer: Dieter Menne <dieter.menne@menne-biomed.de>
 Description: Reads several formats of 13C data (IRIS/Wagner, BreathID)
@@ -11,8 +11,8 @@ Description: Reads several formats of 13C data (IRIS/Wagner, BreathID)
         Bluck L J C and Coward W A 2006 Measurement of gastric
         emptying by the C-13-octanoate breath test --- rationalization
         with scintigraphy Physiol. Meas. 27 279-89
-        Uses Shiny  to display selected parameter in the browser.
+        Uses Shiny  to display selected parameters and decision plots in the browser.
 Depends: R (>= 2.15.0),RSQLite
-Imports: stringr,reshape2,ggplot2,RColorBrewer,nlme, shiny
-Suggests: testthat,lattice,latticeExtra, plyr,hdrcde
+Imports: stringr,reshape2,ggplot2,RColorBrewer,nlme, shiny,plyr, hdrcde
+Suggests: testthat,lattice,latticeExtra
 License: MIT
