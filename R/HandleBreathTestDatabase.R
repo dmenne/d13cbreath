@@ -139,7 +139,6 @@ OpenSqliteConnection = function(sqlitePath=NULL){
   return (con)
 }
 
-
 #' @title Reads record from file and writes it to the database
 #' @name AddBreathTestRecord
 #' @description 
