@@ -17,6 +17,9 @@ shinyServer(function(input, output,session) {
     if (input$redData)    showColors=c(showColors,"red")
     showColors
   })
+
+  #https://gist.github.com/jcheng5/5616777
+  #https://groups.google.com/forum/?fromgroups#!searchin/shiny-discuss/multiple/shiny-discuss/fm0yERuNkIA/eiD19ePqcK0J
   
   output$decisionPlot <- renderPlot({
     pd = str_match(input$par2D,"(\\w*) +(\\w*)/(\\w*) *(\\w*)")  
