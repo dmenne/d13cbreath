@@ -14,18 +14,24 @@
 #' @param lastZipFile file name without path of last zip file; if NULL, not checked
 #' @param lastZipDate modification date of last zip read; if NULL; not checked
 #' @return A list with number of files \code{n}, \code{type=c("error","info","ok")}, and
-#' message string \code{msg}. If \code{ok}, also a list of files that were extracted.
+#' message string \code{msg}. If \code{ok}, also a list of files that were extracted,
+#' the If \code{lastZipFile} and If \code{lastZipDate}.
 #' @author Dieter Menne, \email{dieter.menne@@menne-biomed.de}
 #' @export
-UnzipBreathID = function(zipPath,destinationPath,inZipPath,
+UnzipBreathID = function(zipPath,destinationPath,inZipPath="txt/",
                           lastZipFile=NULL, lastZipDate=NULL){
   if (FALSE) {
-    zipPath = "C:/Users/Dieter/Documents/Gastrobase2"
+    #zipPath = "C:/Users/Dieter/Documents/Gastrobase2"
+    zipPath = "G:"
     lastZipFile = "350_6_4_2013_21_27.zip"
-    destinationPath = "C:/tmp"
+    destinationPath = "C:\\tmp"
     inZipPath = "txt/"
     lastZipDate = NULL#"2013-06-05 15:03:55"
   }
+  # Correct path of form G:
+  zipPath1 = zipPath
+  if (str_detect(zipPath1,"^[A-Z]:$")) 
+    zipPath1 = str_c(zipPath1,"/.") 
   
   if (!is.null(lastZipDate))
     lastZipDate = as.POSIXct(lastZipDate)
@@ -35,8 +41,9 @@ UnzipBreathID = function(zipPath,destinationPath,inZipPath,
     zipFile = zipPath  
   } else { # Assume it is a path
     zips = dir(zipPath,"*.zip",full.names=TRUE)
-    if (!file_test("-d",zipPath))
-      return(list(n=0, type = "error", msg=paste0("Zip source directory ", zipPath, " does not exist")))
+    # We make it info, to allow for removal of USB stick with taking this as an error
+    if (!file_test("-d",zipPath1))
+      return(list(n=0, type = "info", msg=paste0("Zip source directory ", zipPath, " does not exist")))
     if (!file_test("-d",destinationPath))
       return(list(n=0, type = "error", msg=paste0(destinationPath, zipPath, " is not a directory")))
     if (length(zips)==0) 
@@ -52,7 +59,9 @@ UnzipBreathID = function(zipPath,destinationPath,inZipPath,
   alreadyProcessed = !is.null(lastZipFile) && !is.null(lastZipDate) && 
                      lastZipFile == zipFile && lastZipDate >= mtime
   if (alreadyProcessed)
-    return (list(n=0,type="ok",msg= paste0("Zip-file ",zipFile, "already processed")))
+    return (list(n=0,type="ok",
+                 msg= paste0("Zip-file ",zipFile, " already processed"),
+                 lastZipFile = lastZipFile,lastZipDate=as.character(lastZipDate)))
   files = unzip(zipFile,list=TRUE)
   # remove directories and zero length files
   files = files[files$Length>0,][,-2] # Remove length after cleanup
@@ -73,7 +82,8 @@ UnzipBreathID = function(zipPath,destinationPath,inZipPath,
                     as.POSIXct(as.character(files$Date))) < 60
   sameDateFiles = sum(files$sameDate)
   if (sameDateFiles ==nrow(files))
-    return (list(n=0,type="ok",msg= "All files in zip already extracted."))
+    return (list(n=0,type="ok",msg= "All files in zip already extracted.",
+                 lastZipFile = zipFile,lastZipDate=as.character(mtime)))
   toExtract = files[!files$sameDate,"Name"]
   unz = try(
     unzip(zipFile,toExtract,overwrite=TRUE,junkpaths=TRUE,exdir=destinationPath,
@@ -83,5 +93,6 @@ UnzipBreathID = function(zipPath,destinationPath,inZipPath,
     return (list(n=0,type="error",msg=  attr(unz,"condition")$message))
   extractedFiles = length(unz)
   list(n=extractedFiles,type="ok", msg= "New files extracted",
-       files = basename(unz))
+       files = basename(unz),
+       lastZipFile = zipFile,lastZipDate=as.character(mtime))
 }

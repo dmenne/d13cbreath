@@ -2,8 +2,9 @@
 \alias{UnzipBreathID}
 \title{Unpacks a BreathID zip-File}
 \usage{
-  UnzipBreathID(zipPath, destinationPath, inZipPath,
-    lastZipFile = NULL, lastZipDate = NULL)
+  UnzipBreathID(zipPath, destinationPath,
+    inZipPath = "txt/", lastZipFile = NULL,
+    lastZipDate = NULL)
 }
 \arguments{
   \item{zipPath}{path to the zip file; the name is not
@@ -30,7 +31,8 @@
   A list with number of files \code{n},
   \code{type=c("error","info","ok")}, and message string
   \code{msg}. If \code{ok}, also a list of files that were
-  extracted.
+  extracted, the If \code{lastZipFile} and If
+  \code{lastZipDate}.
 }
 \description{
   Retrieve Breath-ID records for a zipped file, and copies
