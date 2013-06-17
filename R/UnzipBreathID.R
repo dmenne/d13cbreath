@@ -28,13 +28,14 @@ UnzipBreathID = function(zipPath,destinationPath,inZipPath="txt/",
     inZipPath = "txt/"
     lastZipDate = NULL#"2013-06-05 15:03:55"
   }
-  # Correct path of form G:
-  zipPath1 = zipPath
-  if (str_detect(zipPath1,"^[A-Z]:$")) 
+  # Correct path of form G: (This has not be tested on NonWindows systems)
+  zipPath1 = normalizePath(zipPath)
+  destinationPath = normalizePath(destinationPath)
+  if (str_detect(zipPath1,"^[A-Z]:\\\\*$")) # This fails on non-Windows
     zipPath1 = str_c(zipPath1,"/.") 
   
   if (!is.null(lastZipDate))
-    lastZipDate = as.POSIXct(lastZipDate)
+  lastZipDate = as.POSIXct(lastZipDate)
   
   isExistingFile = file_test("-f",zipPath)
   if (isExistingFile) {

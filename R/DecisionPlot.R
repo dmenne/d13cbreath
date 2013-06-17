@@ -141,9 +141,11 @@ DecisionPlot = function(con=NULL,
         y0 = arrowRecord[i-1,p2]  
         x1 = arrowRecord[i,p1]  
         y1 = arrowRecord[i,p2]  
+        warnings()
         suppressWarnings(arrows(x0,y0,x1,y1,lwd=3,angle=20,code=2,col="gray95"))
-        if (!is.null(warnings()))
+        if (!is.null(warnings())){
           text(x0,y0,pos=3,"Multiple")
+        }
       }
     })
     if (showDateLabels && nrow(showPar) > 0)

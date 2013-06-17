@@ -39,7 +39,7 @@ helpTexts[methodParameters[[3]]] =
         
 helpTexts[methodParameters[[4]]] = 
  "The population variant of Maes/Ghoos. It could be
-  more stable for extreme cases, but values mostly are very close to the single-fit variant.")
+  more stable for extreme cases, but values mostly are very close to the single-fit variant."
 
 helpTexts[methodParameters[[5]]] =  "Two parameters k and m from the exponential beta 
  curve fit, the third not shown here being beta.
@@ -66,23 +66,26 @@ method and requires an estimate of the terminal slope. This estimate comes from 
 fit to the curve, and therefore WN and Bluck-Coward give similar results. Only when no 
 curve can be fitted, the literature default of 0.65/h is used instead; this assumption 
 is dubious, so it cannot be generally said that the WN method makes fewer assumptions 
-about the form of the curve and the bicarbonate mechanism. The Wagner-Nelson method
-does not give a lag-value, but only one for t50."
+about the form of the curve and the bicarbonate mechanism. The Wagner-Nelson method only
+gives a value of t50 and no lag-value"
 
-C13HelpText = list();
-C13HelpText[[1]] = "Eine 13C-Atemtest-Aufnahme kann durch die Kombination von zwei 
-Parametern charakterisiert werden. Ein Parameter ist üblicherweise der Wert für die 
-Halbwertszeit (t50 oder t1/2), wobei mit der Maes/Ghoos Methode oft um den Faktor 3 größere
+C13HelpText = list()
+C13HelpText[[1]] =  "Eine 13C-Atemtest-Aufnahme kann durch die Kombination von zwei 
+Parametern charakterisiert werden. Einer der Parameter ist üblicherweise der Wert für die 
+Halbwertszeit (t50 oder t1/2), wobei mit der Maes/Ghoos Methode oft um den Faktor 3 größere
 Werte erhalten werden als mit Wagner-Nelson (WN) und BluckCoward. Der andere ist 
 ein Parameter, der als 'Lag' interpretiert wird; er ist ein Maß dafür, ob die Kurve
 sind einschleicht wie eine Parabel, oder ansteigt wie eine Gerade." 
+
 C13HelpText[[2]] = "Im dunkelgrünen Bereich liegen 50% aller gemessenen Atemtestwerte
 in der Datenbank; die Struktur der Bereiche wird sich ändern, wenn mehr Aufnahmen vorliegen.
 Man könnte annehmen, dass die 'mittlere Mehrheit' eher normal ist; diese Annahme ist 
-gefährlich, aber eine bessere gibt es mangels Gold-Standard zur Zeit nicht. Im hellgrünen und 
-dunkelgrünen Bereich zusammen liegen 75%, mit orange 95%, und mit rot 99% der 
-               Atemtestwerte."
-C13HelpText[[3]] =  "Wenn ein Patient mit mehreren Aufnahmen markiert wurde, zeigen weiße 
+gefährlich, aber eine bessere gibt es mangels Gold-Standard zur Zeit nicht. Im hellgrünen 
+und dunkelgrünen Bereich zusammen liegen 75%, mit orange 95%, und mit rot 99% der 
+ Atemtestwerte."
+
+C13HelpText[[3]] = 
+"Wenn ein Patient mit mehreren Aufnahmen markiert wurde, zeigen weiße
 Pfeile an, wie sich die Werte über die Zeit entwickelt haben."
   
 
