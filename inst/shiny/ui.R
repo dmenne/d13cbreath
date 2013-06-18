@@ -20,35 +20,12 @@ shinyUI(pageWithSidebar(
       selectInput("par2D","Parameterpaar",  choices=methodParameters)
     ),
       
-    conditionalPanel(
-      condition =  helpMethodConditions[[1]],
-      helpText(helpTexts[[1]])
-    ),
-    conditionalPanel(
-      condition =  helpMethodConditions[[2]],
-      helpText(helpTexts[[2]])
-    ),
-    conditionalPanel(
-      condition =  helpMethodConditions[[3]],
-      helpText(helpTexts[[3]])
-    ),
-    conditionalPanel(
-      condition =  helpMethodConditions[[4]],
-      helpText(helpTexts[[4]])
-    ),
-    conditionalPanel(
-      condition =  helpMethodConditions[[5]],
-      helpText(helpTexts[[5]])
-    ),
-    conditionalPanel(
-      condition =  helpMethodConditions[[6]],
-      helpText(helpTexts[[6]])
-    ),
-    conditionalPanel(
-      condition =  helpMethodConditions[[7]],
-      helpText(helpTexts[[7]])
-    ),
-    
+    lapply(1:length(helpMethodConditions), function(i){
+      conditionalPanel(condition=helpMethodConditions[[i]],
+                       helpText(helpTexts[[i]]))
+                       
+    }),
+           
     conditionalPanel(
       condition=  "input.tabs!='Multiple'",
       HTML("<hr>"),      

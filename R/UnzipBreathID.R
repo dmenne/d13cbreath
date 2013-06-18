@@ -83,7 +83,8 @@ UnzipBreathID = function(zipPath,destinationPath,inZipPath="txt/",
                     as.POSIXct(as.character(files$Date))) < 60
   sameDateFiles = sum(files$sameDate)
   if (sameDateFiles ==nrow(files))
-    return (list(n=0,type="ok",msg= "All files in zip already extracted.",
+    return (list(n=0,type="ok",
+                 msg= paste0("All files in ",basename(zipFile), " already extracted."),
                  lastZipFile = zipFile,lastZipDate=as.character(mtime)))
   toExtract = files[!files$sameDate,"Name"]
   unz = try(

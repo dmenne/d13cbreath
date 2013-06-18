@@ -3,6 +3,7 @@ library(ggplot2)
 library(lattice) # for splom
 library(reshape2)
 library(stringr)
+library(plyr)
 library(RColorBrewer)
 suppressPackageStartupMessages(library(hdrcde))
 options(shiny.usecairo = FALSE)
