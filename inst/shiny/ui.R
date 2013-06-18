@@ -22,15 +22,19 @@ shinyUI(pageWithSidebar(
       
     lapply(1:length(helpMethodConditions), function(i){
       conditionalPanel(condition=helpMethodConditions[[i]],
-                       helpText(helpTexts[[i]]))
+                       helpText(HTML(helpTexts[[i]])))
                        
     }),
-           
+    conditionalPanel(
+      condition=  "input.tabs=='Bewertung'",
+      HTML("<hr>")      
+    ),
     conditionalPanel(
       condition=  "input.tabs!='Multiple'",
-      HTML("<hr>"),      
-      helpText("Auswahl der Aufnahmen oder Patienten, deren Daten angezeigt werden sollten.
-               Die Farbmarker können in GastroBase2 mit der rechten Maustaste gesetzt werden."),
+      helpText(HTML("Auswahl der Aufnahmen oder Patienten, deren Daten angezeigt werden sollten.
+          Die Farbmarker können in <i>GastroBase2</i> mit der rechten Maustaste gesetzt werden; 
+          alternativ können in <i>GastroBase2</i> mit diesem <img src='menu.png'></img> 
+          Kurzmenü die letzten vier geladenene Aufnahmen markiert werden.")),
       checkboxInput("greenData", "Grün", value = TRUE),
       checkboxInput("blueData", "Blau", value = FALSE),
       checkboxInput("redData", "Rot", value = FALSE),

@@ -12,69 +12,72 @@ maxOutlier = 3
 
 theme_set(theme_bw()+theme(panel.margin=grid::unit(0,"lines")))
 #selectedTab = "Splom"
-methodParameters =  c("BluckCoward t50/tlag", "BluckCowardPop t50/tlag",
-    "Maes t50/tlag","MaesPop t50/tlag","ExpBeta k/m","ExpBeta k/beta",
+methodParameters =  c("Maes t50/tlag","MaesPop t50/tlag",
+                      "BluckCoward t50/tlag", "BluckCowardPop t50/tlag",
+                      "ExpBeta k/m","ExpBeta k/beta",
                       "WN t50/BluckCoward t50")
 helpMethodConditions = list()
 helpMethod = list()
 helpTexts = list()
 helpTexts[methodParameters[[1]]] = 
-"Self-correcting method after Bluck/Coward. Starting from the Maes/Ghoos fit
-of an exponential beta, it uses the terminal falling slope, i.e. parameter k, to 
-correct the original Maes/Ghoos estimate for t50 for the effect of the bicarbonate pool. 
-This value of t50 is always smaller than that of Maes/Ghoos; the difference is most 
-pronounced for curves with a slow drop of the terminal slope. 
-The lag time tlag can be negative."
-
+ "This is the method from <i>Maes/Ghoos</i> that computes t<sub>50</sub> and t<sub>lag</sub>
+  from the exponential beta curve. 
+  The results are slightly different from those of the original <i>Ghoos</i> method which
+  uses the gamma function to fit the time series. The values for t<sub>50</sub> are much higher than those from
+  scintigraphic/MRI data. A scintigraphic linear correction is sometimes applied,
+  but this does not provide an advantage for classification."
+    
 helpTexts[methodParameters[[2]]] = 
-"The population variant of Bluck/Coward. It could be
-more stable for extreme cases, but values mostly are very close to the single-fit variant."
-                      
-helpTexts[methodParameters[[3]]] = 
- "Set of coefficients from the exponential beta
- fit. The term 'Maes (,Ghoos et al.)' is used here to distinguish it from the gamma function
- used in the original paper by Ghoos. The values are generally much high compared to those from
- scintigraphic/MRI data. A scintigraphic linear correction is sometimes applied,
- which is not very well justified."
-
-        
-helpTexts[methodParameters[[4]]] = 
- "The population variant of Maes/Ghoos. It could be
+ "The population variant of <i>Maes/Ghoos</i>. It could be
   more stable for extreme cases, but values mostly are very close to the single-fit variant."
 
-helpTexts[methodParameters[[5]]] =  "Two parameters k and m from the exponential beta 
- curve fit, the third not shown here being beta.
- Other coefficients for all but Wagner-Nelson are derived from these values. Parameter k
- is the inverse time constant for the terminal slope; it is measured in 1/min, to
- compare it with values in the literatur given in 1/h, multiply by 60. A value of 
- k=0.011/m or k=0.65/h is often used in the literature as default when the records are
- too short, but this assumption is highly dubious. m is  the percentage of 
+helpTexts[methodParameters[[3]]] = 
+  "Self-correcting method after <i>Bluck/Coward</i>. It uses the terminal falling slope, 
+ i.e. parameter k, to of the beta exponential fit to correct the original <i>Maes/Ghoos</i>
+estimate for t<sub>50</sub> for the effect of the bicarbonate pool. 
+This value of t<sub>50</sub> is always smaller than that of <i>Maes/Ghoos</i>; the difference 
+is most pronounced for curves with a slow drop of the terminal slope. 
+The lag time t<sub>lag</sub> can be negative."
+
+helpTexts[methodParameters[[4]]] = 
+  "The population variant of <i>Bluck-Coward</i>. It could be
+more stable for extreme cases, but values mostly are very close to the single-fit variant."
+
+helpTexts[methodParameters[[5]]] =  "This plot shows two parameters <code>k</code> and 
+ <code>m</code> from the exponential beta curve fit.
+ Other coefficients for all but <i>Wagner-Nelson</i> are derived from these values. Parameter <code>k</code>
+ is the inverse time constant for the terminal slope; it is measured in <code>1/min</code>; to
+ compare it with values in the literatur given as <code>1/h</code>, multiply by 60. A value of 
+ <code>k=0.011/min</code> or <code>k=0.65/h</code> is often used in the literature as default when the records are
+ too short, but this assumption is highly dubious. <code>m</code> is  the percentage of 
  breath-metabolized substrate, and should be < 100."
 
-helpTexts[methodParameters[[6]]] = "Two parameters k and beta from the exponential beta
-fit, the third not shown here being m.  Other coefficients for all but Wagner-Nelson are derived from these values. Parameter k
- is the inverse time constant for the terminal slope; it is measured in 1/min, to
- compare it with values in the literatur given in 1/h, multiply by 60. A value of 
- k=0.011/m or k=0.65/h is often used in the literature as default when the records are
- too short, but this assumption is highly dubious. beta is related to the initial delay,
- it typically has values between 1.5 and 3."
+helpTexts[methodParameters[[6]]] = "Two parameters  <code>k</code> and  <code>beta</code> 
+from the exponential beta fit.  Other coefficients for all but <i>Wagner-Nelson</i> are 
+derived from these values.  Parameter <code>k</code>
+ is the inverse time constant for the terminal slope; it is measured in  <code>1/min</code>; to
+ compare it with values in the literatur given in  <code>1/h</code>, multiply by 60. A value of 
+  <code>k=0.011/min</code> or <code>k=0.65/h</code> is often used in the literature as default 
+ when the records are too short to fit the terminal slope, but this assumption is highly dubious. 
+ <code>beta</code> is related to the initial delay, it typically has values between 1.5 and 3."
           
-helpTexts[methodParameters[[7]]] =  "The WN (Wagner-Nelson) method is a semiparametric fit
-that does not directly use the data from the exponential beta fit. It should be more 
-reliable if the curve is odd-shaped, e.g. when it has double peaks. However, uses a 
-correction for the bicarbonate pool that is similar to the self-corrected Bluck/Coward 
-method and requires an estimate of the terminal slope. This estimate comes from the 
-fit to the curve, and therefore WN and Bluck-Coward give similar results. Only when no 
-curve can be fitted, the literature default of 0.65/h is used instead; this assumption 
-is dubious, so it cannot be generally said that the WN method makes fewer assumptions 
-about the form of the curve and the bicarbonate mechanism. The Wagner-Nelson method only
-gives a value of t50 and no lag-value"
+helpTexts[methodParameters[[7]]] =  "The <i>WN (Wagner-Nelson)</i> method used a 
+semiparametric method that does not directly use the data from the fitted curve. It 
+should be more reliable if the curve is odd-shaped, e.g. when it has double peaks. However, 
+it uses a correction for the bicarbonate pool that is similar to the self-corrected 
+<i>Bluck/Coward</i> method and requires an estimate of the terminal slope. This estimate 
+comes from the fit to the curve, and therefore <i>Wagner-Nelson</i> and <i>Bluck-Coward</i> give similar 
+results. Only when no curve can be fitted, the literature default of 0.65/h is used instead; 
+this assumption is dubious, so it cannot be generally said that the <i>WN</i> method makes 
+fewer assumptions about the form of the curve and the bicarbonate mechanism. 
+The Wagner-Nelson method only gives a value of t<sub>50</sub> and no lag-value"
 
 C13HelpText = list()
 C13HelpText[[1]] =  "Eine 13C-Atemtest-Aufnahme kann durch die Kombination von zwei 
 Parametern charakterisiert werden. Einer der Parameter ist üblicherweise der Wert für die 
-Halbwertszeit (t50 oder t1/2), wobei mit der Maes/Ghoos Methode oft um den Faktor 3 größere
-Werte erhalten werden als mit Wagner-Nelson (WN) und BluckCoward. Der andere ist 
+Halbwertszeit (t<sub>50</sub> oder t<sub>1/2</sub>), wobei mit der <i>Maes/Ghoos</i> Methode 
+oft um den Faktor 3 größere
+Werte erhalten werden als mit <i>Wagner-Nelson (WN)</i> und <i>Bluck-Coward</i>. Der andere ist 
 ein Parameter, der als 'Lag' interpretiert wird; er ist ein Maß dafür, ob die Kurve
 sind einschleicht wie eine Parabel, oder ansteigt wie eine Gerade." 
 
@@ -218,3 +221,11 @@ PlotCurves = function(showColors){
 #DecisionPlot(con,pars,  method = "BluckCoward", parameter=c("t50","tlag"),outlierFak=3, 
 #              showColors =NULL)
 #dev.off()
+
+
+a = lapply(1:length(helpMethodConditions), function(i){
+  conditionalPanel(condition=helpMethodConditions[[i]],
+                   helpText(helpTexts[[i]]))
+  
+})
+
