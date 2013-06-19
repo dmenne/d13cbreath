@@ -15,7 +15,7 @@ __!! The package is under active development, and functions may change any time.
 * Reads several formats of 13C data: IRIS/Wagner (partially supported), BreathID
 * Creates sample data and writes sample SQLite database; default database is in `<HOME>/Gastrobase2/Gastrobase2.sqlite`.
 * Fits Beta-Exponential nonlinear function using `nls`.
-* Fits Wagner-Nelson, with terminal slope estimated from Bluck/Coward fit.
+* Fits Wagner-Nelson, with terminal slope estimated from Bluck-Coward fit.
 * Computes population fit with `nlme` using all data in database
 * See documentation of function `bluckCoward` for examples, including how to use
   `nlme` for stuborn or highly incomplete cases.

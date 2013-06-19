@@ -6,7 +6,7 @@ Author: Dieter Menne
 Maintainer: Dieter Menne <dieter.menne@menne-biomed.de>
 Description: Reads several formats of 13C data (IRIS/Wagner, BreathID)
         Create sample data, and sqlite database, and writes sample database
-        Fits Bluck/Coward self-correcting formula using nls,
+        Fits Bluck-Coward self-correcting formula using nls,
         and Wagner-Nelson with k(el) estimated from parametric fit.
         Bluck L J C and Coward W A 2006 Measurement of gastric
         emptying by the C-13-octanoate breath test --- rationalization

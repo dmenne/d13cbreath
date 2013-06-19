@@ -90,6 +90,12 @@ CreateEmptyBreathTestDatabase = function(sqlitePath){
   createSettings = 'CREATE TABLE IF NOT EXISTS "Setting" (
     "SettingID" CHAR PRIMARY KEY  NOT NULL , 
     "Value" CHAR)'
+  index1 = 
+    'CREATE INDEX BreathTestRecordPatientID ON BreathTestRecord (PatientID)'
+  index2 = 
+    'CREATE INDEX BreathTestParameterBreathTestRecordID ON BreathTestParameter (BreathTestRecordID)'
+  index3 = 
+    'CREATE INDEX BreathTestTimeSeriesBreathTestRecordID  ON BreathTestTimeSeries (BreathTestRecordID)'
   
 #  dbSendQuery(con,"DROP TABLE IF EXISTS Patient")
 #  dbSendQuery(con,"DROP TABLE IF EXISTS BreathTestRecord")
@@ -100,8 +106,10 @@ CreateEmptyBreathTestDatabase = function(sqlitePath){
   dbSendQuery(con,createBreathTestTimeSeries)
   dbSendQuery(con,createShowParameters)
   dbSendQuery(con,createSettings)
-  res = dbSendQuery(con,createBreathTestParameter)
-  dbClearResult(res)
+  dbSendQuery(con,createBreathTestParameter)
+  dbSendQuery(con,index1)
+  dbSendQuery(con,index2)
+  dbSendQuery(con,index3)
   dbDisconnect(con)
   return (invisible(NULL))
 }  
