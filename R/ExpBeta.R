@@ -1,4 +1,4 @@
-#' @title Fit exponential beta function to 13C breath test PDR
+#' @title Exponential beta function to fit 13C breath test PDR
 #' 
 #' @description Functions to fit PDR/DOB data to exponential-beta formula given in 
 #' Sanaka M, Nakada K (2010) Stable isotope breath test for assessing gastric emptying:
@@ -24,7 +24,7 @@
 # deriv(ExpBeta,c("m","k","beta"))
 #' @author Dieter Menne, \email{dieter.menne@@menne-biomed.de}
 #' 
-#' @param time vector of time in minutes
+#' @param time vector of time values in minutes
 #' @param Dose in mg
 #' @param m efficiency
 #' @param k time constant
@@ -74,7 +74,7 @@
 #' lines(pdr$time,pdr$PDRfit,col="red",lwd=2)
 #' 
 #' # Plot cumulative
-#' plot(pdr$time,BluckCoward2(pdr$time,100,coef(pdr.nls)),type="l",
+#' plot(pdr$time,CumExpBeta(pdr$time,100,coef(pdr.nls)),type="l",
 #'      xlab="time (min)", ylab="cPDR")
 #' # Show t50
 #' t50 = t50BluckCoward(coef(pdr.nls))
@@ -148,4 +148,24 @@ ExpBeta= function(time,Dose,m,k,beta){
   .value
 }
 
-
+#' @title Cumulative Exponential Beta function
+#' @description Equation (2), page 4 from Bluck, "Recent advances in the interpretation of
+#' the 13C octanoate breath test for gastric emptying". This is the cumulative beta exponential, 
+#' and can be used to compute the 50% points.
+#'
+#' @name CumExpBeta
+#' @param Time in minutes
+#' @param Dose in mg
+#' @param cf named vector of coefficients; only \code{k} and \code{beta} are required.
+#' Note that \code{k} is measured in 1/min (e.g. 0.01/min), 
+#' usually it is quoted as 1/h (e.g. 0.6/h).
+#' @return vector of predicted cumulative PDR
+#' @seealso \code{\link{ExpBeta}}
+#' @export
+CumExpBeta  = function(Time,Dose,cf){
+  if  (!is.numeric(cf)) 
+    stop("CumExpBeta requires a vector, does not work for data frames")
+  ekt = 1-exp(-cf["k"]*Time)
+  beta = cf["beta"]
+  unlist(Dose*(beta*(ekt)^(beta-1)-(beta-1)*ekt^beta))
+}

@@ -37,17 +37,18 @@ SimulateBreathId = function(){
 }
 
 
-#' @title Adds one simulated breath test record to the database
+#' @title Adds simulated breath test record to the database
 #' @name AddSimulatedBreathTestRecord
 #' @description Creates a simulated data record, computes several fit 
-#' parameters, and append these to the database 
-#' @param con Connection to sqlite database
+#' parameters, and appends these to the database 
+#' @param con connection to sqlite database
 #' @seealso \code{\link{ReadBreathId}}, \code{\link{SimulateBreathId}}, 
 #' \code{\link{CreateSimulatedBreathTestDatabase}}
 #' 
 #' @examples
-#' # This example does the same as function CreateSimulatedBreathTestDatabase
-#' if (exists("con")) suppressWarnings(dbDisconnect(con))
+#' # This example does the same as the function CreateSimulatedBreathTestDatabase
+#' if (exists("con")) 
+#'   suppressWarnings(dbDisconnect(con))
 #' sqlitePath = tempfile(pattern = "Gastrobase", tmpdir = tempdir(), fileext = ".sqlite")
 #' unlink(sqlitePath)
 #' CreateEmptyBreathTestDatabase(sqlitePath)

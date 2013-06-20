@@ -7,19 +7,20 @@
     lastZipDate = NULL)
 }
 \arguments{
-  \item{zipPath}{path to the zip file; the name is not
-  needed. For security, nothing is read when there is more
-  than in zip file in the directory. When a full path to a
-  file is given and \code{lastReadDate != NULL}, the file
-  is skipped if the file dates match.}
+  \item{zipPath}{path to the zip file; the name of the zip
+  file is optional. For security, nothing is read when more
+  than one zip file is found in the directory. When a full
+  path to a file is given and \code{lastReadDate != NULL},
+  the file is skipped if the its modification date is
+  earlier.}
 
-  \item{destinationPath}{path where store the unpacked
-  file}
+  \item{destinationPath}{directory where to store the
+  unpacked file}
 
   \item{inZipPath}{partial string where to find the files
-  in the zip directory. For example, if the path is
-  \code{temp/BreathID/Results/txt/}, substring \code{txt/}
-  is sufficient.}
+  in the zip directory tree. For example, if the path is
+  \code{temp/BreathID/Results/txt/},
+  \code{inzipPath="txt/"} is sufficient.}
 
   \item{lastZipFile}{file name without path of last zip
   file; if NULL, not checked}
@@ -30,13 +31,13 @@
 \value{
   A list with number of files \code{n},
   \code{type=c("error","info","ok")}, and message string
-  \code{msg}. If \code{ok}, also a list of files that were
-  extracted, the If \code{lastZipFile} and If
-  \code{lastZipDate}.
+  \code{msg}. If \code{ok}, also vector of files that were
+  extracted, the name of the \code{lastZipFile}, and the
+  modification date \code{lastZipDate}.
 }
 \description{
-  Retrieve Breath-ID records for a zipped file, and copies
-  these to a target directors
+  Retrieves BreathID records from a zipped file, and copies
+  these to a target directory.
 }
 \author{
   Dieter Menne, \email{dieter.menne@menne-biomed.de}

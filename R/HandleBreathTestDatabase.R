@@ -147,14 +147,14 @@ OpenSqliteConnection = function(sqlitePath=NULL){
   return (con)
 }
 
-#' @title Reads record from file and writes it to the database
+#' @title Reads BreathID record and writes parameters to database
 #' @name AddBreathTestRecord
 #' @description 
 #' Reads BreathID data record, computes several fit 
 #' parameters and a fit, and writes these to the database.
 #' 
 #' @param filename Name of BreathID file
-#' @param con Connection to sqlite database
+#' @param con connection to sqlite database, e.g. from \code{OpenSqliteConnection}
 #' @examples
 #' sqliteFile = tempfile(pattern = "Gastrobase", tmpdir = tempdir(), fileext = ".sqlite")
 #' unlink(sqliteFile)
@@ -175,13 +175,14 @@ AddBreathTestRecord = function(filename,con){
 #' @title Reads and saves multiple 13C Breath test records
 #' @name AddAllBreathTestRecords
 #' @description 
-#' Reads BreathID data record in a path, 
+#' Reads all BreathID data records in a directory, 
 #' computes several fit parameters and a fit, and writes these to the database. 
-#' Files that are already in the database are skipped. Note that files with 
-#' the same name in different directories are considered the same file.
+#' Files that are already in the database are skipped. Note only the base name is tested, 
+#' so that files with 
+#' the same name in different directories are considered identical without testing.
 #' 
-#' @param path Start path for recursive search
-#' @param con Connection to sqlite database
+#' @param path start path for recursive search
+#' @param con connection to sqlite database
 #' @return A dataframe with columns \code{file}, \code{basename}, 
 #' \code{recordID} (NULL if not saved) and \code{status}
 #' with levels \code{"saved", "skipped", "invalid"}.

@@ -1,21 +1,21 @@
 #' @title Unpacks a BreathID zip-File
 #' 
-#' @description Retrieve Breath-ID records for a zipped file, and copies these 
-#' to a target directors
+#' @description Retrieves BreathID records from a zipped file, and copies these 
+#' to a target directory.
 #' 
-#' @param zipPath path to the zip file; the name is not needed. For security, nothing
-#' is read when there is more than in zip file in the directory. When a full path
+#' @param zipPath path to the zip file; the name of the zip file is optional. For security, nothing
+#' is read when more than one zip file is found in the directory. When a full path
 #' to a file is given and \code{lastReadDate != NULL}, the file is skipped if 
-#' the file dates match.
-#' @param destinationPath path where store the unpacked file
-#' @param inZipPath partial string where to find the files in the zip directory.
-#' For example, if the path is \code{temp/BreathID/Results/txt/}, substring \code{txt/}
+#' the its modification date is earlier.
+#' @param destinationPath directory where to store the unpacked file
+#' @param inZipPath partial string where to find the files in the zip directory tree.
+#' For example, if the path is \code{temp/BreathID/Results/txt/},  \code{inzipPath="txt/"}
 #' is sufficient.
 #' @param lastZipFile file name without path of last zip file; if NULL, not checked
 #' @param lastZipDate modification date of last zip read; if NULL; not checked
 #' @return A list with number of files \code{n}, \code{type=c("error","info","ok")}, and
-#' message string \code{msg}. If \code{ok}, also a list of files that were extracted,
-#' the If \code{lastZipFile} and If \code{lastZipDate}.
+#' message string \code{msg}. If \code{ok}, also vector of files that were extracted,
+#' the name of the \code{lastZipFile}, and the modification date \code{lastZipDate}.
 #' @author Dieter Menne, \email{dieter.menne@@menne-biomed.de}
 #' @export
 UnzipBreathID = function(zipPath,destinationPath,inZipPath="txt/",

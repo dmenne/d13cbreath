@@ -1,27 +1,3 @@
-#' @name BluckCoward2
-#' @title Bluck-Coward self-correcting t50 from 13C breath test
-#' @description Equation (2), page 4 from Bluck, "Recent advances in the interpretation of
-#' the 13C octanoate breath test for gastric emptying", solved for time of 50%.
-#' See also equation G(n,t) in "Bluck, LJC, Jackson S, Vlasakakis G, Mander A (2011) 
-#' Bayesian hierarchical methods to interpret  the 13C-octanoic acid breath 
-#' test for gastric emptying. Digestion 83_96-107, page 98.
-#'
-#' @param Time in minutes
-#' @param Dose in mg
-#' @param cf named vector of coefficients; only \code{k} and \code{beta} are required.
-#' Note that \code{k} is measured in 1/min (e.g. 0.01/min), 
-#' usually it is quoted as 1/h (e.g. 0.6/h).
-#' @return vector of predicted cumulative PDR
-#' @export
-#' @seealso \code{\link{ExpBeta}}
-BluckCoward2  = function(Time,Dose,cf){
-  if  (!is.numeric(cf)) 
-    stop("BluckCoward2 requires a vector, does not work for data frames")
-  ekt = 1-exp(-cf["k"]*Time)
-  beta = cf["beta"]
-  unlist(Dose*(beta*(ekt)^(beta-1)-(beta-1)*ekt^beta))
-}
-
 #' @name t50BluckCoward
 #' @title Self-corrected t_{50}
 #' @description
@@ -95,7 +71,7 @@ BluckCoward2  = function(Time,Dose,cf){
 #' #' @seealso \code{\link{ExpBeta}}
 #' @export
 t50BluckCoward = function(cf){
-  f = function(t,cf0) BluckCoward2(t,1,cf0)-0.5
+  f = function(t,cf0) CumExpBeta(t,1,cf0)-0.5
   g = function(cf0){
     uniroot(f,interval= c(1,1000),cf0)$root
   }

@@ -1,13 +1,14 @@
 \name{AddBreathTestRecord}
 \alias{AddBreathTestRecord}
-\title{Reads record from file and writes it to the database}
+\title{Reads BreathID record and writes parameters to database}
 \usage{
   AddBreathTestRecord(filename, con)
 }
 \arguments{
   \item{filename}{Name of BreathID file}
 
-  \item{con}{Connection to sqlite database}
+  \item{con}{connection to sqlite database, e.g. from
+  \code{OpenSqliteConnection}}
 }
 \description{
   Reads BreathID data record, computes several fit

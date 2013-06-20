@@ -1,11 +1,11 @@
 \name{ExpBeta}
 \alias{ExpBeta}
-\title{Fit exponential beta function to 13C breath test PDR}
+\title{Exponential beta function to fit 13C breath test PDR}
 \usage{
   ExpBeta(time, Dose, m, k, beta)
 }
 \arguments{
-  \item{time}{vector of time in minutes}
+  \item{time}{vector of time values in minutes}
 
   \item{Dose}{in mg}
 
@@ -87,7 +87,7 @@ pdr$PDRfit= predict(pdr.nls)
 lines(pdr$time,pdr$PDRfit,col="red",lwd=2)
 
 # Plot cumulative
-plot(pdr$time,BluckCoward2(pdr$time,100,coef(pdr.nls)),type="l",
+plot(pdr$time,CumExpBeta(pdr$time,100,coef(pdr.nls)),type="l",
      xlab="time (min)", ylab="cPDR")
 # Show t50
 t50 = t50BluckCoward(coef(pdr.nls))

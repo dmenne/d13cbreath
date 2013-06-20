@@ -8,8 +8,8 @@ test_that("Breath test parameter must return valid data or vectors",{
              method = rep(c("NLS","Bayesian")),  
              k = c(0.576,0.606,0.529,0.608), 
              beta=c(5.24,5.79,5.95,7.54))
-  expect_that(BluckCoward2(seq(0,6,by=0.5),100,cf)[13] >98.967, is_true())
-  expect_error(BluckCoward2(seq(0,6,by=0.5),100,df) ,"requires")
+  expect_that(CumExpBeta(seq(0,6,by=0.5),100,cf)[13] >98.967, is_true())
+  expect_error(CumExpBeta(seq(0,6,by=0.5),100,df) ,"requires")
   
   expect_that(t50BluckCoward(cf), is_a("numeric") )
   expect_that(t50BluckCoward(df), is_a("numeric") )

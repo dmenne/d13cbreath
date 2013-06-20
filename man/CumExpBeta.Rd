@@ -1,8 +1,8 @@
-\name{BluckCoward2}
-\alias{BluckCoward2}
-\title{Bluck-Coward self-correcting t50 from 13C breath test}
+\name{CumExpBeta}
+\alias{CumExpBeta}
+\title{Cumulative Exponential Beta function}
 \usage{
-  BluckCoward2(Time, Dose, cf)
+  CumExpBeta(Time, Dose, cf)
 }
 \arguments{
   \item{Time}{in minutes}
@@ -20,11 +20,8 @@
 \description{
   Equation (2), page 4 from Bluck, "Recent advances in the
   interpretation of the 13C octanoate breath test for
-  gastric emptying", solved for time of 50%. See also
-  equation G(n,t) in "Bluck, LJC, Jackson S, Vlasakakis G,
-  Mander A (2011) Bayesian hierarchical methods to
-  interpret the 13C-octanoic acid breath test for gastric
-  emptying. Digestion 83_96-107, page 98.
+  gastric emptying". This is the cumulative beta
+  exponential, and can be used to compute the 50% points.
 }
 \seealso{
   \code{\link{ExpBeta}}
