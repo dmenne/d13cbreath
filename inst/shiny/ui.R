@@ -52,8 +52,9 @@ shinyUI(pageWithSidebar(
   mainPanel(
     tabsetPanel(
       tabPanel("Bewertung", plotOutput("decisionPlot", height="auto"),
-               helpText(C13HelpText[[1]]),helpText(C13HelpText[[2]]),
-               helpText(C13HelpText[[3]])),
+               helpText(HTML(C13HelpText[[1]])),#
+               helpText(HTML(C13HelpText[[2]])),
+               helpText(HTML(C13HelpText[[3]]))),
       tabPanel("PDR Verläufe",plotOutput("curvePlot", height="auto")),
       tabPanel("Multiple", plotOutput("splomPlot", height="auto")),    
       id="tabs"
