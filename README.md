@@ -20,7 +20,7 @@ __!! The package is under active development, and functions may change any time.
 * See documentation of function `bluckCoward` for examples, including how to use
   `nlme` for stuborn or highly incomplete cases.
 * For additional examples, see the folder `inst/tests` of the source package
-* [A comparison of results with nls, nlme](https://bitbucket.org/dmenne/d13cbreath/downloads/BreathTestBayes.html) and the Bayesian [Stan](http://www.mc-stan.org).
+* [A comparison of results with nls, nlme](https://bitbucket.org/dmenne/d13cbreath/downloads/BreathTestBayes1.html) and the Bayesian [Stan](http://www.mc-stan.org).
 * See the example in the documenation of `t50BluckCoward` for a comparison with published data. Most cases agree with those published here, but there are some exceptions; possible a typo in the published table?
 
 

@@ -221,11 +221,3 @@ PlotCurves = function(showColors){
 #DecisionPlot(con,pars,  method = "BluckCoward", parameter=c("t50","tlag"),outlierFak=3, 
 #              showColors =NULL)
 #dev.off()
-
-
-a = lapply(1:length(helpMethodConditions), function(i){
-  conditionalPanel(condition=helpMethodConditions[[i]],
-                   helpText(helpTexts[[i]]))
-  
-})
-
