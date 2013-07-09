@@ -23,12 +23,12 @@
   \code{SavePopulationFit} to save to database.
 }
 \description{
-  Fits an population \code{nlme} model to multiple records.
+  Fits a population \code{nlme} model to multiple records.
   First, separate nls fits are done to determine those
   records that do not give a valid fit. Technically it
   would be possible to fit these outliers with a population
   fit, but this leads to failure of the method quite often,
-  so the simple outlier removal method was chosen.
+  so the simple outlier removal method was chosen. #'
 }
 \examples{
 set.seed(14024)

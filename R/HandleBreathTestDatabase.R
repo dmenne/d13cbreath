@@ -230,7 +230,7 @@ AddAllBreathTestRecords = function(path,con){
 
 #' @title Recompute all fit parameters
 #' @name RebuildFitDatabase
-#' @description Recomputes all fits parameters, including population fit. Use this 
+#' @description Recomputes all fits parameters, excluding population fit. Use this 
 #' function to refresh coefficients when the algorithm has changed.
 #' @param con Connection to sqlite database; if missing, default database in 
 #' path \code{getOption("Gastrobase2SqlitePath")} is used.
@@ -249,7 +249,7 @@ RebuildFitDatabase = function(con=NULL){
     ComputeAndSaveWNFit(con,BreathTestRecordID) # This requires the parameterized fit
     invisible(NULL)
   })
-  RebuildPopulationFitDatabase(con)
+  #RebuildPopulationFitDatabase(con)
   if (localCon) dbDisconnect(con)
 }
 

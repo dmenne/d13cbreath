@@ -12,10 +12,11 @@ maxOutlier = 3
 
 theme_set(theme_bw()+theme(panel.margin=grid::unit(0,"lines")))
 #selectedTab = "Splom"
-methodParameters =  c("Maes t50/tlag","MaesPop t50/tlag",
-                      "BluckCoward t50/tlag", "BluckCowardPop t50/tlag",
-                      "ExpBeta k/m","ExpBeta k/beta",
-                      "WN t50/BluckCoward t50")
+methodParameters =  c("Maes t50/tlag",
+                      "BluckCoward t50/tlag", 
+                      "WN t50/BluckCoward t50",
+                      "ExpBeta k/m",
+                      "ExpBeta k/beta")
 helpMethodConditions = list()
 helpMethod = list()
 helpTexts = list()
@@ -28,10 +29,6 @@ helpTexts[methodParameters[[1]]] =
   but this does not provide an advantage for classification."
     
 helpTexts[methodParameters[[2]]] = 
- "The population variant of <i>Maes/Ghoos</i>. It could be
-  more stable for extreme cases, but values mostly are very close to the single-fit variant."
-
-helpTexts[methodParameters[[3]]] = 
   "Self-correcting method after <i>Bluck/Coward</i>. It uses the terminal falling slope, 
  i.e. parameter k, to of the beta exponential fit to correct the original <i>Maes/Ghoos</i>
 estimate for t<sub>50</sub> for the effect of the bicarbonate pool. 
@@ -39,11 +36,7 @@ This value of t<sub>50</sub> is always smaller than that of <i>Maes/Ghoos</i>; t
 is most pronounced for curves with a slow drop of the terminal slope. 
 The lag time t<sub>lag</sub> can be negative."
 
-helpTexts[methodParameters[[4]]] = 
-  "The population variant of <i>Bluck-Coward</i>. It could be
-more stable for extreme cases, but values mostly are very close to the single-fit variant."
-
-helpTexts[methodParameters[[5]]] =  "This plot shows two parameters <code>k</code> and 
+helpTexts[methodParameters[[4]]] =  "This plot shows two parameters <code>k</code> and 
  <code>m</code> from the exponential beta curve fit.
  Other coefficients for all but <i>Wagner-Nelson</i> are derived from these values. Parameter <code>k</code>
  is the inverse time constant for the terminal slope; it is measured in <code>1/min</code>; to
@@ -52,7 +45,7 @@ helpTexts[methodParameters[[5]]] =  "This plot shows two parameters <code>k</cod
  too short, but this assumption is highly dubious. <code>m</code> is  the percentage of 
  breath-metabolized substrate, and should be < 100."
 
-helpTexts[methodParameters[[6]]] = "Two parameters  <code>k</code> and  <code>beta</code> 
+helpTexts[methodParameters[[5]]] = "Two parameters  <code>k</code> and  <code>beta</code> 
 from the exponential beta fit.  Other coefficients for all but <i>Wagner-Nelson</i> are 
 derived from these values.  Parameter <code>k</code>
  is the inverse time constant for the terminal slope; it is measured in  <code>1/min</code>; to
@@ -61,7 +54,7 @@ derived from these values.  Parameter <code>k</code>
  when the records are too short to fit the terminal slope, but this assumption is highly dubious. 
  <code>beta</code> is related to the initial delay, it typically has values between 1.5 and 3."
           
-helpTexts[methodParameters[[7]]] =  "The <i>WN (Wagner-Nelson)</i> method used a 
+helpTexts[methodParameters[[3]]] =  "The <i>WN (Wagner-Nelson)</i> method used a 
 semiparametric method that does not directly use the data from the fitted curve. It 
 should be more reliable if the curve is odd-shaped, e.g. when it has double peaks. However, 
 it uses a correction for the bicarbonate pool that is similar to the self-corrected 

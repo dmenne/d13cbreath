@@ -66,6 +66,7 @@ DecisionPlot = function(con=NULL,
     showPoints=FALSE
     main="No points, Spectral"
     brewerPalette = "Spectral"  
+    outlierFak = 3
     prob = c(0.01,0.05,0.25,0.5)
     showDateLabels = TRUE
   }
@@ -119,7 +120,7 @@ DecisionPlot = function(con=NULL,
   )
   # Display the points in color
   markedRecords = MarkedRecords(con)[,-1]
-  if (!is.null(showColors)){
+  if (!is.null(showColors) && !is.null(markedRecords)){
     markedRecords = droplevels(markedRecords[markedRecords$color %in% showColors,])
     colorRecords =  join(markedRecords,qPar[,c("BreathTestRecordID","index")], 
                          by="BreathTestRecordID")

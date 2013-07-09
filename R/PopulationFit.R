@@ -1,11 +1,11 @@
 #' @title Breathtest population fit
 #' @description 
-#' Fits an population \code{nlme} model to multiple records.
+#' Fits a population \code{nlme} model to multiple records.
 #'  First, separate nls fits are done to determine those records that do not give
 #' a valid fit. Technically it would be possible to fit these outliers with 
 #' a population fit, but this leads to failure of the method quite often, so 
 #' the simple outlier removal method was chosen.
-#' @name BreathTestPopulationFit
+#' #' @name BreathTestPopulationFit
 #' @author Dieter Menne, \email{dieter.menne@@menne-biomed.de}
 #' @param x data frame with columns \code{BreathTestRecordID,Time,Value}.
 #' When no parameter is given, reads from default database via with function
