@@ -109,7 +109,10 @@ t50Maes = function(cf){
 }
 
 #' @name tLagMaes
-#' @title Determine tlag from uncorrected fit to the beta exponential function
+#' @title So-called lag time from Maes/Ghoos fit
+#' @description Determine \code{tlag} from uncorrected fit to the beta exponential function.
+#' The name \code{tLag} is a misnomer. It simply is the maximum of the PDR curve,
+#' so in papers by Bluck et al. it is renamed to tMax.
 #' Maes B D, Ghoos Y F, Rutgeerts P J, Hiele M I, Geypens B and Vantrappen G 1994 Dig. Dis. Sci. 39 S104-6
 #' @param cf named vector of coefficients; only \code{k} and \code{beta} are required
 #' Note that \code{k} is measured in 1/min (e.g. 0.01/min), 

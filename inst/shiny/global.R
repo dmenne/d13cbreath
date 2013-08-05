@@ -71,8 +71,9 @@ Parametern charakterisiert werden. Einer der Parameter ist üblicherweise der We
 Halbwertszeit (t<sub>50</sub> oder t<sub>1/2</sub>), wobei mit der <i>Maes/Ghoos</i> Methode 
 oft um den Faktor 3 größere
 Werte erhalten werden als mit <i>Wagner-Nelson (WN)</i> und <i>Bluck-Coward</i>. Der andere ist 
-ein Parameter, der als 'Lag' interpretiert wird; er ist ein Maß dafür, ob die Kurve
-sind einschleicht wie eine Parabel, oder ansteigt wie eine Gerade." 
+ein Parameter, der als 'Lag' interpretiert wird. Theoretisch steht er für
+eine Verzögerung, in Praxis ist er bei Maes/Ghoos aber die Position den Maximums 
+der PDR-Kurve. Bluck nennt <i>tLag</i> deshalb <i>tMax</i>." 
 
 C13HelpText[[2]] = "Im dunkelgrünen Bereich liegen 50% aller gemessenen Atemtestwerte
 in der Datenbank; die Struktur der Bereiche wird sich ändern, wenn mehr Aufnahmen vorliegen.

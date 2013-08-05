@@ -7,7 +7,7 @@
 #' the simple outlier removal method was chosen.
 #' #' @name BreathTestPopulationFit
 #' @author Dieter Menne, \email{dieter.menne@@menne-biomed.de}
-#' @param x data frame with columns \code{BreathTestRecordID,Time,Value}.
+#' @param x data frame with columns \code{BreathTestRecordID, Time, PDR}.
 #' When no parameter is given, reads from default database via with function
 #' \code{GetPopulationsData}.
 #' @param RemoveItemsFunction leave this function at its default NULL value; with 

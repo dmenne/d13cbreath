@@ -17,14 +17,13 @@
   \code{<color>Item} in the settings table. If a patient
   was selected, adds all records of the patient.
 
-  Example of Setting table in database
+Example of Setting table in database:
+\preformatted{
+ SettingID    Value
+ RedItem      Patient_10574
+ GreenItem    Record_433 }
 }
 \examples{
-\dontrun{
-SettingID    Value
-RedItem      Patient_10574
-GreenItem    Record_433
-}
 databasePath = CreateSimulatedBreathTestDatabase()
 con = OpenSqliteConnection(databasePath)
 MarkedRecords(con)

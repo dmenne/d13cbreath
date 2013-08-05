@@ -1,7 +1,6 @@
 \name{tLagMaes}
 \alias{tLagMaes}
-\title{Determine tlag from uncorrected fit to the beta exponential function
-Maes B D, Ghoos Y F, Rutgeerts P J, Hiele M I, Geypens B and Vantrappen G 1994 Dig. Dis. Sci. 39 S104-6}
+\title{So-called lag time from Maes/Ghoos fit}
 \usage{
   tLagMaes(cf)
 }
@@ -15,10 +14,12 @@ Maes B D, Ghoos Y F, Rutgeerts P J, Hiele M I, Geypens B and Vantrappen G 1994 D
   lag time as defined from Maes fit
 }
 \description{
-  Determine tlag from uncorrected fit to the beta
-  exponential function Maes B D, Ghoos Y F, Rutgeerts P J,
-  Hiele M I, Geypens B and Vantrappen G 1994 Dig. Dis. Sci.
-  39 S104-6
+  Determine \code{tlag} from uncorrected fit to the beta
+  exponential function. The name \code{tLag} is a misnomer.
+  It simply is the maximum of the PDR curve, so in papers
+  by Bluck et al. it is renamed to tMax. Maes B D, Ghoos Y
+  F, Rutgeerts P J, Hiele M I, Geypens B and Vantrappen G
+  1994 Dig. Dis. Sci. 39 S104-6
 }
 \seealso{
   \code{\link{ExpBeta}}, and \code{\link{t50BluckCoward}}

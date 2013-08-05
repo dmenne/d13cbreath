@@ -7,7 +7,7 @@
 }
 \arguments{
   \item{x}{data frame with columns
-  \code{BreathTestRecordID,Time,Value}. When no parameter
+  \code{BreathTestRecordID, Time, PDR}. When no parameter
   is given, reads from default database via with function
   \code{GetPopulationsData}.}
 
