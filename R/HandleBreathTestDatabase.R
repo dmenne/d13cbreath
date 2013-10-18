@@ -175,7 +175,9 @@ AddBreathTestRecord = function(filename,con){
 #' @title Reads and saves multiple 13C Breath test records
 #' @name AddAllBreathTestRecords
 #' @description 
-#' Reads all BreathID data records in a directory, 
+#' Reads all BreathID and Iris/Wagner data records in a directory.
+#' It is assumed that BreathID files have at least 2 underscores, all
+#' other are taken as Iris/Wagner. This is not very generic! 
 #' computes several fit parameters and a fit, and writes these to the database. 
 #' Files that are already in the database are skipped. Note only the base name is tested, 
 #' so that files with 
@@ -197,8 +199,10 @@ AddBreathTestRecord = function(filename,con){
 #' AddAllBreathTestRecords(path,con)
 #' dbDisconnect(con)
 ## con = OpenSqliteConnection(getOption("Gastrobase2SqlitePath"))
-## path = "C:/Users/Dieter/Documents/Gastrobase2/breathIDNeu"
 #' @export
+#' 
+path = "C:/Users/Dieter/Documents/Gastrobase2/Iris"
+
 AddAllBreathTestRecords = function(path,con){
   files = data.frame(file = dir(path,pattern="*.txt",ignore.case=TRUE,
                      recursive=TRUE,full.names=TRUE),stringsAsFactors=FALSE)
@@ -207,24 +211,36 @@ AddAllBreathTestRecords = function(path,con){
   files$basename = basename(files$file)
   files$recordID = NA
   files$status = NA
+  files$error = ""
+  # BreathID files have at least 2 underscores
+  files$isBreathID =  str_detect(files$file,"_.*_")
   for (i in seq(along=files$file)){
     filename = files[i,"file"]
-    bid = try(ReadBreathId(filename),silent=TRUE)
+    if (files[i,"isBreathID"]) {
+      bid = try(ReadBreathId(filename),silent=TRUE)
+    } else { # Assume Iris
+      bid = try(ReadIris(filename),silent=TRUE)
+    }
+    cat(filename,"\n")
     if (inherits(bid,"try-error")){
+      files[i,"error"] = attr(bid,"condition")$message
       files[i,"status"] = "invalid"      
       next
     }
+    if (TRUE){
     recId = try(BreathTestRecordToDatabase(bid,con),silent=TRUE)
     if (inherits(recId,"try-error")){
+      files[i,"error"] = attr(recId,"condition")$message
       files[i,"status"] = "skipped"      
       next
     }
     files[i,"recordID"] = recId
     files[i,"status"] = "saved"  
+    }
   }
   files$status = as.factor(files$status)
   # Rearrange for easier printout
-  files[,c(2,3,4,1)]
+  files[,c(2,3,4,1,5)]
 }
 
 

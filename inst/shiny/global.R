@@ -98,11 +98,12 @@ if (!exists("databasePath") )
 con = OpenSqliteConnection(databasePath)
 parComb = dbGetQuery(con, "SELECT DISTINCT Parameter, Method, Parameter || '/' || Method as Pair
  FROM BreathTestParameter order by Parameter, Method")
+# Temporary remove population stuf
+parComb = parComb[!str_detect(parComb$Method,"Pop"),]
 
 pars = dbGetQuery(con,"SELECT * from BreathTestParameter")[,-1]
 #records = dbGetQuery(con,
 #  "SELECT BreathTestRecordID, PatientID, Substrate from BreathTestRecord")
-
 
 PlotPairs = function(parc,quantiles){
   parp = parComb[parComb$Pair %in% parc,1:2]
@@ -114,7 +115,6 @@ PlotPairs = function(parc,quantiles){
   p = dbGetQuery(con,paste0(
     "SELECT BreathTestRecordID, Parameter, Method,Value from BreathTestParameter ",
     "WHERE ",q1))
-  
   if (nrow(p)==0) return (NULL)
   main = "Breath test parameters"
   if (sameParameters ){
@@ -135,7 +135,8 @@ PlotPairs = function(parc,quantiles){
     p$color[is.na(p$color)] = "gray"
   } else
     p$color = "blue"
-  pPlot = p[,-c(1,ncol(p))]
+  pPlot = na.omit(p[,-c(1,ncol(p))])
+  if (nrow(pPlot)<2) return(NULL)
   splom(pPlot,pch=16,
         prepanel.limits=prepanel.limits,
         main = main,
@@ -215,3 +216,5 @@ PlotCurves = function(showColors){
 #DecisionPlot(con,pars,  method = "BluckCoward", parameter=c("t50","tlag"),outlierFak=3, 
 #              showColors =NULL)
 #dev.off()
+
+
