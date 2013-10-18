@@ -1,18 +1,19 @@
 #' @title Read 13C data from IRIs/Wagner Analysen
 #' 
 #' @description Reads 13C data from IRIS/Wagner Analysen. Currently
-#' it only support "standard" files in csv-format.
+#' it only supports "standard" files in csv-format.
 #' 
 #' @param filename Name of IRIS/Wagner file in csv format
 #' @return list with \code{FileName, PatientName, PatientFirstName, Test, Identifikation}, 
 #' and data frame \code{Data} with \code{Time} and \code{DOB}
+#' @note Substrate has been fixed to octanoate, this may be wrong
 #' @author Dieter Menne, \email{dieter.menne@@menne-biomed.de}
 #' @examples
 #' filename = system.file("extdata", "standard.txt", package = "D13CBreath")
 #' irisData = ReadIris(filename)
 #' str(irisData)
 #' @export
-
+#filename = "C:/Users/Dieter/Documents/Gastrobase2/Iris/MP1980.TXT"
 ReadIris = function(filename) {
   if (!file.exists(filename)) 
     stop(str_c("File ",filename," does not exist."))
@@ -35,13 +36,20 @@ ReadIris = function(filename) {
   data = iris[,c(5,6)]
   names(data)=c("Time","DOB")
   data$Time = as.numeric(data$Time)
-  structure(list(FileName=basename(filename),
-       PatientName = as.character(iris[1,"Name"]),
-       PatientFirstName = as.character(iris[1,"Vorname"]),
-       Test = as.character(iris[1,"Test"]),
-       Identifikation = as.character(iris[1,"Identifikation"]),     
-       Data = data),class="irisData")
   
+  BreathTestData(
+    FileName=basename(filename),
+    PatientID=as.character(iris[1,"Identifikation"]),
+    Name = as.character(iris[1,"Name"]),
+    FirstName = as.character(iris[1,"Vorname"]),
+    Initials =  str_c(str_sub(iris[1,"Vorname"],1,1), 
+                      str_sub(iris[1,"Name"],1,1)),
+    TestNo=as.character(iris[1,"Test"]),
+    RecordDate = strptime(iris[1,"Datum"],"%d.%m.%y"),
+    StartTime = str_c(iris[1,"Datum"], " ",iris[1,"Zeit"]),
+    Device = "Iris",
+    Substrate="octanoate",
+    Data=data)
 }
 
 

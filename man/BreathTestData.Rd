@@ -64,14 +64,14 @@
 
   \item{Weight}{optional, in kg}
 
-  \item{T50}{optional, only present if device compute this
+  \item{T50}{optional, only present if device computes this
   value}
 
-  \item{GEC}{optional, only present if device compute this
+  \item{GEC}{optional, only present if device computes this
   value}
 
-  \item{TLag}{optional, only present if device compute this
-  value}
+  \item{TLag}{optional, only present if device computes
+  this value}
 
   \item{Data}{data frame with at least 5 rows and columns
   \code{Time} and one or both of \code{DOB} or \code{PDR}}

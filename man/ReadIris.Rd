@@ -14,7 +14,10 @@
 }
 \description{
   Reads 13C data from IRIS/Wagner Analysen. Currently it
-  only support "standard" files in csv-format.
+  only supports "standard" files in csv-format.
+}
+\note{
+  Substrate has been fixed to octanoate, this may be wrong
 }
 \examples{
 filename = system.file("extdata", "standard.txt", package = "D13CBreath")

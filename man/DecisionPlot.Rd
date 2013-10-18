@@ -70,7 +70,7 @@ databasePath = CreateSimulatedBreathTestDatabase()
 con = OpenSqliteConnection(databasePath)
 opt = par(mfrow=c(2,2))
 DecisionPlot(con, showColors="red", main="Method ash")
-DecisionPlot(con, showColors=c("orange","blue"),main= "Method ks", kde.package="ks")
+# DecisionPlot(con, showColors=c("orange","blue"),main= "Method ks", kde.package="ks")
 DecisionPlot(con, method="BluckCowardPop",showColors=c("red"), main= "BluckCoward Population" )
 # For Wagner-Nelson, there is no lag, we must use it from a different source
 DecisionPlot(con, method=c("MaesPop","Maes"),parameters=c("t50","t50"),

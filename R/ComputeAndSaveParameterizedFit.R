@@ -24,7 +24,7 @@ ComputeAndSaveParameterizedFit = function(con,BreathTestRecordID)  {
     "SELECT Time, Value as PDR from BreathTestTimeSeries where BreathTestRecordID=" ,
     BreathTestRecordID, " and Parameter = 'PDR' and Time > 0 order by Time",sep=""))
   if (inherits("data","try-error")  | nrow(data)==0) 
-    stop(paste("No data found for BreathTestRecordID",BreathTestRecordID))
+    stop(paste("No PDR data found for BreathTestRecordID",BreathTestRecordID))
   # Fit Model and compute prediction
   
   bid.nls = try(suppressWarnings(nls(PDR~ExpBeta(Time,Dose,m,k,beta),

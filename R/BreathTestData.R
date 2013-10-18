@@ -27,9 +27,9 @@
 #' @param Height optional, in cm; when PDR must be calculated, default values are 
 #' used; see \code{\link{DOBToPDR}}
 #' @param Weight optional, in kg
-#' @param T50  optional, only present if device compute this value
-#' @param GEC  optional, only present if device compute this value
-#' @param TLag optional, only present if device compute this value
+#' @param T50  optional, only present if device computes this value
+#' @param GEC  optional, only present if device computes this value
+#' @param TLag optional, only present if device computes this value
 #' @param Data data frame with at least 5 rows and columns \code{Time} and one 
 #' or both of \code{DOB} or \code{PDR}
 #' @export

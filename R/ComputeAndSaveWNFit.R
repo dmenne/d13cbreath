@@ -27,7 +27,7 @@ ComputeAndSaveWNFit = function(con,BreathTestRecordID)  {
     "SELECT Time, Value as PDR from BreathTestTimeSeries where BreathTestRecordID=" ,
     BreathTestRecordID, " and Parameter = 'PDR' and Time > 0 order by Time",sep=""))
   if (inherits("data","try-error")) 
-    stop(paste("No data found for BreathTestRecordID",BreathTestRecordID))
+    stop(paste("No PDR data found for BreathTestRecordID",BreathTestRecordID))
   auct = AUCt(data$Time,data$PDR)
   aucInf = auct[length(auct)]+data$PDR[nrow(data)]/k # equation 7 in Sanaka
   frac = 1-(auct+data$PDR/k)/aucInf
