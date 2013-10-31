@@ -13,9 +13,8 @@
 #' @author Dieter Menne, \email{dieter.menne@@menne-biomed.de}
 #' @param con connection to SQlite database
 #' @param BreathTestRecordID these data will be read from BreathTestTimeSeries
-#' @export 
+#' @export ComputeAndSaveParameterizedFit
 ComputeAndSaveParameterizedFit = function(con,BreathTestRecordID)  {
-  start = list(m=50,k=1/100,beta=2)
   Dose = try(dbGetQuery(con, paste(
     "SELECT Dose from BreathTestRecord where BreathTestRecordID=",
     BreathTestRecordID),  sep="")[1,1])
@@ -26,7 +25,8 @@ ComputeAndSaveParameterizedFit = function(con,BreathTestRecordID)  {
   if (inherits("data","try-error")  | nrow(data)==0) 
     stop(paste("No PDR data found for BreathTestRecordID",BreathTestRecordID))
   # Fit Model and compute prediction
-  
+  start = list(m=sum(data$PDR*diff(c(0,data$Time)))/70, # Empirical
+               k=1/100,beta=2)
   bid.nls = try(suppressWarnings(nls(PDR~ExpBeta(Time,Dose,m,k,beta),
         data=data, start=start)),silent=TRUE)
   if (inherits(bid.nls,"try-error")){
