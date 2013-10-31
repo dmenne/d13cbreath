@@ -1,7 +1,14 @@
 #' @title Read 13C data from IRIs/Wagner Analysen
 #' 
-#' @description Reads 13C data from IRIS/Wagner Analysen. Currently
-#' it only supports "standard" files in csv-format.
+#' @description Reads 13C data from IRIS/Wagner Analysen. 
+#' Reading CSV-formatted files is not supported, because these do not contain
+#' weight and height information required for DOB to PDR conversion.
+#' The composite files required start as follows:
+#''\preformatted{
+#'' "Testergebnis"
+#'' "Nummer","1330"
+#'' "Datum","10.10.2013"
+#'' "Testart"}
 #' 
 #' @param filename Name of IRIS/Wagner file in csv format
 #' @return list with \code{FileName, PatientName, PatientFirstName, Test, Identifikation}, 
@@ -9,47 +16,78 @@
 #' @note Substrate has been fixed to octanoate, this may be wrong
 #' @author Dieter Menne, \email{dieter.menne@@menne-biomed.de}
 #' @examples
-#' filename = system.file("extdata", "standard.txt", package = "D13CBreath")
+#' filename = system.file("extdata", "IrisMulti.txt", package = "D13CBreath")
 #' irisData = ReadIris(filename)
 #' str(irisData)
-#' @export
-#filename = "C:/Users/Dieter/Documents/Gastrobase2/Iris/MP1980.TXT"
+#' @export ReadIris
 ReadIris = function(filename) {
   if (!file.exists(filename)) 
     stop(str_c("File ",filename," does not exist."))
-  iris = try(read.csv(filename),silent=TRUE)
-  if (class(iris)=="try-error")
-    stop(str_c("Error reading file ",filename) )
-  valid = all(names(iris)==c("Name","Vorname","Test","Identifikation",
-    "Testzeit.min.","DOB..o.oo.","Delta..o.oo.","Std..Abw..o.oo.",
-    "CO2....","Std..Abw....","Atom.ppm.Excess.13C..ppm.","Datum","Zeit"))
-  if (!valid)  
-    stop(str_c("The header row of ",basename(filename)+" has an unexpected format"))
-  lapply(c("Name","Vorname","Test","Identifikation"), function(x){
-    levs = as.factor(iris[,x])
-    if (nlevels(levs) != 1)
-      stop(str_c("There is more than one ",x," in file ",basename(filename),"\n",
-            paste(levels(levs),collapse=", ")))
-    invisible(NULL)
-    })
+  # Check if this is the right format
+  bid = readLines(filename)
+  header = str_trim(bid[1])
+  if (header != "\"Testergebnis\"")
+    stop(str_c("File ",filename,
+      " is not a valid Iris file. First line should be <<Testergebnis>>")) 
+  dataRow = which(str_detect(bid,"Daten"))
+  if (length(dataRow)==0 )
+    stop("File does not contain data" ) 
   
-  data = iris[,c(5,6)]
-  names(data)=c("Time","DOB")
-  data$Time = as.numeric(data$Time)
+  recordDate = findPattern(bid,"Datum")
+  RecordDate = strptime(recordDate,"%d.%m.%y")
+  PatientID = findPattern(bid,"Patient")
   
+  TestNo = as.integer(findPattern(bid,"Nummer"))
+  Substrate = findPattern(bid,"Substrat")
+  Gender = findPattern(bid,"Geschlecht")
+  if (nchar(Gender)> 0) {
+    Gender = str_sub(tolower(Gender),1,1)
+    if (Gender != "m") Gender ="f" # Make sure to avoid German names
+  }
+  Dose = as.numeric(findPattern(bid,"Dosis"))
+  Height = as.numeric(findPattern(bid,"Gr\u00f6\u00DFe.*",TRUE))*100
+  Weight = as.numeric(findPattern(bid,"Gewicht.*",TRUE))  
+  Test = findPattern(bid,"Abk\u00fcrzung")
+  # There are multiple "Name" fields; skip the first
+  Name = findPattern(bid[-(1:14)],"Name")
+  FirstName = findPattern(bid,"Vorname")
+  Initials = NA
+  if (nchar(Name)>0 && nchar(FirstName)>0)    
+    Initials =  str_c(str_sub(Name,1,1), 
+                      str_sub(FirstName,1,1))
+  data = read.csv(textConnection(bid[-(1:dataRow)]))
+  data = try(data[,c("Testzeit..min.","Atom.ppm.Excess.13C..ppm.")])
+  if (inherits(data,"try-error"))
+    stop("Invalid data columns in Iris data file")
+  names(data) = c("Time","DOB")
+  # PDR will be computed by function BreathTestData
   BreathTestData(
     FileName=basename(filename),
-    PatientID=as.character(iris[1,"Identifikation"]),
-    Name = as.character(iris[1,"Name"]),
-    FirstName = as.character(iris[1,"Vorname"]),
-    Initials =  str_c(str_sub(iris[1,"Vorname"],1,1), 
-                      str_sub(iris[1,"Name"],1,1)),
-    TestNo=as.character(iris[1,"Test"]),
-    RecordDate = strptime(iris[1,"Datum"],"%d.%m.%y"),
-    StartTime = str_c(iris[1,"Datum"], " ",iris[1,"Zeit"]),
+    PatientID=PatientID,
+    Name = Name,
+    FirstName = FirstName,
+    Initials =  Initials,
+    TestNo=TestNo,
+    Study = Test,
+    RecordDate = RecordDate,
     Device = "Iris",
-    Substrate="octanoate",
+    Height= Height,
+    Weight = Weight,
+    Substrate=Substrate,
     Data=data)
 }
 
 
+findPattern = function(bid,pattern,required=TRUE){
+  p = str_match(bid,str_c('\\"',pattern,'\\",\\s*\\"(.*)\\"'))[,2]
+  p = p[!is.na(p)]
+  if (length(p)>1) 
+    stop(str_c("No unique <<", pattern,">> in Iris file"))
+  if (length(p)==0){
+    if (required)
+      stop(str_c("No <<" ,pattern, ">> found in Iris file "))
+    else 
+      p=""
+  }
+  return(str_trim(p))
+}

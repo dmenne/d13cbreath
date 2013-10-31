@@ -1,22 +1,21 @@
 context("13C read test")
 
 test_that("ReadIris returns valid data set",{
-  filename = d13File("standard.txt")
+  filename = d13File("IrisMulti.txt")
   f = ReadIris(filename)
   expect_is(f,"BreathTestData")
   expect_equal(f$FileName,basename(filename))
-  expect_equal(f$Name,"Einstein")
-  expect_equal(f$FirstName,"Albert")
-  expect_equal(f$Initials,"AE")
-  expect_equal(f$Test,"GE FEST")
-  expect_equal(f$PatientID,"330240")
+  expect_equal(f$Name,"V")
+  expect_equal(f$FirstName,"S")
+  expect_equal(f$Initials,"VS")
+  expect_equal(f$PatientID,"1871960")
   expect_equal(nrow(f$Data),14)
-  expect_equal(ncol(f$Data),2)
+  expect_equal(ncol(f$Data),3)
 })
 
-test_that("ReadIris of invalid data throws",{
-  filename = d13File("standardMultiName.txt")
-  expect_error( ReadIris(filename),"more than one")
+test_that("ReadIris of CSV file throws",{
+  filename = d13File("IrisCSV.txt")
+  expect_error( ReadIris(filename),"valid Iris")
 })
           
 test_that("ReadBreathID returns valid data set",{

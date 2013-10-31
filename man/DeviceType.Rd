@@ -1,0 +1,24 @@
+\name{DeviceType}
+\alias{DeviceType}
+\title{Guess device type of a text file}
+\usage{
+  DeviceType(files)
+}
+\arguments{
+  \item{files}{character vector of files}
+}
+\value{
+  character vector of device types
+}
+\description{
+  Reads the first line of the files, and returns
+  "BreathID","Iris", or "invalid"
+}
+\examples{
+path = dirname(
+  system.file("extdata", "350_20043_0_GER.txt", package = "D13CBreath"))
+files = dir(path,pattern="*.txt",ignore.case=TRUE,
+        recursive=TRUE,full.names=TRUE)
+DeviceType(files)
+}
+

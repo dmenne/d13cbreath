@@ -2,7 +2,7 @@ context("Database write test")
 
 
 test_that("Writing sample BreathID database returns valid set of fit parameters ",{
-  if (exists("con")) suppressWarnings(dbDisconnect(con))
+  if (exists("con")) suppressWarnings(try(dbDisconnect(con)))
   sqlitePath = tempfile(pattern = "Gastrobase", tmpdir = tempdir(), fileext = ".sqlite")
   unlink(sqlitePath)
   CreateEmptyBreathTestDatabase(sqlitePath)
@@ -87,8 +87,8 @@ test_that("Reading of multiple files returns dataframe with status",{
   expectParams = c("CPDR","CPDRfit","DOB","PDR","PDRfit","WN")
   expect_equal(pars[,1],expectParams)
   # !!! Change this if additional test are added
-  ExpectUnique = c(NA,1,2,3,4)
-  ExpectTab = c(6,4)
+  ExpectUnique = c(NA,1,2,3,4,5)
+  ExpectTab = c(5,5)
   expect_true(all(unique(res$recordID) %in% ExpectUnique))
   expect_equal(names(tab),c("invalid","saved"))
   expect_equal(names(tab1),c("invalid","skipped"))

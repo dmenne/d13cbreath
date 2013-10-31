@@ -44,9 +44,9 @@
 
   \item{Device}{BreathID or Iris; default "generic"}
 
-  \item{Substrate}{Should contain string "acet" or "octa",
-  case insensitive. Will be replaced by acetate or
-  octanoate}
+  \item{Substrate}{Should contain string "ace" or "oct" or
+  "okt", case insensitive. Will be replaced by "acetate" or
+  "octanoate"}
 
   \item{RecordDate}{Required record date.}
 
@@ -74,7 +74,9 @@
   this value}
 
   \item{Data}{data frame with at least 5 rows and columns
-  \code{Time} and one or both of \code{DOB} or \code{PDR}}
+  \code{Time} and one or both of \code{DOB} or \code{PDR}.
+  If PDR is missing, and Height, Weight and Substrate are
+  given, computes PDR via function DOBToPDR}
 }
 \description{
   Generates structure of class BreathTestData with required

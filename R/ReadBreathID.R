@@ -80,11 +80,12 @@ findSinglePattern = function(bid,pattern,required=TRUE){
   p = p[!is.na(p)]
   if (length(p)>1) 
     stop(str_c("No unique <<", pattern,">> in BreathID file"))
-  if (length(p)==0)
+  if (length(p)==0){
     if (required)
       stop(str_c("No <<" ,pattern, ">> found in BreathID file "))
     else 
       p=""
+  }  
   return(str_trim(p))
 }
 

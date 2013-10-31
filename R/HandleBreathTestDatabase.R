@@ -109,7 +109,9 @@ CreateEmptyBreathTestDatabase = function(sqlitePath){
   dbSendQuery(con,createBreathTestParameter)
   dbSendQuery(con,index1)
   dbSendQuery(con,index2)
-  dbSendQuery(con,index3)
+  ret = dbSendQuery(con,index3)
+  ## Avoid closing error
+  dbClearResult(ret)
   dbDisconnect(con)
   return (invisible(NULL))
 }  
@@ -178,12 +180,13 @@ AddBreathTestRecord = function(filename,con){
 #' Reads all BreathID and Iris/Wagner data records in a directory.
 #' It is assumed that BreathID files have at least 2 underscores, all
 #' other are taken as Iris/Wagner. This is not very generic! 
-#' computes several fit parameters and a fit, and writes these to the database. 
+#' Computes several fit parameters and a fit, and writes these to the database. 
 #' Files that are already in the database are skipped. Note only the base name is tested, 
 #' so that files with 
 #' the same name in different directories are considered identical without testing.
 #' 
-#' @param path start path for recursive search
+#' @param path start path for recursive search; can be a vector of 
+#' multiple start paths.
 #' @param con connection to sqlite database
 #' @return A dataframe with columns \code{file}, \code{basename}, 
 #' \code{recordID} (NULL if not saved) and \code{status}
@@ -199,10 +202,10 @@ AddBreathTestRecord = function(filename,con){
 #' AddAllBreathTestRecords(path,con)
 #' dbDisconnect(con)
 ## con = OpenSqliteConnection(getOption("Gastrobase2SqlitePath"))
-#' @export
 #' 
-path = "C:/Users/Dieter/Documents/Gastrobase2/Iris"
-
+#path = c("C:/Users/Dieter/Documents/Gastrobase2/Iris",
+#         "C:/Users/Dieter/Documents/Gastrobase2/BreathID")
+#' @export
 AddAllBreathTestRecords = function(path,con){
   files = data.frame(file = dir(path,pattern="*.txt",ignore.case=TRUE,
                      recursive=TRUE,full.names=TRUE),stringsAsFactors=FALSE)
@@ -212,20 +215,26 @@ AddAllBreathTestRecords = function(path,con){
   files$recordID = NA
   files$status = NA
   files$error = ""
+  files$device = DeviceType(files$file)  
   # BreathID files have at least 2 underscores
-  files$isBreathID =  str_detect(files$file,"_.*_")
   for (i in seq(along=files$file)){
     filename = files[i,"file"]
-    if (files[i,"isBreathID"]) {
-      bid = try(ReadBreathId(filename),silent=TRUE)
-    } else { # Assume Iris
-      bid = try(ReadIris(filename),silent=TRUE)
-    }
-    cat(filename,"\n")
-    if (inherits(bid,"try-error")){
-      files[i,"error"] = attr(bid,"condition")$message
-      files[i,"status"] = "invalid"      
+    device = files[i,"device"] 
+    if ( device == "invalid"){
+      files[i,"error"] = "Unrecognized device type"
+      files[i,"status"] = "invalid"
       next
+    } else {      
+      if (device == "BreathID") {
+        bid = try(ReadBreathId(filename),silent=TRUE)
+      } else if (device == "Iris")  {
+        bid = try(ReadIris(filename),silent=TRUE)
+      } 
+      if (inherits(bid,"try-error")){
+        files[i,"error"] = attr(bid,"condition")$message
+        files[i,"status"] = "invalid"      
+        next
+      }
     }
     if (TRUE){
     recId = try(BreathTestRecordToDatabase(bid,con),silent=TRUE)
@@ -241,6 +250,28 @@ AddAllBreathTestRecords = function(path,con){
   files$status = as.factor(files$status)
   # Rearrange for easier printout
   files[,c(2,3,4,1,5)]
+}
+
+#' @title Guess device type of a text file
+#' @name DeviceType
+#' @description Reads the first line of the files, and returns
+#' "BreathID","Iris", or "invalid"
+#' @param files character vector of files
+#' @return character vector of device types
+#' @examples
+#' path = dirname(
+#'   system.file("extdata", "350_20043_0_GER.txt", package = "D13CBreath"))
+#' files = dir(path,pattern="*.txt",ignore.case=TRUE,
+#'         recursive=TRUE,full.names=TRUE)
+#' DeviceType(files)
+#' @export
+DeviceType = function(files){
+  unlist(lapply(files, function(file) {
+    line = str_trim(readLines(file,1) )
+    if (line == "Test and Patient parameters") return("BreathID")
+    if (line == '"Testergebnis"') return("Iris")
+    return("invalid")
+  }))
 }
 
 

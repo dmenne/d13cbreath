@@ -17,8 +17,8 @@
 #' record does not turn up in database after repeated reading, check if a record with
 #' the same file name is already there, and rename the file to avoid collisions.
 #' @param Device BreathID or Iris; default "generic"
-#' @param Substrate Should contain string "acet" or "octa", case insensitive. Will
-#' be replaced by acetate or octanoate
+#' @param Substrate Should contain string "ace" or "oct" or "okt", case insensitive. Will
+#' be replaced by "acetate" or "octanoate"
 #' @param RecordDate Required record date.
 #' @param StartTime optional
 #' @param EndTime optional
@@ -31,7 +31,8 @@
 #' @param GEC  optional, only present if device computes this value
 #' @param TLag optional, only present if device computes this value
 #' @param Data data frame with at least 5 rows and columns \code{Time} and one 
-#' or both of \code{DOB} or \code{PDR}
+#' or both of \code{DOB} or \code{PDR}. If PDR is missing, and Height, Weight and Substrate
+#' are given, computes PDR via function DOBToPDR
 #' @export
 BreathTestData = function(
   PatientID, Name=NA, FirstName=NA, 
@@ -53,13 +54,15 @@ BreathTestData = function(
     stop("Function BreathTestData: Data should have either DOB or PDR or both")
   ##### Add more substrates here
   substrates = c("octanoate","acetate")
-  substrate = substrates[str_detect(tolower(Substrate),str_sub(substrates,1,4))][1]
+  substratePattern = c("o[ck]t","acet")
+  substrate = substrates[str_detect(tolower(Substrate),substratePattern)][1]
   if (length(substrate)==0)
     stop("Function BreathTestData: Substrate is '", Substrate,
          "'; it should contain substrings '" ,paste(str_sub(substrates,1,4),collapse="' or '"),"'")
   if (!is.na(Gender) & ! match(Gender,c("m","f")))
     stop("Function BreathTestData: Gender should be 'm' or 'f'")
-  
+  if (! "PDR" %in% nd )  
+    Data$PDR = DOBToPDR(Data$DOB,Weight,Height,MW=substrate)
   structure(list(
     PatientID = PatientID, Name=Name, FirstName=FirstName, Initials=Initials, 
     DOB=DOB, BirthYear=BirthYear,

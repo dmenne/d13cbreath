@@ -124,7 +124,7 @@ test_that("Test error and info cases",{
   badZipPath = "X:"
   if (!file_test("-d",paste0(badZipPath,"/.")))
   {
-    ret = UnzipBreathID(badZipPath,destinationPath)  
+    ret = suppressWarnings(UnzipBreathID(badZipPath,destinationPath)  )
     expect_that(ret$n,equals(0))
     expect_that(ret$type,equals("info"))
     expect_that(ret$msg,matches("Zip source"))  

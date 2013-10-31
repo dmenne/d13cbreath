@@ -13,14 +13,23 @@
   \code{Time} and \code{DOB}
 }
 \description{
-  Reads 13C data from IRIS/Wagner Analysen. Currently it
-  only supports "standard" files in csv-format.
+  Reads 13C data from IRIS/Wagner Analysen. Reading
+  CSV-formatted files is not supported, because these do
+  not contain weight and height information required for
+  DOB to PDR conversion.
+
+The composite files required start as follows:
+ \preformatted{
+ "Testergebnis"
+ "Nummer","1330"
+ "Datum","10.10.2013"
+ "Testart"}
 }
 \note{
   Substrate has been fixed to octanoate, this may be wrong
 }
 \examples{
-filename = system.file("extdata", "standard.txt", package = "D13CBreath")
+filename = system.file("extdata", "IrisMulti.txt", package = "D13CBreath")
 irisData = ReadIris(filename)
 str(irisData)
 }
