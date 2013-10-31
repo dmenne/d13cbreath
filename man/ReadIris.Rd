@@ -19,7 +19,7 @@
   DOB to PDR conversion.
 
 The composite files required start as follows:
- \preformatted{
+\preformatted{
  "Testergebnis"
  "Nummer","1330"
  "Datum","10.10.2013"

@@ -56,11 +56,11 @@ ReadIris = function(filename) {
     Initials =  str_c(str_sub(Name,1,1), 
                       str_sub(FirstName,1,1))
   data = read.csv(textConnection(bid[-(1:dataRow)]))
-  data = try(data[,c("Testzeit..min.","Atom.ppm.Excess.13C..ppm.")])
+  data = try(data[,c("Testzeit..min.","DOB..o.oo.","Atom.ppm.Excess.13C..ppm.")])
+  data = try(data[,c("Testzeit..min.","DOB..o.oo.")])
   if (inherits(data,"try-error"))
     stop("Invalid data columns in Iris data file")
   names(data) = c("Time","DOB")
-  # PDR will be computed by function BreathTestData
   BreathTestData(
     FileName=basename(filename),
     PatientID=PatientID,
