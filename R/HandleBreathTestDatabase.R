@@ -201,8 +201,8 @@ AddBreathTestRecord = function(filename,con){
 #'   system.file("extdata", "350_20043_0_GER.txt", package = "D13CBreath"))
 #' AddAllBreathTestRecords(path,con)
 #' dbDisconnect(con)
-## con = OpenSqliteConnection(getOption("Gastrobase2SqlitePath"))
 #' 
+#con = OpenSqliteConnection()
 #path = c("C:/Users/Dieter/Documents/Gastrobase2/Iris",
 #         "C:/Users/Dieter/Documents/Gastrobase2/BreathID")
 #' @export
@@ -215,9 +215,19 @@ AddAllBreathTestRecords = function(path,con){
   files$recordID = NA
   files$status = NA
   files$error = ""
-  files$device = DeviceType(files$file)  
-  # BreathID files have at least 2 underscores
+  files$device=NA
+  # Check database for files already processed
+  doneFiles = dbGetQuery(con,"SELECT filename from BreathTestRecord")[,1]
+  if (length(doneFiles >0)){
+    skipped = files$basename %in% doneFiles
+    files$status[skipped] = "skipped"
+    files$device[!skipped] = DeviceType(files$file[!skipped])  
+  } else 
+    files$device = DeviceType(files$file)  
+  # processe all files
   for (i in seq(along=files$file)){
+    if (is.na(files[i,"device"]))  # skip known
+      next
     filename = files[i,"file"]
     device = files[i,"device"] 
     if ( device == "invalid"){
