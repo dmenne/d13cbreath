@@ -173,7 +173,7 @@ PlotCurves = function(showColors){
   
   # Get color-marked curves
   recs = MarkedRecords(con)
-  if (nrow(recs)==0) 
+  if (is.null(recs) || nrow(recs)==0) 
     return (NULL)
   recs = droplevels(recs[recs$color %in% showColors,])
   if (nrow(recs)==0) 
