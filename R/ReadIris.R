@@ -34,8 +34,11 @@ ReadIris = function(filename) {
     stop("File does not contain data" ) 
   
   recordDate = findPattern(bid,"Datum")
-  RecordDate = strptime(recordDate,"%d.%m.%y")
-  PatientID = findPattern(bid,"Patient")
+  RecordDate = strptime(recordDate,"%d.%m.%Y")
+  # Try if there is a Patient number. If not, try Identification
+  PatientID = try(findPattern(bid,"Patient"), silent=TRUE)
+  if (class(PatientID) == "try-error")  
+    PatientID = findPattern(bid,"Identifikation")
   
   TestNo = as.integer(findPattern(bid,"Nummer"))
   Substrate = findPattern(bid,"Substrat")

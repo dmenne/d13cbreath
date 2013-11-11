@@ -203,7 +203,8 @@ AddBreathTestRecord = function(filename,con){
 #' dbDisconnect(con)
 #' 
 #con = OpenSqliteConnection()
-#path = c("C:/Users/Dieter/Documents/Gastrobase2/Iris",
+#path = c("C:/Users/Dieter/Documents/Gastrobase2/Iris")
+
 #         "C:/Users/Dieter/Documents/Gastrobase2/BreathID")
 #' @export
 AddAllBreathTestRecords = function(path,con){
@@ -387,6 +388,8 @@ SavePatientRecord = function(bid,con) {
      VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)",
      sn(PatientID),sn(Name),sn(FirstName),sn(Initials),sn(DOB),sn(BirthYear),
                          sn(Gender),sn(Study),sn(PatStudyID)))
+    # Make sure to use utf8 here for Müller und Möller
+    q = enc2utf8(q)
     tryCatch( dbSendQuery(con,q), 
               error=function(e) stop(str_c("Error inserting PatientID ",PatientID)))
   }
