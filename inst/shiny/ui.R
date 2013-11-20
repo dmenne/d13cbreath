@@ -33,7 +33,8 @@ shinyUI(pageWithSidebar(
       condition=  "input.tabs!='Multiple'",
       helpText(HTML("Auswahl der Aufnahmen oder Patienten, deren Daten angezeigt werden sollten.
           Die Farbmarker können in <i>GastroBase2</i> mit der rechten Maustaste gesetzt werden; 
-          alternativ können in <i>GastroBase2</i> mit diesem <img src='menu.png'></img> 
+          alternativ können in <i>GastroBase2</i> mit diesem 
+          <img src='menu.png' alt='Gastrobase2 menu button'>
           Kurzmenü die letzten vier geladenenen Aufnahmen markiert werden.")),
       checkboxInput("greenData", "Grün", value = TRUE),
       checkboxInput("blueData", "Blau", value = FALSE),

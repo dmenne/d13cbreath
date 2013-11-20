@@ -43,7 +43,7 @@ helpTexts[methodParameters[[4]]] =  "This plot shows two parameters <code>k</cod
  compare it with values in the literatur given as <code>1/h</code>, multiply by 60. A value of 
  <code>k=0.011/min</code> or <code>k=0.65/h</code> is often used in the literature as default when the records are
  too short, but this assumption is highly dubious. <code>m</code> is  the percentage of 
- breath-metabolized substrate, and should be < 100."
+ breath-metabolized substrate, and should be &lt; 100."
 
 helpTexts[methodParameters[[5]]] = "Two parameters  <code>k</code> and  <code>beta</code> 
 from the exponential beta fit.  Other coefficients for all but <i>Wagner-Nelson</i> are 
