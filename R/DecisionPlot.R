@@ -202,17 +202,15 @@ MarkedRecords = function(con=NULL ){
                    BreathTestRecordID=as.integer(p[,1]), 
                    RecordDate = RecordDate) 
       } else NULL
-    }  else{
+    }  else {
       q = paste("SELECT PatientID,RecordDate from BreathTestRecord where BreathTestRecordID=",
                 x$Record)
-      p = dbGetQuery(con,q)[1,,drop=FALSE]
-      data.frame(color=x$Color,PatientID = as.character(p$PatientID),
+      p = na.omit(dbGetQuery(con,q)[1,,drop=FALSE])
+      if (nrow(p) > 0)
+        data.frame(color=x$Color,PatientID = as.character(p$PatientID),
                  BreathTestRecordID=as.integer(x$Record),
                  RecordDate = as.Date(p$RecordDate))
-    }
+    } 
   })
 }
-
-
-kde.package="ks"
 
