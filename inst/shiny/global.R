@@ -23,8 +23,7 @@ helpTexts = list()
 helpTexts[methodParameters[[1]]] = 
  "This is the method from <i>Maes/Ghoos</i> that computes t<sub>50</sub> and t<sub>lag</sub>
   from the exponential beta curve. 
-  The results are slightly different from those of the original <i>Ghoos</i> method which
-  uses the gamma function to fit the time series. The values for t<sub>50</sub> are much higher than those from
+  The values for t<sub>50</sub> are much higher than those from
   scintigraphic/MRI data. A scintigraphic linear correction is sometimes applied,
   but this does not provide an advantage for classification."
     
