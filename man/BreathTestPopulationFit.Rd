@@ -2,8 +2,7 @@
 \alias{BreathTestPopulationFit}
 \title{Breathtest population fit}
 \usage{
-  BreathTestPopulationFit(x = NULL,
-    RemoveItemsFunction = NULL)
+BreathTestPopulationFit(x = NULL, RemoveItemsFunction = NULL)
 }
 \arguments{
   \item{x}{data frame with columns
@@ -18,17 +17,17 @@
   nlsList.}
 }
 \value{
-  data frame with columns \code{BreathTestRecordID, m,
-  k,beta} of the population fit. Use function
-  \code{SavePopulationFit} to save to database.
+data frame with columns \code{BreathTestRecordID, m,
+k,beta} of the population fit. Use function
+\code{SavePopulationFit} to save to database.
 }
 \description{
-  Fits a population \code{nlme} model to multiple records.
-  First, separate nls fits are done to determine those
-  records that do not give a valid fit. Technically it
-  would be possible to fit these outliers with a population
-  fit, but this leads to failure of the method quite often,
-  so the simple outlier removal method was chosen. #'
+Fits a population \code{nlme} model to multiple records.
+First, separate nls fits are done to determine those
+records that do not give a valid fit. Technically it would
+be possible to fit these outliers with a population fit,
+but this leads to failure of the method quite often, so the
+simple outlier removal method was chosen. #'
 }
 \examples{
 set.seed(14024)
@@ -48,6 +47,6 @@ SavePopulationFit(cf,con) # Return a data frame with kept/removed
 dbDisconnect(con)
 }
 \author{
-  Dieter Menne, \email{dieter.menne@menne-biomed.de}
+Dieter Menne, \email{dieter.menne@menne-biomed.de}
 }
 

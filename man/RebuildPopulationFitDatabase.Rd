@@ -2,7 +2,7 @@
 \alias{RebuildPopulationFitDatabase}
 \title{Recompute population fit and store results in database}
 \usage{
-  RebuildPopulationFitDatabase(con = NULL)
+RebuildPopulationFitDatabase(con = NULL)
 }
 \arguments{
   \item{con}{connection to SQlite database. If no
@@ -11,7 +11,7 @@
   \code{getOption("Gastrobase2SqlitePath")}}
 }
 \description{
-  The population fit using nlme is computed, and
-  coefficients are saved in database, overwriting old ones.
+The population fit using nlme is computed, and coefficients
+are saved in database, overwriting old ones.
 }
 

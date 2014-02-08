@@ -2,14 +2,12 @@
 \alias{DecisionPlot}
 \title{DecisionPlot: 2D contour plot of breath-test variables}
 \usage{
-  DecisionPlot(con = NULL,
-    pars = dbGetQuery(con, "SELECT * from BreathTestParameter")[, -1],
-    methods = "Maes", parameters = c("t50", "tlag"),
-    prob = c(0.01, 0.05, 0.25, 0.5),
-    main = "Breath test parameters",
-    kde.package = c("ash", "ks"), brewerPalette = "RdYlGn",
-    outlierFak = 3, showColors = NULL, showPoints = TRUE,
-    showDateLabels = TRUE)
+DecisionPlot(con = NULL, pars = dbGetQuery(con,
+  "SELECT * from BreathTestParameter")[, -1], methods = "Maes",
+  parameters = c("t50", "tlag"), prob = c(0.01, 0.05, 0.25, 0.5),
+  main = "Breath test parameters", kde.package = c("ash", "ks"),
+  brewerPalette = "RdYlGn", outlierFak = 3, showColors = NULL,
+  showPoints = TRUE, showDateLabels = TRUE)
 }
 \arguments{
   \item{con}{connection to sqlite database; if missing,
@@ -54,16 +52,16 @@
   \code{showPoints}s records are added as label.}
 }
 \value{
-  None; as a side effect, a plot using standard graphics is
-  generated. Note that the image may contain aliasing lines
-  when Cairo is avaialable on your system.
-  \url{https://groups.google.com/forum/?fromgroups#!topic/shiny-discuss/ysac9FqOQLI}
+None; as a side effect, a plot using standard graphics is
+generated. Note that the image may contain aliasing lines
+when Cairo is avaialable on your system.
+\url{https://groups.google.com/forum/?fromgroups#!topic/shiny-discuss/ysac9FqOQLI}
 }
 \description{
-  Creates a 2D percentile plot of a pair of breath test
-  variables. By default, the green central regions contains
-  50% of the data points, determined using a
-  highest-density-interval (HDI) method.
+Creates a 2D percentile plot of a pair of breath test
+variables. By default, the green central regions contains
+50% of the data points, determined using a
+highest-density-interval (HDI) method.
 }
 \examples{
 databasePath = CreateSimulatedBreathTestDatabase()
@@ -80,6 +78,6 @@ par(opt)
 dbDisconnect(con)
 }
 \author{
-  Dieter Menne, \email{dieter.menne@menne-biomed.de}
+Dieter Menne, \email{dieter.menne@menne-biomed.de}
 }
 

@@ -2,7 +2,7 @@
 \alias{GetPopulationData}
 \title{Read Population data from database}
 \usage{
-  GetPopulationData(con = NULL)
+GetPopulationData(con = NULL)
 }
 \arguments{
   \item{con}{connection to SQlite database. If no
@@ -11,11 +11,11 @@
   \code{getOption("Gastrobase2SqlitePath")}}
 }
 \value{
-  data frame with columns \code{BreathTestRecordID, Time,
-  Value}
+data frame with columns \code{BreathTestRecordID, Time,
+Value}
 }
 \description{
-  Retrieves a dataframe for use in
-  \code{BreathTestPopulationFit}
+Retrieves a dataframe for use in
+\code{BreathTestPopulationFit}
 }
 

@@ -2,21 +2,21 @@
 \alias{OpenSqliteConnection}
 \title{Opens sqlite database connection}
 \usage{
-  OpenSqliteConnection(sqlitePath = NULL)
+OpenSqliteConnection(sqlitePath = NULL)
 }
 \arguments{
   \item{sqlitePath}{Full filename with path to create
   database file.}
 }
 \value{
-  con Connection for use with dbSendQuery and dbGetQuery
+con Connection for use with dbSendQuery and dbGetQuery
 }
 \description{
-  Opens an connection to sqlite database; creates the
-  database if it does not exists. If missing, file name is
-  given by \code{getOption("Gastrobase2SqlitePath")} which
-  is set to <HOME>/GastroBase/Gastobase/Gastrobase2.sqlite
-  at package load time.
+Opens an connection to sqlite database; creates the
+database if it does not exists. If missing, file name is
+given by \code{getOption("Gastrobase2SqlitePath")} which is
+set to <HOME>/GastroBase/Gastobase/Gastrobase2.sqlite at
+package load time.
 }
 \examples{
 \dontrun{

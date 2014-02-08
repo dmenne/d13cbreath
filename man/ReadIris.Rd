@@ -2,31 +2,26 @@
 \alias{ReadIris}
 \title{Read 13C data from IRIs/Wagner Analysen}
 \usage{
-  ReadIris(filename)
+ReadIris(filename)
 }
 \arguments{
   \item{filename}{Name of IRIS/Wagner file in csv format}
 }
 \value{
-  list with \code{FileName, PatientName, PatientFirstName,
-  Test, Identifikation}, and data frame \code{Data} with
-  \code{Time} and \code{DOB}
+list with \code{FileName, PatientName, PatientFirstName,
+Test, Identifikation}, and data frame \code{Data} with
+\code{Time} and \code{DOB}
 }
 \description{
-  Reads 13C data from IRIS/Wagner Analysen. Reading
-  CSV-formatted files is not supported, because these do
-  not contain weight and height information required for
-  DOB to PDR conversion.
-
-The composite files required start as follows:
-\preformatted{
- "Testergebnis"
- "Nummer","1330"
- "Datum","10.10.2013"
- "Testart"}
+Reads 13C data from IRIS/Wagner Analysen. Reading
+CSV-formatted files is not supported, because these do not
+contain weight and height information required for DOB to
+PDR conversion. The composite files required start as
+follows: '\preformatted{ ' "Testergebnis" ' "Nummer","1330"
+' "Datum","10.10.2013" ' "Testart"}
 }
 \note{
-  Substrate has been fixed to octanoate, this may be wrong
+Substrate has been fixed to octanoate, this may be wrong
 }
 \examples{
 filename = system.file("extdata", "IrisMulti.txt", package = "D13CBreath")
@@ -34,6 +29,6 @@ irisData = ReadIris(filename)
 str(irisData)
 }
 \author{
-  Dieter Menne, \email{dieter.menne@menne-biomed.de}
+Dieter Menne, \email{dieter.menne@menne-biomed.de}
 }
 

@@ -2,17 +2,17 @@
 \alias{DeviceType}
 \title{Guess device type of a text file}
 \usage{
-  DeviceType(files)
+DeviceType(files)
 }
 \arguments{
   \item{files}{character vector of files}
 }
 \value{
-  character vector of device types
+character vector of device types
 }
 \description{
-  Reads the first line of the files, and returns
-  "BreathID","Iris", or "invalid"
+Reads the first line of the files, and returns
+"BreathID","Iris", or "invalid"
 }
 \examples{
 path = dirname(

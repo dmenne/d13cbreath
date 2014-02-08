@@ -2,7 +2,7 @@
 \alias{Summary13CRecord}
 \title{Summary data from a 13C Record}
 \usage{
-  Summary13CRecord(con, breathTestRecordID)
+Summary13CRecord(con, breathTestRecordID)
 }
 \arguments{
   \item{con}{Open connection to SQLite database; use
@@ -12,12 +12,11 @@
   used in tables}
 }
 \value{
-  List with named vector \code{Record} (Patient and Record)
-  and data frame \code{Parameters}
+List with named vector \code{Record} (Patient and Record)
+and data frame \code{Parameters}
 }
 \description{
-  Reads record from database and returns extracted
-  parameters
+Reads record from database and returns extracted parameters
 }
 \examples{
 sqlitePath = CreateSimulatedBreathTestDatabase()
@@ -27,6 +26,6 @@ Summary13CRecord(con,breathTestRecordID)
 dbDisconnect(con)
 }
 \author{
-  Dieter Menne, \email{dieter.menne@menne-biomed.de}
+Dieter Menne, \email{dieter.menne@menne-biomed.de}
 }
 

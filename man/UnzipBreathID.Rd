@@ -2,9 +2,8 @@
 \alias{UnzipBreathID}
 \title{Unpacks a BreathID zip-File}
 \usage{
-  UnzipBreathID(zipPath, destinationPath,
-    inZipPath = "txt/", lastZipFile = NULL,
-    lastZipDate = NULL)
+UnzipBreathID(zipPath, destinationPath, inZipPath = "txt/",
+  lastZipFile = NULL, lastZipDate = NULL)
 }
 \arguments{
   \item{zipPath}{path to the zip file; the name of the zip
@@ -29,17 +28,17 @@
   NULL; not checked}
 }
 \value{
-  A list with number of files \code{n},
-  \code{type=c("error","info","ok")}, and message string
-  \code{msg}. If \code{ok}, also vector of files that were
-  extracted, the name of the \code{lastZipFile}, and the
-  modification date \code{lastZipDate}.
+A list with number of files \code{n},
+\code{type=c("error","info","ok")}, and message string
+\code{msg}. If \code{ok}, also vector of files that were
+extracted, the name of the \code{lastZipFile}, and the
+modification date \code{lastZipDate}.
 }
 \description{
-  Retrieves BreathID records from a zipped file, and copies
-  these to a target directory.
+Retrieves BreathID records from a zipped file, and copies
+these to a target directory.
 }
 \author{
-  Dieter Menne, \email{dieter.menne@menne-biomed.de}
+Dieter Menne, \email{dieter.menne@menne-biomed.de}
 }
 

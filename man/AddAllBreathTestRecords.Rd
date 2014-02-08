@@ -2,7 +2,7 @@
 \alias{AddAllBreathTestRecords}
 \title{Reads and saves multiple 13C Breath test records}
 \usage{
-  AddAllBreathTestRecords(path, con)
+AddAllBreathTestRecords(path, con)
 }
 \arguments{
   \item{path}{start path for recursive search; can be a
@@ -11,20 +11,20 @@
   \item{con}{connection to sqlite database}
 }
 \value{
-  A dataframe with columns \code{file}, \code{basename},
-  \code{recordID} (NULL if not saved) and \code{status}
-  with levels \code{"saved", "skipped", "invalid"}.
+A dataframe with columns \code{file}, \code{basename},
+\code{recordID} (NULL if not saved) and \code{status} with
+levels \code{"saved", "skipped", "invalid"}.
 }
 \description{
-  Reads all BreathID and Iris/Wagner data records in a
-  directory. It is assumed that BreathID files have at
-  least 2 underscores, all other are taken as Iris/Wagner.
-  This is not very generic! Computes several fit parameters
-  and a fit, and writes these to the database. Files that
-  are already in the database are skipped. Note only the
-  base name is tested, so that files with the same name in
-  different directories are considered identical without
-  testing.
+Reads all BreathID and Iris/Wagner data records in a
+directory. It is assumed that BreathID files have at least
+2 underscores, all other are taken as Iris/Wagner. This is
+not very generic! Computes several fit parameters and a
+fit, and writes these to the database. Files that are
+already in the database are skipped. Note only the base
+name is tested, so that files with the same name in
+different directories are considered identical without
+testing.
 }
 \examples{
 if (exists("con")) suppressWarnings(dbDisconnect(con))

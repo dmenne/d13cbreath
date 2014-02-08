@@ -2,9 +2,8 @@
 \alias{Plot13CRecord}
 \title{Plot a 13C record and fit results}
 \usage{
-  Plot13CRecord(con, breathTestRecordID,
-    showParameters = NULL, ymax = NULL, xmax = NULL,
-    showName = FALSE, showPopulationFit = FALSE)
+Plot13CRecord(con, breathTestRecordID, showParameters = NULL, ymax = NULL,
+  xmax = NULL, showName = FALSE, showPopulationFit = FALSE)
 }
 \arguments{
   \item{con}{Open connection to SQLite database; use
@@ -34,11 +33,11 @@
   a valid population fit, this is always shown.}
 }
 \value{
-  A ggplot2 graphics object
+A ggplot2 graphics object
 }
 \description{
-  Reads record from database and plots raw data, fit, and
-  extracted coefficients
+Reads record from database and plots raw data, fit, and
+extracted coefficients
 }
 \examples{
 if (exists("con")) suppressWarnings(dbDisconnect(con))
@@ -54,6 +53,6 @@ Plot13CRecord(con,breathTestRecordID, showParameters)
 dbDisconnect(con)
 }
 \author{
-  Dieter Menne, \email{dieter.menne@menne-biomed.de}
+Dieter Menne, \email{dieter.menne@menne-biomed.de}
 }
 

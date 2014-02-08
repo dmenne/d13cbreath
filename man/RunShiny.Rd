@@ -2,10 +2,10 @@
 \alias{RunShiny}
 \title{Runs Shiny app to display data}
 \usage{
-  RunShiny()
+RunShiny()
 }
 \description{
-  Start the Shiny App
+Start the Shiny App
 }
 \examples{
 \dontrun{

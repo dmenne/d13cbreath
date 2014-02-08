@@ -2,7 +2,7 @@
 \alias{ComputeAndSaveParameterizedFit}
 \title{Reads 13C data from database, computes parameterized fit parameters}
 \usage{
-  ComputeAndSaveParameterizedFit(con, BreathTestRecordID)
+ComputeAndSaveParameterizedFit(con, BreathTestRecordID)
 }
 \arguments{
   \item{con}{connection to SQlite database}
@@ -11,10 +11,10 @@
   BreathTestTimeSeries}
 }
 \description{
-  Reads record with given BreathTestRecordID from database
-  and computes ExpBeta fit parameter which are written back
-  to table BreathTestParameter Existing parameters are
-  overwritten.
+Reads record with given BreathTestRecordID from database
+and computes ExpBeta fit parameter which are written back
+to table BreathTestParameter Existing parameters are
+overwritten.
 }
 \examples{
 sqliteFile = CreateSimulatedBreathTestDatabase()
@@ -24,6 +24,6 @@ ComputeAndSaveParameterizedFit(con,BreathTestRecordID)
 dbDisconnect(con)
 }
 \author{
-  Dieter Menne, \email{dieter.menne@menne-biomed.de}
+Dieter Menne, \email{dieter.menne@menne-biomed.de}
 }
 

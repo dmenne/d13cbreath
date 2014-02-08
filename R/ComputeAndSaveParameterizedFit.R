@@ -25,6 +25,8 @@ ComputeAndSaveParameterizedFit = function(con,BreathTestRecordID)  {
   if (inherits("data","try-error")  | nrow(data)==0) 
     stop(paste("No PDR data found for BreathTestRecordID",BreathTestRecordID))
   # Fit Model and compute prediction
+  # TODO: Shift values at t=0 to values a t=0.001 to avoid errors
+  # TODO: Kill if values t<0 are present
   start = list(m=sum(data$PDR*diff(c(0,data$Time)))/70, # Empirical
                k=1/100,beta=2)
   bid.nls = try(suppressWarnings(nls(PDR~ExpBeta(Time,Dose,m,k,beta),

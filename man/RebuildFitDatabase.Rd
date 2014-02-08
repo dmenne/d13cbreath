@@ -2,7 +2,7 @@
 \alias{RebuildFitDatabase}
 \title{Recompute all fit parameters}
 \usage{
-  RebuildFitDatabase(con = NULL)
+RebuildFitDatabase(con = NULL)
 }
 \arguments{
   \item{con}{Connection to sqlite database; if missing,
@@ -10,8 +10,8 @@
   \code{getOption("Gastrobase2SqlitePath")} is used.}
 }
 \description{
-  Recomputes all fits parameters, excluding population fit.
-  Use this function to refresh coefficients when the
-  algorithm has changed.
+Recomputes all fits parameters, excluding population fit.
+Use this function to refresh coefficients when the
+algorithm has changed.
 }
 

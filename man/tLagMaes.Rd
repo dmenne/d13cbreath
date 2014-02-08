@@ -2,7 +2,7 @@
 \alias{tLagMaes}
 \title{So-called lag time from Maes/Ghoos fit}
 \usage{
-  tLagMaes(cf)
+tLagMaes(cf)
 }
 \arguments{
   \item{cf}{named vector of coefficients; only \code{k} and
@@ -11,18 +11,18 @@
   (e.g. 0.6/h).}
 }
 \value{
-  lag time as defined from Maes fit
+lag time as defined from Maes fit
 }
 \description{
-  Determine \code{tlag} from uncorrected fit to the beta
-  exponential function. The name \code{tLag} is a misnomer.
-  It simply is the maximum of the PDR curve, so in papers
-  by Bluck et al. it is renamed to tMax. Maes B D, Ghoos Y
-  F, Rutgeerts P J, Hiele M I, Geypens B and Vantrappen G
-  1994 Dig. Dis. Sci. 39 S104-6
+Determine \code{tlag} from uncorrected fit to the beta
+exponential function. The name \code{tLag} is a misnomer.
+It simply is the maximum of the PDR curve, so in papers by
+Bluck et al. it is renamed to tMax. Maes B D, Ghoos Y F,
+Rutgeerts P J, Hiele M I, Geypens B and Vantrappen G 1994
+Dig. Dis. Sci. 39 S104-6
 }
 \seealso{
-  \code{\link{ExpBeta}}, and \code{\link{t50BluckCoward}}
-  for an example.
+\code{\link{ExpBeta}}, and \code{\link{t50BluckCoward}} for
+an example.
 }
 

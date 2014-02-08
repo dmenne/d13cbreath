@@ -2,7 +2,7 @@
 \alias{CumExpBeta}
 \title{Cumulative Exponential Beta function}
 \usage{
-  CumExpBeta(Time, Dose, cf)
+CumExpBeta(Time, Dose, cf)
 }
 \arguments{
   \item{Time}{in minutes}
@@ -15,15 +15,15 @@
   (e.g. 0.6/h).}
 }
 \value{
-  vector of predicted cumulative PDR
+vector of predicted cumulative PDR
 }
 \description{
-  Equation (2), page 4 from Bluck, "Recent advances in the
-  interpretation of the 13C octanoate breath test for
-  gastric emptying". This is the cumulative beta
-  exponential, and can be used to compute the 50% points.
+Equation (2), page 4 from Bluck, "Recent advances in the
+interpretation of the 13C octanoate breath test for gastric
+emptying". This is the cumulative beta exponential, and can
+be used to compute the 50% points.
 }
 \seealso{
-  \code{\link{ExpBeta}}
+\code{\link{ExpBeta}}
 }
 

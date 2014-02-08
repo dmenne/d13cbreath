@@ -2,7 +2,7 @@
 \alias{AddBreathTestRecord}
 \title{Reads BreathID record and writes parameters to database}
 \usage{
-  AddBreathTestRecord(filename, con)
+AddBreathTestRecord(filename, con)
 }
 \arguments{
   \item{filename}{Name of BreathID file}
@@ -11,8 +11,8 @@
   \code{OpenSqliteConnection}}
 }
 \description{
-  Reads BreathID data record, computes several fit
-  parameters and a fit, and writes these to the database.
+Reads BreathID data record, computes several fit parameters
+and a fit, and writes these to the database.
 }
 \examples{
 sqliteFile = tempfile(pattern = "Gastrobase", tmpdir = tempdir(), fileext = ".sqlite")

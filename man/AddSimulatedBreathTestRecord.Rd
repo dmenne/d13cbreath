@@ -2,14 +2,14 @@
 \alias{AddSimulatedBreathTestRecord}
 \title{Adds simulated breath test record to the database}
 \usage{
-  AddSimulatedBreathTestRecord(con)
+AddSimulatedBreathTestRecord(con)
 }
 \arguments{
   \item{con}{connection to sqlite database}
 }
 \description{
-  Creates a simulated data record, computes several fit
-  parameters, and appends these to the database
+Creates a simulated data record, computes several fit
+parameters, and appends these to the database
 }
 \examples{
 # This example does the same as the function CreateSimulatedBreathTestDatabase
@@ -26,8 +26,7 @@ if (inherits(add,"try-error")) dbRollback(con) else dbCommit(con)
 dbDisconnect(con)
 }
 \seealso{
-  \code{\link{ReadBreathId}},
-  \code{\link{SimulateBreathId}},
-  \code{\link{CreateSimulatedBreathTestDatabase}}
+\code{\link{ReadBreathId}}, \code{\link{SimulateBreathId}},
+\code{\link{CreateSimulatedBreathTestDatabase}}
 }
 

@@ -2,20 +2,20 @@
 \alias{RemoveNACoefficients}
 \title{Remove coefficients from \code{nlsList} for subsequent \code{nlme} run.}
 \usage{
-  RemoveNACoefficients(cf)
+RemoveNACoefficients(cf)
 }
 \arguments{
   \item{cf}{coefficients from a nlsList fit.}
 }
 \value{
-  character vector of levels to be deleted
+character vector of levels to be deleted
 }
 \description{
-  Returns a character vector of the levels to be deleted
-  from nlme. Used in function
-  \code{\link{BreathTestPopulationFit}} as the default
-  function. In general, leave this function at its default
-  value. Overriding this function is required for testing
-  only
+Returns a character vector of the levels to be deleted from
+nlme. Used in function
+\code{\link{BreathTestPopulationFit}} as the default
+function. In general, leave this function at its default
+value. Overriding this function is required for testing
+only
 }
 

@@ -2,7 +2,7 @@
 \alias{CreateEmptyBreathTestDatabase}
 \title{Create an empty SQLite database for breath test data}
 \usage{
-  CreateEmptyBreathTestDatabase(sqlitePath)
+CreateEmptyBreathTestDatabase(sqlitePath)
 }
 \arguments{
   \item{sqlitePath}{Full filename with path to create
@@ -11,13 +11,13 @@
   find the default path for the database.}
 }
 \description{
-  These functions can be used for testing, or as a sample
-  how to write data to the database. Using sqlite allows
-  for full control of database and table creation from the
-  script; creating a Microsoft Access database is not
-  possible from RODBC, creating tables is possible, but "ON
-  UPDATE DELETE" fails and you will need to dig deep into
-  webspace to find it is not your fault.
+These functions can be used for testing, or as a sample how
+to write data to the database. Using sqlite allows for full
+control of database and table creation from the script;
+creating a Microsoft Access database is not possible from
+RODBC, creating tables is possible, but "ON UPDATE DELETE"
+fails and you will need to dig deep into webspace to find
+it is not your fault.
 }
 \examples{
 sqlitePath = tempfile(pattern = "Gastrobase", tmpdir = tempdir(), fileext = ".sqlite")
@@ -29,6 +29,6 @@ CreateEmptyBreathTestDatabase(getOption("Gastrobase2SqlitePath"))
 }
 }
 \author{
-  Dieter Menne, \email{dieter.menne@menne-biomed.de}
+Dieter Menne, \email{dieter.menne@menne-biomed.de}
 }
 

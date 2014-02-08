@@ -25,7 +25,9 @@ helpTexts[methodParameters[[1]]] =
   from the exponential beta curve. 
   The values for t<sub>50</sub> are much higher than those from
   scintigraphic/MRI data. A scintigraphic linear correction is sometimes applied,
-  but this does not provide an advantage for classification."
+  but this does not provide an advantage for classification. The lag time t<sub>lag</sub>
+  is misnomed, because it is the position of PDR maximum, and only indirectly related to delay
+  of the whole curve."
     
 helpTexts[methodParameters[[2]]] = 
   "Self-correcting method after <i>Bluck/Coward</i>. It uses the terminal falling slope, 

@@ -2,7 +2,7 @@
 \alias{t50BluckCoward}
 \title{Self-corrected t_{50}}
 \usage{
-  t50BluckCoward(cf)
+t50BluckCoward(cf)
 }
 \arguments{
   \item{cf}{named vector of coefficients; only \code{k} and
@@ -11,17 +11,17 @@
   is quoted as 1/h (e.g. 0.6/h).}
 }
 \value{
-  time where value is 1/2 of maximum, i.e. t_{50} or
-  t_{1/2} in minutes; in the above paper, the parameter is
-  called t_{1/2(in)}.
+time where value is 1/2 of maximum, i.e. t_{50} or t_{1/2}
+in minutes; in the above paper, the parameter is called
+t_{1/2(in)}.
 }
 \description{
-  Newton's method to solve the self-corrected BluckCoward
-  equation for 1/2 to compute t_50. See also equation
-  G(n,t) in "Bluck LJC, Jackson S, Vlasakakis G, Mander A
-  (2011) Bayesian hierarchical methods to interpret the
-  13C-octanoic acid breath test for gastric emptying.
-  Digestion 83_96-107, page 98.
+Newton's method to solve the self-corrected BluckCoward
+equation for 1/2 to compute t_50. See also equation G(n,t)
+in "Bluck LJC, Jackson S, Vlasakakis G, Mander A (2011)
+Bayesian hierarchical methods to interpret the 13C-octanoic
+acid breath test for gastric emptying. Digestion 83_96-107,
+page 98.
 }
 \examples{
 # From table 3 and 4 in Bluck et al.; values for k and beta(NLS, Bayesian) are entered
@@ -83,6 +83,6 @@ cf4
 #'
 }
 \seealso{
-  \code{\link{ExpBeta}}
+\code{\link{ExpBeta}}
 }
 
