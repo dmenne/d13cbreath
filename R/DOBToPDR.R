@@ -30,8 +30,9 @@
 #' @export
 DOBToPDR = function(DOB,weight=75,height=180,MW=167,purityPercent=99.1,
                       mgSubstrate=100){
-  if (is.na(weight) || is.null(weight)) weight=75
-  if (is.na(height) || is.null(height)) height=180
+  if (is.na(weight) || is.null(weight) || weight<20 ) weight=75
+  if (is.na(height) || is.null(height) ) height=180
+  if (height < 2 ) height = height*100 # Correct for people giving height in meter
   if (is.character(MW))  {
     if (MW =="octanoate") MW = 167 else
     if (MW == "acetate") MW = 83.0233388 else

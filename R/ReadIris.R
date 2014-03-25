@@ -4,16 +4,15 @@
 #' Reading CSV-formatted files is not supported, because these do not contain
 #' weight and height information required for DOB to PDR conversion.
 #' The composite files required start as follows:
-#''\preformatted{
-#'' "Testergebnis"
-#'' "Nummer","1330"
-#'' "Datum","10.10.2013"
-#'' "Testart"}
+#' \preformatted{
+#' "Testergebnis"
+#' "Nummer","1330"
+#' "Datum","10.10.2013"
+#' "Testart"}
 #' 
 #' @param filename Name of IRIS/Wagner file in csv format
 #' @return list with \code{FileName, PatientName, PatientFirstName, Test, Identifikation}, 
 #' and data frame \code{Data} with \code{Time} and \code{DOB}
-#' @note Substrate has been fixed to octanoate, this may be wrong
 #' @author Dieter Menne, \email{dieter.menne@@menne-biomed.de}
 #' @examples
 #' filename = system.file("extdata", "IrisMulti.txt", package = "D13CBreath")

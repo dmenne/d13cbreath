@@ -178,8 +178,6 @@ AddBreathTestRecord = function(filename,con){
 #' @name AddAllBreathTestRecords
 #' @description 
 #' Reads all BreathID and Iris/Wagner data records in a directory.
-#' It is assumed that BreathID files have at least 2 underscores, all
-#' other are taken as Iris/Wagner. This is not very generic! 
 #' Computes several fit parameters and a fit, and writes these to the database. 
 #' Files that are already in the database are skipped. Note only the base name is tested, 
 #' so that files with 

@@ -22,8 +22,8 @@ ComputeAndSaveParameterizedFit = function(con,BreathTestRecordID)  {
   data = dbGetQuery(con,paste(
     "SELECT Time, Value as PDR from BreathTestTimeSeries where BreathTestRecordID=" ,
     BreathTestRecordID, " and Parameter = 'PDR' and Time > 0 order by Time",sep=""))
-  if (inherits("data","try-error")  | nrow(data)==0) 
-    stop(paste("No PDR data found for BreathTestRecordID",BreathTestRecordID))
+  if (inherits("data","try-error")  | nrow(data)==0 | all(data$PDR == 0) ) 
+    stop(paste("No PDR data found for BreathTestRecordID; did you supply weight and height?",BreathTestRecordID))
   # Fit Model and compute prediction
   # TODO: Shift values at t=0 to values a t=0.001 to avoid errors
   # TODO: Kill if values t<0 are present
