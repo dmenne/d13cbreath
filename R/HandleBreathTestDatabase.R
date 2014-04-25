@@ -418,7 +418,8 @@ SavePatientRecord = function(bid,con) {
   ret = try(dbGetPreparedQuery(con, q,bind.data= bts[,flds]), silent=TRUE)
 
   if (inherits(ret,"try-error"))
-    stop(str_c("Could not write raw time series record for patient ",PatientID))
+    stop(str_c("Could not write raw time series record for patient ",PatientID,"\n",
+    attr(ret,"condition")$message))
   BreathTestRecordID
 }
 
