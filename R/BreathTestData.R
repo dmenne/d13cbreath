@@ -22,7 +22,7 @@
 #' @param RecordDate Required record date.
 #' @param StartTime optional
 #' @param EndTime optional
-#' @param TestNo required; unique test number
+#' @param TestNo required integer; unique test number. Converted to integer if factor
 #' @param Dose optional, default 100 mg
 #' @param Height optional, in cm; when PDR must be calculated, default values are 
 #' used; see \code{\link{DOBToPDR}}
@@ -64,12 +64,14 @@ BreathTestData = function(
   if (! "PDR" %in% nd )  
     Data$PDR = DOBToPDR(Data$DOB,Weight,Height,MW=substrate)
   structure(list(
-    PatientID = PatientID, Name=Name, FirstName=FirstName, Initials=Initials, 
+    PatientID = PatientID, Name=Name, FirstName=FirstName, 
+    Initials=Initials, 
     DOB=DOB, BirthYear=BirthYear,
     Gender=Gender, Study=Study, PatStudyID=PatStudyID,  
     FileName=FileName, Device = Device, Substrate= substrate, 
     RecordDate=as.character(RecordDate), StartTime=as.character(StartTime),
-    EndTime = as.character(EndTime), TestNo=TestNo ,Dose=100, Height=Height, Weight=Weight, 
+    EndTime = as.character(EndTime), TestNo=as.integer(TestNo),
+    Dose=100, Height=Height, Weight=Weight, 
     T50 = T50, GEC = GEC, TLag=TLag, 
     Data=Data),class="BreathTestData")
 }

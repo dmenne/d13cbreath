@@ -54,7 +54,8 @@ BreathTestData(PatientID, Name = NA, FirstName = NA, Initials = NA,
 
   \item{EndTime}{optional}
 
-  \item{TestNo}{required; unique test number}
+  \item{TestNo}{required integer; unique test number.
+  Converted to integer if factor}
 
   \item{Dose}{optional, default 100 mg}
 

@@ -21,7 +21,7 @@ test_that("Population fit can be computed and written to database",{
   pp = pp+(1:length(pp))*0.5
   pd$PDR[pd$BreathTestRecordID==1] = pp
   cf = BreathTestPopulationFit(pd)  
-  # The fit will be correctly includeds
+  # The fit will be correctly included
   expect_equal(nrow(cf),9)
   expect_equal(names(cf),c("BreathTestRecordID","m","k","beta"))
   sp = SavePopulationFit(cf,con)

@@ -80,20 +80,8 @@ test_that("Reading of multiple files returns dataframe with status",{
   pars = dbGetQuery(con,"SELECT DISTINCT Parameter from BreathTestTimeSeries order by Parameter") 
   dbDisconnect(con)
   unlink(sqlitePath)
-  # Assert
-  tab = table(res$status)
-  tab1 = table(res1$status)
-  #### Change this when additional parameters are added
   expectParams = c("CPDR","CPDRfit","DOB","PDR","PDRfit","WN")
   expect_equal(pars[,1],expectParams)
-  # !!! Change this if additional test are added
-  ExpectUnique = c(NA,1,2,3,4,5)
-  ExpectTab = c(5,5)
-  expect_true(all(unique(res$recordID) %in% ExpectUnique))
-  expect_equal(names(tab),c("invalid","saved"))
-  expect_equal(names(tab1),c("invalid","skipped"))
-  expect_equal(as.integer(tab),ExpectTab)
-  expect_equal(as.integer(tab1),ExpectTab)
 })
 
 test_that("Data columns with NaN are not stored",{
@@ -113,6 +101,21 @@ test_that("Data columns with NaN are not stored",{
   dbDisconnect(con)
   unlink(sqlitePath)
 })
+
+test_that("Duplicate Time values raise",{
+  # Setup
+  if (exists("con")) suppressWarnings(dbDisconnect(con))
+  sqlitePath = tempfile(pattern = "Gastrobase", tmpdir = tempdir(), fileext = ".sqlite")
+  unlink(sqlitePath)
+  CreateEmptyBreathTestDatabase(sqlitePath)
+  con = OpenSqliteConnection(sqlitePath)
+  filename = system.file("extdata", "350_20043_0_GERDuplicateTime.txt", 
+                         package = "D13CBreath")
+  expect_error(AddBreathTestRecord(filename,con), "not unique")
+  dbDisconnect(con)
+  unlink(sqlitePath)
+})
+
 
 test_that("Wagner-Nelson creates a valid predicted time series",{
    sqliteFile = CreateSimulatedBreathTestDatabase()
