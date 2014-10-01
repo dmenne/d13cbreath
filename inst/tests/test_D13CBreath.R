@@ -1,4 +1,7 @@
 context("13C read test")
+d13File = function(filename){
+  system.file("extdata", filename, package = "D13CBreath")  
+}
 
 test_that("ReadIris returns valid data set",{
   filename = d13File("IrisMulti.txt")

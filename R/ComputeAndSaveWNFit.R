@@ -33,7 +33,9 @@ ComputeAndSaveWNFit = function(con,BreathTestRecordID)  {
   frac = 1-(auct+data$PDR/k)/aucInf
   # compute 0.5-crossing
   spl = smooth.spline(data$Time,frac)
-  t50 = uniroot(function(t) predict(spl,t)$y-0.5,c(0,max(data$Time)))$root
+  t50 = try(
+    uniroot(function(t) predict(spl,t)$y-0.5,c(0,max(data$Time)))$root,silent=TRUE)
+  if (class(t50)=="try-error") t50 = 0
   ret = dbSendQuery(con, paste(
     "DELETE FROM BreathTestParameter where BreathTestRecordID=",
     BreathTestRecordID ," and Method ='WN'",sep=""))
@@ -41,6 +43,8 @@ ComputeAndSaveWNFit = function(con,BreathTestRecordID)  {
   # Write parameters and coefficients
   pars = data.frame(BreathTestParameterID=as.integer(NA), BreathTestRecordID,
                     Parameter = "t50",Method = "WN",Value = t50)
+  # *** Todo: remove dirty trick for invalid WN
+  pars =  pars[pars$Value !=0,]
   q = str_c("INSERT INTO BreathTestParameter VALUES(",
             paste(rep("?",ncol(pars)),collapse=","),")")
   ret = try(dbGetPreparedQuery(con, q,bind.data= pars), silent=TRUE)
@@ -54,6 +58,7 @@ ComputeAndSaveWNFit = function(con,BreathTestRecordID)  {
     Time = Time,
     Parameter = "WN",
     Value = predict(spl,Time)$y  )  
+  
   # Delete old values
   ret = dbSendQuery(con, paste(
     "DELETE FROM BreathTestTimeSeries where BreathTestRecordID=",

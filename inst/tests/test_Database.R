@@ -132,3 +132,22 @@ test_that("Wagner-Nelson creates a valid predicted time series",{
    dbDisconnect(con)
 })
 
+
+test_that("ReadBreathID on difficult file does not throw",{
+  if (exists("con")) suppressWarnings(dbDisconnect(con))
+  sqlitePath = 
+    tempfile(pattern = "Gastrobase", tmpdir = tempdir(), fileext = ".sqlite")
+  unlink(sqlitePath)
+  # This file fails in WN t50
+  breathfilename = d13File("badCurve.txt")
+  f = ReadBreathId(breathfilename)
+  expect_is(f,"BreathTestData")
+  CreateEmptyBreathTestDatabase(sqlitePath)
+  con = OpenSqliteConnection(sqlitePath)
+  filename = system.file("extdata", "350_20023_0_GERWithNan.txt", 
+                         package = "D13CBreath")
+  AddBreathTestRecord(filename,con)
+  dbDisconnect(con)
+  unlink(sqlitePath)
+})
+

@@ -73,7 +73,10 @@
 t50BluckCoward = function(cf){
   f = function(t,cf0) CumExpBeta(t,1,cf0)-0.5
   g = function(cf0){
-    uniroot(f,interval= c(1,1000),cf0)$root
+    ret = try(uniroot(f,interval= c(1,1000),cf0)$root, silent=TRUE)
+    if (inherits(ret, "try-error"))
+      ret = 0 # Dirty workaround, correct this
+    ret
   }
   if (class(cf)=="numeric")
     round(g(cf),3)

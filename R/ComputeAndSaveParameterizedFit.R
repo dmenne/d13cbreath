@@ -57,12 +57,13 @@ ComputeAndSaveParameterizedFit = function(con,BreathTestRecordID)  {
                                      t50Maes(cf),t50MaesScintigraphy(cf),
                                      tLagBluckCoward(cf),tLagMaes(cf)))
   )
-  
+  # Dirty trick: remove zero t50BluckCowards
+  pars = pars[pars$Value !=0,]
   q = str_c("INSERT INTO BreathTestParameter VALUES(",
             paste(rep("?",ncol(pars)),collapse=","),")")
   ret = try(dbGetPreparedQuery(con, q,bind.data= pars), silent=TRUE)
   if (inherits(ret,"try-error"))
-    stop(str_c("Could not write fit parameters BreathTestRecordID ",
+    stop(str_c("Could not write fit parameters for record with BreathTestRecordID= ",
                BreathTestRecordID))
   
 }

@@ -245,7 +245,6 @@ AddAllBreathTestRecords = function(path,con){
         next
       }
     }
-    if (TRUE){
     recId = try(BreathTestRecordToDatabase(bid,con),silent=TRUE)
     if (inherits(recId,"try-error")){
       files[i,"error"] = attr(recId,"condition")$message
@@ -254,7 +253,6 @@ AddAllBreathTestRecords = function(path,con){
     }
     files[i,"recordID"] = recId
     files[i,"status"] = "saved"  
-    }
   }
   files$status = as.factor(files$status)
   # Rearrange for easier printout
