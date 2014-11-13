@@ -1,4 +1,4 @@
-context("Test of extraction of BreathID files from ")
+context("Test of extraction of BreathID files from zip file ")
 
 test_that("Test ok cases during file extraction without date comparison",{
   # Prepare zip file and directories

@@ -16,18 +16,10 @@ test_that("Population fit can be computed and written to database",{
   cf = BreathTestPopulationFit(pd)  
   expect_equal(nrow(cf),10)
   
-  # Make one stupid outlier
-  pp = pd$PDR[pd$BreathTestRecordID=="1"]
-  pp = pp+(1:length(pp))*0.5
-  pd$PDR[pd$BreathTestRecordID==1] = pp
-  cf = BreathTestPopulationFit(pd)  
-  # The fit will be correctly included
-  expect_equal(nrow(cf),9)
-  expect_equal(names(cf),c("BreathTestRecordID","m","k","beta"))
   sp = SavePopulationFit(cf,con)
   expect_is(sp,"data.frame")
   tb = as.numeric(table(sp$status))
-  expect_equal(tb, c(9,1)) # 9 kept, 1 removed
+  expect_equal(tb, c(10))
 })
 
 RandomizeRemoveNACoefficient = function(cf){
@@ -35,7 +27,7 @@ RandomizeRemoveNACoefficient = function(cf){
   sample(r,length(r))
 }
 
-if (FALSE) # This test need long time to run and produces a lot of error messages
+if (FALSE) # This test need loncg time to run and produces a lot of error messages
 test_that("NLME fit must return the same results when nlsList invalid results are randomized",{
   # This test is only run when there is a default database with real data
   # The success of this test depends on actual data from measurements, not on simulated

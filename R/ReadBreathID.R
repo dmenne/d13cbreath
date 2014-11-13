@@ -25,8 +25,7 @@ ReadBreathId = function(filename) {
   ## Note : End Time and Start Time are reversed in the data file, we correct
   ## this here, no typo!!
   EndTime = strptime(str_c(recordDate, " ",findSinglePattern(bid,"Start time") ),
-                     "%m/%d/%y %H:%M")
-    
+                     "%m/%d/%y %H:%M")  
   StartTime =strptime(str_c(recordDate, " ",findSinglePattern(bid,"End time") ),
                       "%m/%d/%y %H:%M")
   PatientID = findSinglePattern(bid,"Patient #")

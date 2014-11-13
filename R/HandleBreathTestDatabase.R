@@ -166,8 +166,8 @@ OpenSqliteConnection = function(sqlitePath=NULL){
 #' AddBreathTestRecord(filename,con)
 #' dbDisconnect(con)
 #' @export
-##con = OpenSqliteConnection()
-##filename = "C:/Users/Dieter/Documents/RPackages/D13CBreath/inst/extdata/350_20023_0_GERWithNan.txt"
+#con = OpenSqliteConnection()
+#filename = "C:/Users/Dieter/Documents/RPackages/D13CBreath/inst/extdata/350_20023_0_GERWithNan.txt"
 
 AddBreathTestRecord = function(filename,con){
   bid = ReadBreathId(filename)
@@ -200,9 +200,8 @@ AddBreathTestRecord = function(filename,con){
 #' AddAllBreathTestRecords(path,con)
 #' dbDisconnect(con)
 #' 
-#con = OpenSqliteConnection()
+# con = OpenSqliteConnection()
 #path = c("C:/Users/Dieter/Documents/Gastrobase2/Iris")
-
 #         "C:/Users/Dieter/Documents/Gastrobase2/BreathID")
 #' @export
 AddAllBreathTestRecords = function(path,con){
@@ -223,7 +222,7 @@ AddAllBreathTestRecords = function(path,con){
     files$device[!skipped] = DeviceType(files$file[!skipped])  
   } else 
     files$device = DeviceType(files$file)  
-  # processe all files
+  # process all files
   for (i in seq(along=files$file)){
     if (is.na(files[i,"device"]))  # skip known
       next
@@ -325,20 +324,21 @@ RebuildFitDatabase = function(con=NULL){
 #' @param con Connection to sqlite database
 #' @export
 BreathTestRecordToDatabase = function(bid, con){
-  # Nested transactions are not possible with dbBeginTransaction in SQlite,
+  # Nested transactions are not possible with dbBegin in SQlite,
   # therefore within the transaction it is not allowed to use dbWriteTable
   # which opens a transaction. Must use prepared queries instead.
+  # TODO: Nesting is possible with named transactions
   if (! inherits(bid,"BreathTestData"))
-    stop("BreathTestRecordToDatabase: bid must be generated with function 'BreathTestData'")
+    stop("BreathTestRecordToDatabase: bid must of class 'BreathTestData'")
   # Wrap everything in a transaction
-  dbBeginTransaction(con)
+  dbBegin(con,"BreathTestRecordToDatabase")
   ## Do not use dbWriteTable in any nested function
   ret =try(BreathTestRecordToDatabaseInternal(bid,con), silent = TRUE)
   if (inherits(ret,"try-error")){
-    dbRollback(con)
+    dbRollback(con,"BreathTestRecordToDatabase")
     stop(attr(ret,"condition")$message)  
   }
-  dbCommit(con)
+  dbCommit(con,"BreathTestRecordToDatabase")
   ret
 }
 

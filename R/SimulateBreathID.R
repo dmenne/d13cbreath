@@ -46,7 +46,7 @@ SimulateBreathId = function(){
 #' \code{\link{CreateSimulatedBreathTestDatabase}}
 #' 
 #' @examples
-#' # This example does the same as the function CreateSimulatedBreathTestDatabase
+#' # This example does the same as the function \code{CreateSimulatedBreathTestDatabase}
 #' if (exists("con")) 
 #'   suppressWarnings(dbDisconnect(con))
 #' sqlitePath = tempfile(pattern = "Gastrobase", tmpdir = tempdir(), fileext = ".sqlite")
@@ -56,7 +56,6 @@ SimulateBreathId = function(){
 #' add = try (
 #'   for (i in 1:10)
 #'     AddSimulatedBreathTestRecord(con),silent = TRUE)
-#' if (inherits(add,"try-error")) dbRollback(con) else dbCommit(con)
 #' dbDisconnect(con)
 #' @export
 AddSimulatedBreathTestRecord = function(con){
@@ -86,15 +85,17 @@ CreateSimulatedBreathTestDatabase = function(sqlitePath=NULL){
   add = try (
     for (i in 1:10)
       AddSimulatedBreathTestRecord(con),silent = TRUE)
+  if (inherits(add,"try-error")){
+    stop(paste("CreateSimulatedBreathTestDatabase", attr(add,"condition")$message))
+  }
   setting = data.frame(
       SettingID = c("BlueItem","GreenItem","OrangeItem","RedItem"),
       Value = c("Record_1","Record_2","Record_3","Patient_Gamma")      
     )
-  q = str_c("INSERT INTO Setting VALUES(?,?)")        
+  q = "INSERT INTO Setting VALUES(?,?)"        
   ret = try(dbGetPreparedQuery(con, q,bind.data= setting), silent=TRUE)
   
-  if (inherits(add,"try-error") | inherits(ret, "try-error") )
-    dbRollback(con) else   dbCommit(con)
+  # Ok
   RebuildPopulationFitDatabase(con)
   dbDisconnect(con)
   sqlitePath
@@ -102,10 +103,10 @@ CreateSimulatedBreathTestDatabase = function(sqlitePath=NULL){
 
 RandomName = function(nLetters=6){
   paste(sample(LETTERS[1:26],1,TRUE),
-        paste(sample(letters[1:26],nLetters-1,TRUE),collapse=""),sep="")
+        paste0(sample(letters[1:26],nLetters-1,TRUE),collapse=""))
 }
 RandomFile = function(ext="txt"){
-  paste(paste(sample(100:999,1,TRUE),sample(10000:99999,1,TRUE),
-              sample(1:9,1),sep="_"),".",ext,sep="")
+  paste0(paste(sample(100:999,1,TRUE),sample(10000:99999,1,TRUE),
+              sample(1:9,1),sep="_"),".",ext)
 }  
 

@@ -124,9 +124,9 @@ SavePopulationFit = function(cf,con=NULL){
              "BluckCowardPop","MaesPop","MaesScintPop",
              "BluckCowardPop","MaesPop")
   # Delete all old entries
-  q = paste(
+  q = paste0(
      "DELETE FROM BreathTestParameter where Method in ('",
-     paste(unique(Method),collapse="','",sep=""),"')",sep="")
+     paste0(unique(Method),collapse="','"),"')")
   dbSendQuery(con,q)
   for (i in 1:nrow(cf))
   {
@@ -200,7 +200,7 @@ RebuildPopulationFitDatabase = function(con=NULL){
   if (localCon) dbDisconnect(con)
   kept = sum(res$status =="kept")
   removed = sum(res$status =="removed")
-  paste("Population fit:", 
+  paste0("Population fit:", 
         kept, " Records added\n",
-        removed," Records not added\n",sep="")
+        removed," Records not added\n")
 }

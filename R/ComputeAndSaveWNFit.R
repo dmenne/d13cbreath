@@ -18,14 +18,14 @@
 #' @export
 #' 
 ComputeAndSaveWNFit = function(con,BreathTestRecordID)  {
-  k = dbGetQuery(con, paste(
+  k = dbGetQuery(con, paste0(
     "SELECT Value as k from BreathTestParameter where BreathTestRecordID=",
-    BreathTestRecordID," and Parameter ='k'",sep=""))[1,1]
+    BreathTestRecordID," and Parameter ='k'"))[1,1]
   if (is.na(k)) 
     k = 0.65/60 # Default value is 0.65, but we use minutes everywhere
-  data = dbGetQuery(con,paste(
+  data = dbGetQuery(con,paste0(
     "SELECT Time, Value as PDR from BreathTestTimeSeries where BreathTestRecordID=" ,
-    BreathTestRecordID, " and Parameter = 'PDR' and Time > 0 order by Time",sep=""))
+    BreathTestRecordID, " and Parameter = 'PDR' and Time > 0 order by Time"))
   if (inherits("data","try-error")) 
     stop(paste("No PDR data found for BreathTestRecordID",BreathTestRecordID))
   auct = AUCt(data$Time,data$PDR)
@@ -36,9 +36,9 @@ ComputeAndSaveWNFit = function(con,BreathTestRecordID)  {
   t50 = try(
     uniroot(function(t) predict(spl,t)$y-0.5,c(0,max(data$Time)))$root,silent=TRUE)
   if (class(t50)=="try-error") t50 = 0
-  ret = dbSendQuery(con, paste(
+  ret = dbSendQuery(con, paste0(
     "DELETE FROM BreathTestParameter where BreathTestRecordID=",
-    BreathTestRecordID ," and Method ='WN'",sep=""))
+    BreathTestRecordID ," and Method ='WN'"))
   dbClearResult(ret)
   # Write parameters and coefficients
   pars = data.frame(BreathTestParameterID=as.integer(NA), BreathTestRecordID,
@@ -60,9 +60,9 @@ ComputeAndSaveWNFit = function(con,BreathTestRecordID)  {
     Value = predict(spl,Time)$y  )  
   
   # Delete old values
-  ret = dbSendQuery(con, paste(
+  ret = dbSendQuery(con, paste0(
     "DELETE FROM BreathTestTimeSeries where BreathTestRecordID=",
-    BreathTestRecordID ," and Parameter ='WN'",sep=""))
+    BreathTestRecordID ," and Parameter ='WN'"))
   dbClearResult(ret)
   q = str_c("INSERT INTO BreathTestTimeSeries VALUES(",
             paste(rep("?",ncol(wn)),collapse=","),")")

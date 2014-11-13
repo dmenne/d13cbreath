@@ -15,13 +15,13 @@
 #' @param BreathTestRecordID these data will be read from BreathTestTimeSeries
 #' @export ComputeAndSaveParameterizedFit
 ComputeAndSaveParameterizedFit = function(con,BreathTestRecordID)  {
-  Dose = try(dbGetQuery(con, paste(
+  Dose = try(dbGetQuery(con, paste0(
     "SELECT Dose from BreathTestRecord where BreathTestRecordID=",
-    BreathTestRecordID),  sep="")[1,1])
+    BreathTestRecordID))[1,1])
   if (inherits("Dose","try-error")) Dose=100
-  data = dbGetQuery(con,paste(
+  data = dbGetQuery(con,paste0(
     "SELECT Time, Value as PDR from BreathTestTimeSeries where BreathTestRecordID=" ,
-    BreathTestRecordID, " and Parameter = 'PDR' and Time > 0 order by Time",sep=""))
+    BreathTestRecordID, " and Parameter = 'PDR' and Time > 0 order by Time"))
   if (inherits("data","try-error")  | nrow(data)==0 | all(data$PDR == 0) ) 
     stop(paste("No PDR data found for BreathTestRecordID; did you supply weight and height?",BreathTestRecordID))
   # Fit Model and compute prediction
@@ -44,10 +44,11 @@ ComputeAndSaveParameterizedFit = function(con,BreathTestRecordID)  {
   methods = c("ExpBeta","ExpBeta","ExpBeta","ExpBeta","BluckCoward","Maes","MaesScint",
     "BluckCoward","Maes")
   parameters = c("m","k","beta","deviance","t50","t50","t50","tlag","tlag")
-  dbSendQuery(con, paste(
-      "DELETE FROM BreathTestParameter where BreathTestRecordID=",
-      BreathTestRecordID ," and Method in ('",
-      paste(unique(methods),collapse="','",sep=""),"')",sep=""))
+  q = paste0(
+    "DELETE FROM BreathTestParameter where BreathTestRecordID=",
+    BreathTestRecordID ," and Method in ('",
+    paste0(unique(methods),collapse="','",sep=""),"')")
+  dbSendQuery(con, q)
   # Write parameters and coefficients
   pars = data.frame(BreathTestParameterID=as.integer(NA), BreathTestRecordID,
                     Parameter = parameters,

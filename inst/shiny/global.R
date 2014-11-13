@@ -111,8 +111,8 @@ PlotPairs = function(parc,quantiles){
   if (nrow(parp)<2) 
     return (NULL)
   sameParameters = nlevels(factor(parp$Parameter)) ==1
-  q1 =  paste("(Method ='", parp$Method,
-              "' and Parameter = '",parp$Parameter,"')",collapse=" or ",sep="")
+  q1 =  paste0("(Method ='", parp$Method,
+              "' and Parameter = '",parp$Parameter,"')",collapse=" or ")
   p = dbGetQuery(con,paste0(
     "SELECT BreathTestRecordID, Parameter, Method,Value from BreathTestParameter ",
     "WHERE ",q1))
