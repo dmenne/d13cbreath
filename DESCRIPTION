@@ -1,10 +1,10 @@
 Package: D13CBreath
 Title: Reads and evaluates gastric emptying 13C breath test data.
-Version: 1.6.3
-Date: 2014-11-12
+Version: 1.6.5
+Date: 2014-13-3
 Author: Dieter Menne
 Maintainer: Dieter Menne <dieter.menne@menne-biomed.de>
-Description: Reads several formats of 13C data (IRIS/Wagner, BreathID)
+Description: Reads several formats of 13C data (IRIS/Wagner, BreathID).
         Creates sample data, and sqlite database, and writes sample
         database Fits Bluck-Coward self-correcting formula using nls,
         and Wagner-Nelson with k(el) estimated from parametric fit.
