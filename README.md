@@ -7,8 +7,7 @@ http://www.menne-biomed.de
 
 dieter.menne@menne-biomed.de 
 
-The software is being developed in cooperation with the ETH and Department of Gastroenterology of the University Hospital of Zürich, Switzerland.  
-Thanks to Andreas Steingötter and Werner Schwizer.
+The software is being developed in cooperation with the ETH and Department of Gastroenterology of the University Hospital of Zürich, Switzerland. Thanks to Andreas Steingötter, Benjamin Misselwitz, Mark Fox and Werner Schwizer.
 
 __!! The package is under active development, and functions may change any time. Be warned !!__
 
