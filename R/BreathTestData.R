@@ -61,6 +61,11 @@ BreathTestData = function(
          "'; it should contain substrings '" ,paste(str_sub(substrates,1,4),collapse="' or '"),"'")
   if (!is.na(Gender) & ! match(Gender,c("m","f")))
     stop("Function BreathTestData: Gender should be 'm' or 'f'")
+  # Force NA if Weight or Height is not 0
+  if (Weight <= 30 || Height < 1){
+    Height = NA
+    Weight = NA
+  } 
   if (! "PDR" %in% nd )  
     Data$PDR = DOBToPDR(Data$DOB,Weight,Height,MW=substrate)
   structure(list(
