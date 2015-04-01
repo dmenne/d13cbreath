@@ -102,7 +102,7 @@ CreateSimulatedBreathTestDatabase = function(sqlitePath=NULL){
 }
 
 RandomName = function(nLetters=6){
-  paste(sample(LETTERS[1:26],1,TRUE),
+  paste0(sample(LETTERS[1:26],1,TRUE),
         paste0(sample(letters[1:26],nLetters-1,TRUE),collapse=""))
 }
 RandomFile = function(ext="txt"){
