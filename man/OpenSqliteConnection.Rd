@@ -17,6 +17,8 @@ Opens an connection to sqlite database; creates the database
 if it does not exists. If missing, file name is given by
 \code{getOption("Gastrobase2SqlitePath")} which is set to
 <HOME>/GastroBase/Gastobase/Gastrobase2.sqlite at package load time.
+
+When \code{options(D13CBreath.sqldebug=TRUE)}, SQL of queries is printed out
 }
 \examples{
 \dontrun{

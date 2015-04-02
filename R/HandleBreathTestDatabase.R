@@ -122,6 +122,8 @@ CreateEmptyBreathTestDatabase = function(sqlitePath){
 #' if it does not exists. If missing, file name is given by
 #' \code{getOption("Gastrobase2SqlitePath")} which is set to
 #' <HOME>/GastroBase/Gastobase/Gastrobase2.sqlite at package load time.
+#' 
+#' When \code{options(D13CBreath.sqldebug=TRUE)}, SQL of queries is printed out
 #' @param sqlitePath Full filename with path to create database file.
 #' @return con Connection for use with dbSendQuery and dbGetQuery
 #' @import stringr
@@ -166,8 +168,8 @@ OpenSqliteConnection = function(sqlitePath=NULL){
 #' AddBreathTestRecord(filename,con)
 #' dbDisconnect(con)
 #' @export
-#con = OpenSqliteConnection()
-#filename = "C:/Users/Dieter/Documents/RPackages/D13CBreath/inst/extdata/350_20023_0_GERWithNan.txt"
+# con = OpenSqliteConnection()
+# filename = "C:/Users/Dieter/Documents/RPackages/D13CBreath/inst/extdata/350_20023_0_GERWithNan.txt"
 
 AddBreathTestRecord = function(filename,con){
   bid = ReadBreathId(filename)
@@ -374,9 +376,11 @@ sn = function(x){
 SavePatientRecord = function(bid,con) {
   # returns last inserted RecordID
   # Check if patient exists
+  printSQL = unlist(options("D13CBreath.sqldebug"))
   PatientID = bid$PatientID
   q = sprintf("SELECT COUNT(*) from Patient where PatientID='%s'",
               bid$PatientID)
+  if (printSQL) print(q)
   if (dbGetQuery(con,q) == 0)
   {
     # Must insert Patient
@@ -385,6 +389,7 @@ SavePatientRecord = function(bid,con) {
      VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)",
      sn(PatientID),sn(Name),sn(FirstName),sn(Initials),sn(DOB),sn(BirthYear),
                          sn(Gender),sn(Study),sn(PatStudyID)))
+    if (printSQL) print(q)
     # Make sure to use utf8 here for Müller und Möller
     q = enc2utf8(q)
     tryCatch( dbSendQuery(con,q),
@@ -395,6 +400,7 @@ SavePatientRecord = function(bid,con) {
       %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
       sn(FileName), sn(Device), sn(Substrate),sn(PatientID),sn(RecordDate),
       sn(StartTime),sn(EndTime), sn(TestNo), sn(Dose), sn(Height), sn(Weight),0))
+  if (printSQL) print(q)
   ret = try(dbSendQuery(con,q),TRUE)
   if (inherits(ret,"try-error"))
   {
@@ -414,6 +420,7 @@ SavePatientRecord = function(bid,con) {
   flds = dbListFields(con,"BreathTestTimeSeries")
   q = str_c("INSERT INTO BreathTestTimeSeries VALUES(",
         paste(rep("?",length(flds)),collapse=","),")")
+  if (printSQL) print(q)
   ret = try(dbGetPreparedQuery(con, q,bind.data= bts[,flds]), silent=TRUE)
 
   if (inherits(ret,"try-error"))

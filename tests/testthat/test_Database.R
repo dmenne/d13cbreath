@@ -8,7 +8,10 @@ test_that("Writing sample BreathID database returns valid set of fit parameters 
   CreateEmptyBreathTestDatabase(sqlitePath)
   con = OpenSqliteConnection(sqlitePath)
   filename = system.file("extdata", "350_20043_0_GER.txt", package = "D13CBreath")
-  AddBreathTestRecord(filename,con)
+  # Check Debug output
+  options(D13CBreath.sqldebug = TRUE)
+  expect_output(AddBreathTestRecord(filename,con),"SELECT.*")
+  options(D13CBreath.sqldebug = FALSE)
   # Check Patient record
   pat = dbGetQuery(con,"SELECT * from Patient")
   expect_equal(pat$PatientID,"0")
