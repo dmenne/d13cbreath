@@ -47,9 +47,10 @@ ReadIris = function(filename) {
     if (Gender != "m") Gender ="f" # Make sure to avoid German names
   }
   Dose = as.numeric(findPattern(bid,"Dosis"))
-  Height = as.numeric(findPattern(bid,"Gr\u00f6\u00DFe.*",TRUE))*100
+  # Workaround for "Größe" and UTF
+  Height = as.numeric(findPattern(bid,"Gr.*e.*",TRUE))*100
   Weight = as.numeric(findPattern(bid,"Gewicht.*",TRUE))  
-  Test = findPattern(bid,"Abk\u00fcrzung")
+  Test = findPattern(bid,"Abk.*rzung")
   # There are multiple "Name" fields; skip the first
   Name = findPattern(bid[-(1:14)],"Name")
   FirstName = findPattern(bid,"Vorname")
