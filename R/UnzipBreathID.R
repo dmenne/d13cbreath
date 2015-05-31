@@ -18,8 +18,8 @@
 #' the name of the \code{lastZipFile}, and the modification date \code{lastZipDate}.
 #' @author Dieter Menne, \email{dieter.menne@@menne-biomed.de}
 #' @export
-UnzipBreathID = function(zipPath,destinationPath,inZipPath="txt/",
-                          lastZipFile=NULL, lastZipDate=NULL){
+UnzipBreathID = function(zipPath,destinationPath,
+                          lastZipFile=NULL, lastZipDate=NULL, inZipPath="txt/"){
   if (FALSE) {
     #zipPath = "C:/Users/Dieter/Documents/Gastrobase2"
     zipPath = "G:"

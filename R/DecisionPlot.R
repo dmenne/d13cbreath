@@ -46,96 +46,101 @@
 #' @export
 #' 
 DecisionPlot = function(con=NULL, 
-                        pars = dbGetQuery(con,"SELECT * from BreathTestParameter")[,-1],                      
+                        pars = dbGetQuery(con, "SELECT * from BreathTestParameter")[,-1],                      
                         methods = "Maes", 
-                        parameters = c("t50","tlag"),
-                        prob = c(0.01,0.05,0.25,0.5),
+                        parameters = c("t50", "tlag"),
+                        prob = c(0.01, 0.05, 0.25, 0.5),
                         main = "Breath test parameters",
-                        kde.package=c("ash","ks"),
+                        kde.package=c("ash", "ks"),
                         brewerPalette = "RdYlGn",
                         outlierFak = 3,
                         showColors = NULL,
                         showPoints=TRUE,
                         showDateLabels = TRUE){
-  if (FALSE){ # Debug
+  if (FALSE) { # Debug
     con = OpenSqliteConnection()
-    pars = dbGetQuery(con,"SELECT * from BreathTestParameter")[,-1]                      
-    methods=c("Maes","WN")
-    parameters=c("tlag","t50")
-    showColors=c("green","blue")
-    showPoints=FALSE
-    main="No points, Spectral"
+    pars = dbGetQuery(con, "SELECT * from BreathTestParameter")[,-1]                      
+    methods = c("Maes", "WN")
+    parameters = c("tlag", "t50")
+    showColors = c("green", "blue")
+    showPoints = FALSE
+    main = "No points, Spectral"
     brewerPalette = "Spectral"  
     outlierFak = 3
-    prob = c(0.01,0.05,0.25,0.5)
+    prob = c(0.01, 0.05, 0.25, 0.5)
     showDateLabels = TRUE
   }
   RecordDate = color = NULL # Only to avoid notes during package build
   stopifnot(length(methods) %in% 1:2) 
-  stopifnot(length(parameters)==2)
+  stopifnot(length(parameters) == 2)
   # Check if local database is used
   isLocal = is.null(con)
   if (isLocal) 
     con = OpenSqliteConnection()
-  if (length(methods)==1) methods = rep(methods,2)
-  on.exit(if(isLocal) dbDisconnect(con) )
-  selectPars =   (pars$Method==methods[1] & pars$Parameter == parameters[1]) |
-                 (pars$Method==methods[2] & pars$Parameter == parameters[2]) 
-  pp = pars[selectPars,]
+  if (length(methods) == 1) methods = rep(methods, 2)
+  on.exit(if (isLocal) dbDisconnect(con) )
+  selectPars =   (pars$Method == methods[1] & pars$Parameter == parameters[1]) |
+                 (pars$Method == methods[2] & pars$Parameter == parameters[2]) 
+  pp = pars[selectPars, ]
   if (nrow(pp) == 0 || ncol(pp) != 4) 
     stop("Selected parameter/method combination not available")
-  qPar =     dcast(pp,BreathTestRecordID~Method+Parameter,value.var="Value")
+  qPar =     dcast(pp, BreathTestRecordID~Method+Parameter, value.var="Value")
   # Remove outliers
   nOutliers = 0
   cParameters = names(qPar)[-1]
   p1 = names(qPar)[2]
   p2 = names(qPar)[3]
-  if (outlierFak > 0){
+  if (outlierFak > 0) {
     range = ldply(qPar[,cParameters], function(x) { 
-      sd = outlierFak*sqrt(var(x,na.rm=TRUE))
-      m = median(x,na.rm=TRUE)
-      data.frame(lower=m-sd ,upper=m+sd)})
+      sd = outlierFak*sqrt(var(x, na.rm=TRUE))
+      m = median(x, na.rm=TRUE)
+      data.frame(lower = m-sd , upper = m+sd)})
     rownames(range) = range[,".id"]
-    inRange = qPar[,p1] > range[p1,"lower"] & qPar[,p1] < range[p1,"upper"]   &
-              qPar[,p2] > range[p2,"lower"] & qPar[,p2] < range[p2,"upper"]
+    inRange = qPar[,p1] > range[p1, "lower"] & qPar[,p1] < range[p1, "upper"]   &
+              qPar[,p2] > range[p2, "lower"] & qPar[,p2] < range[p2, "upper"]
     nOutliers = nrow(qPar[!inRange,])
     qPar = qPar[inRange,  ]
   }
   qPar = na.omit(qPar)
+  # A dirty workaround for a degenerate case. hdr.boxplot does not like 
+  # duplicated values in some cases
+  dup = duplicated(qPar[,2:3])
+  qPar[dup, 2:3] = qPar[dup, 2:3]*1.000001
+  
   qPar$index = 1:nrow(qPar)
   # plot HDI graph
   sub = NULL
-  if (nOutliers==1){    
+  if (nOutliers == 1) {    
     sub = paste0(nOutliers, "outlier removed")
   } else {
     sub = paste0(nOutliers, "outliers removed")    
   }
-  hdr.boxplot.2d(qPar[,p1],qPar[,p2],prob, show.points=showPoints, pch=16,
-                 xlab=p1, ylab=p2, 
-                 kde.package=kde.package,
-                 shadecols = brewer.pal(length(prob),brewerPalette ),
+  hdr.boxplot.2d(qPar[,p1], qPar[,p2], prob, show.points = showPoints, pch = 16,
+                 xlab = p1, ylab = p2, 
+                 kde.package = kde.package,
+                 shadecols = brewer.pal(length(prob), brewerPalette),
                  main = main,
-                 pointcol="gray70",
-                 sub = paste0(nOutliers, " outliers removed"),
+                 pointcol = "gray70",
+                 sub = paste0(nOutliers, " outliers removed")
   )
   # Display the points in color
   markedRecords = MarkedRecords(con)[,-1]
-  if (!is.null(showColors) && !is.null(markedRecords)){
-    markedRecords = droplevels(markedRecords[markedRecords$color %in% showColors,])
-    colorRecords =  join(markedRecords,qPar[,c("BreathTestRecordID","index")], 
-                         by="BreathTestRecordID")
-    showPar = join(qPar[qPar$index %in% colorRecords$index,],colorRecords,
-                   by="BreathTestRecordID")
+  if (!is.null(showColors) && !is.null(markedRecords)) {
+    markedRecords = droplevels(markedRecords[markedRecords$color %in% showColors, ])
+    colorRecords =  join(markedRecords, qPar[,c("BreathTestRecordID", "index")], 
+                         by = "BreathTestRecordID")
+    showPar = join(qPar[qPar$index %in% colorRecords$index, ], colorRecords,
+                   by = "BreathTestRecordID")
     col = as.character(showPar[,"color"])
-    col[col=="orange"] = "darkorange" # otherwise not visible
-    col[col=="red"] = "darkred" # otherwise not visible
-    points(showPar[,cParameters],col=col,cex=2,pch=16)
+    col[col == "orange"] = "darkorange" # otherwise not visible
+    col[col == "red"] = "darkred" # otherwise not visible
+    points(showPar[,cParameters], col = col, cex = 2, pch = 16)
     # Plot arrows between those items that have a 
     colorCount = table(colorRecords$color)
-    arrowColors = names(colorCount)[colorCount>1]
+    arrowColors = names(colorCount)[colorCount > 1]
     
-    arrowRecords = arrange(colorRecords[colorRecords$color %in% arrowColors,],RecordDate)
-    arrowRecords = join(arrowRecords,qPar,by="BreathTestRecordID")
+    arrowRecords = arrange(colorRecords[colorRecords$color %in% arrowColors,], RecordDate)
+    arrowRecords = join(arrowRecords, qPar, by = "BreathTestRecordID")
     d_ply(arrowRecords,.(color), function(arrowRecord){
       for (i in 2:(nrow(arrowRecords))){
         x0 = arrowRecord[i-1,p1]  
