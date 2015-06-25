@@ -7,9 +7,8 @@ http://www.menne-biomed.de
 
 dieter.menne@menne-biomed.de 
 
+## What it does
 The software is being developed in cooperation with the ETH and Department of Gastroenterology of the University Hospital of Zürich, Switzerland. Thanks to Andreas Steingötter, Benjamin Misselwitz, Mark Fox and Werner Schwizer.
-
-__!! The package is under active development, and functions may change any time. Be warned !!__
 
 * Reads several formats of 13C data: IRIS/Wagner (partially supported), BreathID
 * Creates sample data and writes sample SQLite database; default database is in `<HOME>/Gastrobase2/Gastrobase2.sqlite`.
@@ -22,14 +21,25 @@ __!! The package is under active development, and functions may change any time.
 * [A comparison of results with nls, nlme](http://dmenne.github.io/d13cbreath) and the Bayesian [Stan](http://www.mc-stan.org).
 * See the example in the documentation of `t50BluckCoward` for a comparison with published data. Most cases agree with those published here, but there are some exceptions; possible a typo in the published table?
 
-
+## How to install
 To install the functions, use
 ```
 devtools::install_bitbucket("d13cbreath","dmenne")
 ```
 
+This package is also included in my [drat](https://github.com/eddelbuettel/drat) repository. Install R package `drat`, and issue the following command:
+
+`drat::addRepo("dmenne")`
+
+After this, the packages from the `dmenne` github repository can be installed like other packages, e.g. from RStudio. When a new versions is available, the packages  is update like any other packages from CRAN.
+
+For a persistent setting, add the above line to `<R_HOME>/etc/Rprofile.site`.
+
+## Using shiny to display the results
+
 The Shiny package is the test bed for new ways to display the data. To run
 it with a sample database, use:
+
 ```
 library(D13CBreath)
 # remove the following line if there is a database in the default location
@@ -38,8 +48,11 @@ databasePath = CreateSimulatedBreathTestDatabase()
 RunShiny()
 ```
 
-
 These function were developed under Windows 7 and have not been tested under Linux.
+
+## Known problems
+The coupling between computation and database storage is rather tight because of requirements of the first installation. Some refactoring must be done to allow using the computational part without data from the database.
+
 
 __Reference__: 
 
