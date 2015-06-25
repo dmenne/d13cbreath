@@ -31,7 +31,7 @@ This package is also included in my [drat](https://github.com/eddelbuettel/drat)
 
 `drat::addRepo("dmenne")`
 
-After this, the packages from the `dmenne` github repository can be installed like other packages, e.g. from RStudio. When a new versions is available, the packages  is update like any other packages from CRAN.
+After this, the packages from the `dmenne` github repository can be installed like CRAN packages, e.g. from RStudio. When a new version is available, the package is available as an update like any other CRAN package.
 
 For a persistent setting, add the above line to `<R_HOME>/etc/Rprofile.site`.
 
