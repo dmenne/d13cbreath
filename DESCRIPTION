@@ -1,16 +1,16 @@
 Package: D13CBreath
 Title: Reads and evaluates gastric emptying 13C breath test data
-Version: 1.7.3
+Version: 1.7.4
 Date: 2015-06-25
 Author: Dieter Menne
 Maintainer: Dieter Menne <dieter.menne@menne-biomed.de>
 Description: Reads several formats of 13C data (IRIS/Wagner, BreathID).
         Creates sample data, and sqlite database, and writes sample
-        database Fits Bluck-Coward self-correcting formula using nls,
+        database. Fits Bluck-Coward self-correcting formula using nls,
         and Wagner-Nelson with k(el) estimated from parametric fit.
         Bluck L J C and Coward W A 2006 Measurement of gastric emptying
         by the C-13-octanoate breath test --- rationalization with
-        scintigraphy Physiol. Meas. 27 279-89 Uses Shiny to display
+        scintigraphy Physiol. Meas. 27 279-89. Uses Shiny to display
         selected parameters and decision plots in the browser.
 Depends: R (>= 2.15.0),RSQLite (>= 1.0.0)
 Imports: stringr,reshape2,ggplot2,RColorBrewer,nlme, shiny,plyr, hdrcde
