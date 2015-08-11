@@ -19,7 +19,8 @@
 #' @param  mgSubstrate substrate in mg
 #' @return PDR percent dose/h
 #' @examples
-#' filename = system.file("extdata/extrasample", "350_20049_0_GERWithWeight.txt", package = "D13CBreath")
+#' filename = system.file("extdata/extrasample", "350_20049_0_GERWithWeight.txt", 
+#'     package = "D13CBreath")
 #' bid = ReadBreathId(filename)
 #' bid$Data$PDR1 = DOBToPDR(bid$Data$DOB,weight=bid$Weight,height=bid$Height)
 #' 
@@ -28,21 +29,27 @@
 #' var(bid$Data$PDR1-bid$Data$PDR)
 #' @author Dieter Menne, \email{dieter.menne@@menne-biomed.de}
 #' @export
-DOBToPDR = function(DOB,weight=75,height=180,MW=167,purityPercent=99.1,
-                      mgSubstrate=100){
-  if (is.na(weight) || is.null(weight) || max(weight)<20 ) weight=75
-  if (is.na(height) || is.null(height) ) height=180
-  if (max(height) < 2 ) height = height*100 # Correct for people giving height in meter
+DOBToPDR = function(DOB,weight = 75, height = 180, MW = 167, 
+                    purityPercent = 99.1, mgSubstrate = 100) {
+  if (is.na(weight) ||
+      is.null(weight) || max(weight) < 20)
+    weight = 75
+  if (is.na(height) || is.null(height))
+    height = 180
+  if (max(height) < 2)
+    height = height * 100 # Correct for people giving height in meter
   if (is.character(MW))  {
-    if (MW =="octanoate") MW = 167 else
-    if (MW == "acetate") MW = 83.0233388 else
-    stop("DOBToPDR: MW must be 'octanoate' or 'acetate' or numeric")
+    if (MW == "octanoate")
+      MW = 167
+    else
+      if (MW == "acetate")
+        MW = 83.0233388
+      else
+        stop("DOBToPDR: MW must be 'octanoate' or 'acetate' or numeric")
   }
-  surface= 0.024265* weight^0.5378*height^0.3964
-  CO2PerMinute = 300*surface # 
+  surface = 0.024265 * weight ^ 0.5378 * height ^ 0.3964
+  CO2PerMinute = 300 * surface #
   rpdb = 0.0112372 # isotope ratio in  reference
-  # See above note on 
-  DOB*CO2PerMinute*rpdb*10*MW/(mgSubstrate*purityPercent)
+  # See above note on
+  DOB * CO2PerMinute * rpdb * 10 * MW / (mgSubstrate * purityPercent)
 }
-
-

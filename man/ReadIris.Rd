@@ -25,7 +25,7 @@ The composite files required start as follows:
 "Testart"}
 }
 \examples{
-filename = system.file("extdata", "IrisMulti.txt", package = "D13CBreath")
+filename = system.file("extdata", "IrisMulti.TXT", package = "D13CBreath")
 irisData = ReadIris(filename)
 str(irisData)
 }
