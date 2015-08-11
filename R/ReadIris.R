@@ -15,7 +15,7 @@
 #' and data frame \code{Data} with \code{Time} and \code{DOB}
 #' @author Dieter Menne, \email{dieter.menne@@menne-biomed.de}
 #' @examples
-#' filename = system.file("extdata", "IrisMulti.txt", package = "D13CBreath")
+#' filename = system.file("extdata", "IrisMulti.TXT", package = "D13CBreath")
 #' irisData = ReadIris(filename)
 #' str(irisData)
 #' @export ReadIris
