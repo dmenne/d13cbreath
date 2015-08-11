@@ -4,7 +4,7 @@ d13File = function(filename){
 }
 
 test_that("ReadIris returns valid data set",{
-  filename = d13File("IrisMulti.txt")
+  filename = d13File("IrisMulti.TXT")
   f = ReadIris(filename)
   expect_is(f,"BreathTestData")
   expect_equal(f$FileName,basename(filename))
@@ -17,7 +17,7 @@ test_that("ReadIris returns valid data set",{
 })
 
 test_that("ReadIris returns valid data set when Weight/Height is zero",{
-  filename = d13File("IrisZeroWeight.txt")
+  filename = d13File("IrisZeroWeight.TXT")
   f = ReadIris(filename)
   expect_is(f,"BreathTestData")
   expect_true(is.na(f$Weight))
@@ -28,7 +28,7 @@ test_that("ReadIris returns valid data set when Weight/Height is zero",{
 
 
 test_that("ReadIris of CSV file throws",{
-  filename = d13File("IrisCSV.txt")
+  filename = d13File("IrisCSV.TXT")
   expect_error( ReadIris(filename),"valid Iris")
 })
           
