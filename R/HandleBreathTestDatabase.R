@@ -21,86 +21,90 @@
 #' CreateEmptyBreathTestDatabase(getOption("Gastrobase2SqlitePath"))
 #' }
 #' @export
-CreateEmptyBreathTestDatabase = function(sqlitePath){
+CreateEmptyBreathTestDatabase = function(sqlitePath) {
   if (file.exists(sqlitePath))
-    stop(str_c("The database", basename(sqlitePath),
-               " already exists, please delete it manually to proceed."))
+    stop(
+      str_c(
+        "The database", basename(sqlitePath),
+        " already exists, please delete it manually to proceed."
+      )
+    )
   con = OpenSqliteConnection(sqlitePath)
   createPatient =
-  'CREATE TABLE IF NOT EXISTS Patient (
-    PatientID TEXT PRIMARY KEY  NOT NULL ,
-    Name TEXT,
-    FirstName TEXT,
-    Initials TEXT,
-    DOB DATETIME,
-    BirthYear INTEGER,
-    Gender CHAR,
-    Study TEXT,
-    PatStudyID TEXT,
-    Status INTEGER DEFAULT 0)'
-
+    'CREATE TABLE IF NOT EXISTS Patient (
+  PatientID TEXT PRIMARY KEY  NOT NULL ,
+  Name TEXT,
+  FirstName TEXT,
+  Initials TEXT,
+  DOB DATETIME,
+  BirthYear INTEGER,
+  Gender CHAR,
+  Study TEXT,
+  PatStudyID TEXT,
+  Status INTEGER DEFAULT 0)'
+  
   createBreathTestRecord = '
   CREATE TABLE IF NOT EXISTS BreathTestRecord(
-    BreathTestRecordID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-    FileName TEXT NOT NULL UNIQUE,
-    Device TEXT,
-    Substrate TEXT,
-    PatientID TEXT NOT NULL,
-    RecordDate DateTime,
-    StartTime DateTime,
-    EndTime DateTime,
-    TestNo INTEGER,
-    Dose REAL,
-    Height REAL,
-    Weight REAL,
-    Status INTEGER DEFAULT 0,
-    FOREIGN KEY (PatientID) REFERENCES Patient(PatientID) ON DELETE CASCADE ON UPDATE CASCADE
-    )'
+  BreathTestRecordID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+  FileName TEXT NOT NULL UNIQUE,
+  Device TEXT,
+  Substrate TEXT,
+  PatientID TEXT NOT NULL,
+  RecordDate DateTime,
+  StartTime DateTime,
+  EndTime DateTime,
+  TestNo INTEGER,
+  Dose REAL,
+  Height REAL,
+  Weight REAL,
+  Status INTEGER DEFAULT 0,
+  FOREIGN KEY (PatientID) REFERENCES Patient(PatientID) ON DELETE CASCADE ON UPDATE CASCADE
+  )'
 
   createBreathTestTimeSeries = '
   CREATE TABLE IF NOT EXISTS BreathTestTimeSeries(
-    BreathTestTimeSeriesID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-    BreathTestRecordID INTEGER NOT NULL,
-    Time REAL NOT NULL, -- In minutes after start
-    Parameter TEXT NOT NULL, -- cDOB, DOB, PDR,cPDR
-    Value REAL NOT NULL,
-    CONSTRAINT unq UNIQUE (BreathTestRecordID, Time, Parameter),
-    FOREIGN KEY (BreathTestRecordID)
-       REFERENCES BreathTestRecord(BreathTestRecordID) ON DELETE CASCADE
+  BreathTestTimeSeriesID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+  BreathTestRecordID INTEGER NOT NULL,
+  Time REAL NOT NULL, -- In minutes after start
+  Parameter TEXT NOT NULL, -- cDOB, DOB, PDR,cPDR
+  Value REAL NOT NULL,
+  CONSTRAINT unq UNIQUE (BreathTestRecordID, Time, Parameter),
+  FOREIGN KEY (BreathTestRecordID)
+  REFERENCES BreathTestRecord(BreathTestRecordID) ON DELETE CASCADE
   )'
 
   createBreathTestParameter = '
   CREATE TABLE IF NOT EXISTS BreathTestParameter(
-    BreathTestParameterID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-    BreathTestRecordID INTEGER NOT NULL,
-    Parameter TEXT NOT NULL, -- t50, tlag, GEC, k, m, beta
-    Method TEXT NOT NULL, -- How the value was computed: bluckSC, Maes, BreathID, MaesScinti
-    Value REAL NOT NULL,
-    CONSTRAINT unq UNIQUE (BreathTestRecordID, Method, Parameter),
-    FOREIGN KEY (BreathTestRecordID)
-       REFERENCES BreathTestRecord(BreathTestRecordID) ON DELETE CASCADE
+  BreathTestParameterID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+  BreathTestRecordID INTEGER NOT NULL,
+  Parameter TEXT NOT NULL, -- t50, tlag, GEC, k, m, beta
+  Method TEXT NOT NULL, -- How the value was computed: bluckSC, Maes, BreathID, MaesScinti
+  Value REAL NOT NULL,
+  CONSTRAINT unq UNIQUE (BreathTestRecordID, Method, Parameter),
+  FOREIGN KEY (BreathTestRecordID)
+  REFERENCES BreathTestRecord(BreathTestRecordID) ON DELETE CASCADE
   )'
 
   createShowParameters =
-  'CREATE TABLE IF NOT EXISTS "ShowParameters" (
-    "Parameter" VARCHAR NOT NULL ,
-    "Method" VARCHAR NOT NULL ,
-    "Show" INT NOT NULL  DEFAULT 0,
-    PRIMARY KEY ("Method", "Parameter"))'
+    'CREATE TABLE IF NOT EXISTS "ShowParameters" (
+  "Parameter" VARCHAR NOT NULL ,
+  "Method" VARCHAR NOT NULL ,
+  "Show" INT NOT NULL  DEFAULT 0,
+  PRIMARY KEY ("Method", "Parameter"))'
   createSettings = 'CREATE TABLE IF NOT EXISTS "Setting" (
-    "SettingID" CHAR PRIMARY KEY  NOT NULL ,
-    "Value" CHAR)'
+  "SettingID" CHAR PRIMARY KEY  NOT NULL ,
+  "Value" CHAR)'
   index1 =
     'CREATE INDEX BreathTestRecordPatientID ON BreathTestRecord (PatientID)'
   index2 =
     'CREATE INDEX BreathTestParameterBreathTestRecordID ON BreathTestParameter (BreathTestRecordID)'
   index3 =
     'CREATE INDEX BreathTestTimeSeriesBreathTestRecordID  ON BreathTestTimeSeries (BreathTestRecordID)'
-
-#  dbSendQuery(con,"DROP TABLE IF EXISTS Patient")
-#  dbSendQuery(con,"DROP TABLE IF EXISTS BreathTestRecord")
-#  dbSendQuery(con,"DROP TABLE IF EXISTS BreathTestTimeSeries")
-#  dbSendQuery(con,"DROP TABLE IF EXISTS BreathTestParameter")
+  
+  #  dbSendQuery(con,"DROP TABLE IF EXISTS Patient")
+  #  dbSendQuery(con,"DROP TABLE IF EXISTS BreathTestRecord")
+  #  dbSendQuery(con,"DROP TABLE IF EXISTS BreathTestTimeSeries")
+  #  dbSendQuery(con,"DROP TABLE IF EXISTS BreathTestParameter")
   dbSendQuery(con,createPatient)
   dbSendQuery(con,createBreathTestRecord)
   dbSendQuery(con,createBreathTestTimeSeries)
@@ -122,7 +126,7 @@ CreateEmptyBreathTestDatabase = function(sqlitePath){
 #' if it does not exists. If missing, file name is given by
 #' \code{getOption("Gastrobase2SqlitePath")} which is set to
 #' <HOME>/GastroBase/Gastobase/Gastrobase2.sqlite at package load time.
-#' 
+#'
 #' When \code{options(D13CBreath.sqldebug=TRUE)}, SQL of queries is printed out
 #' @param sqlitePath Full filename with path to create database file.
 #' @return con Connection for use with dbSendQuery and dbGetQuery
@@ -135,15 +139,16 @@ CreateEmptyBreathTestDatabase = function(sqlitePath){
 #' dbDisconnect(con)
 #' }
 #' @export
-OpenSqliteConnection = function(sqlitePath=NULL){
+OpenSqliteConnection = function(sqlitePath = NULL) {
   if (is.null(sqlitePath))
     sqlitePath = getOption("Gastrobase2SqlitePath")
-  if (!file.exists(sqlitePath)){
+  if (!file.exists(sqlitePath)) {
     # Create Path
     path = dirname(sqlitePath)
-    if (!file.exists(path)) dir.create(path)
+    if (!file.exists(path))
+      dir.create(path)
   }
-  m <- dbDriver("SQLite")
+  m <- DBI::dbDriver("SQLite")
   con <- dbConnect(m, dbname = sqlitePath)
   dbSendQuery(con,"PRAGMA foreign_keys=ON")
   if (dbGetQuery(con,"PRAGMA foreign_keys") != 1)
@@ -171,7 +176,7 @@ OpenSqliteConnection = function(sqlitePath=NULL){
 # con = OpenSqliteConnection()
 # filename = "C:/Users/Dieter/Documents/RPackages/D13CBreath/inst/extdata/350_20023_0_GERWithNan.txt"
 
-AddBreathTestRecord = function(filename,con){
+AddBreathTestRecord = function(filename,con) {
   bid = ReadBreathId(filename)
   BreathTestRecordToDatabase(bid,con)
 }
@@ -206,48 +211,53 @@ AddBreathTestRecord = function(filename,con){
 #path = c("C:/Users/Dieter/Documents/Gastrobase2/Iris")
 #         "C:/Users/Dieter/Documents/Gastrobase2/BreathID")
 #' @export
-AddAllBreathTestRecords = function(path,con){
-  files = data.frame(file = dir(path,pattern="*.txt",ignore.case=TRUE,
-                     recursive=TRUE,full.names=TRUE),stringsAsFactors=FALSE)
-  if (nrow(files)==0)
+AddAllBreathTestRecords = function(path,con) {
+  files = data.frame(
+    file = dir(
+      path,pattern = "*.txt",ignore.case = TRUE,
+      recursive = TRUE,full.names = TRUE
+    ),stringsAsFactors = FALSE
+  )
+  if (nrow(files) == 0)
     stop("No file found in path")
   files$basename = basename(files$file)
   files$recordID = NA
   files$status = NA
   files$error = ""
-  files$device=NA
+  files$device = NA
   # Check database for files already processed
   doneFiles = dbGetQuery(con,"SELECT filename from BreathTestRecord")[,1]
-  if (length(doneFiles >0)){
+  if (length(doneFiles > 0)) {
     skipped = files$basename %in% doneFiles
     files$status[skipped] = "skipped"
     files$device[!skipped] = DeviceType(files$file[!skipped])
   } else
     files$device = DeviceType(files$file)
   # process all files
-  for (i in seq(along=files$file)){
-    if (is.na(files[i,"device"]))  # skip known
+  for (i in seq(along = files$file)) {
+    if (is.na(files[i,"device"]))
+      # skip known
       next
     filename = files[i,"file"]
     device = files[i,"device"]
-    if ( device == "invalid"){
+    if (device == "invalid") {
       files[i,"error"] = "Unrecognized device type"
       files[i,"status"] = "invalid"
       next
     } else {
       if (device == "BreathID") {
-        bid = try(ReadBreathId(filename),silent=TRUE)
+        bid = try(ReadBreathId(filename),silent = TRUE)
       } else if (device == "Iris")  {
-        bid = try(ReadIris(filename),silent=TRUE)
+        bid = try(ReadIris(filename),silent = TRUE)
       }
-      if (inherits(bid,"try-error")){
+      if (inherits(bid,"try-error")) {
         files[i,"error"] = attr(bid,"condition")$message
         files[i,"status"] = "invalid"
         next
       }
     }
-    recId = try(BreathTestRecordToDatabase(bid,con),silent=TRUE)
-    if (inherits(recId,"try-error")){
+    recId = try(BreathTestRecordToDatabase(bid,con),silent = TRUE)
+    if (inherits(recId,"try-error")) {
       files[i,"error"] = attr(recId,"condition")$message
       files[i,"status"] = "skipped"
       next
@@ -273,11 +283,13 @@ AddAllBreathTestRecords = function(path,con){
 #'         recursive=TRUE,full.names=TRUE)
 #' DeviceType(files)
 #' @export
-DeviceType = function(files){
+DeviceType = function(files) {
   unlist(lapply(files, function(file) {
-    line = str_trim(readLines(file,1) )
-    if (line == "Test and Patient parameters") return("BreathID")
-    if (line == '"Testergebnis"') return("Iris")
+    line = str_trim(readLines(file,1))
+    if (line == "Test and Patient parameters")
+      return("BreathID")
+    if (line == '"Testergebnis"')
+      return("Iris")
     return("invalid")
   }))
 }
@@ -291,7 +303,7 @@ DeviceType = function(files){
 #' path \code{getOption("Gastrobase2SqlitePath")} is used.
 #'
 #' @export
-RebuildFitDatabase = function(con=NULL){
+RebuildFitDatabase = function(con = NULL) {
   localCon = is.null(con)
   if (localCon)
     con = OpenSqliteConnection()
@@ -299,13 +311,14 @@ RebuildFitDatabase = function(con=NULL){
   # Faster delete, this is optimized to TRUNCATE by SQLite
   dbSendQuery(con,"DELETE FROM BreathTestParameter")
   dbSendQuery(con,"DELETE FROM sqlite_sequence where name='BreathTestParameter'")
-  lapply(rid,function(BreathTestRecordID){
+  lapply(rid,function(BreathTestRecordID) {
     ComputeAndSaveParameterizedFit(con,BreathTestRecordID)
     ComputeAndSaveWNFit(con,BreathTestRecordID) # This requires the parameterized fit
     invisible(NULL)
   })
   #RebuildPopulationFitDatabase(con)
-  if (localCon) dbDisconnect(con)
+  if (localCon)
+    dbDisconnect(con)
 }
 
 #' @title Computes fit and writes a 13C record and extracted parameters to databse
@@ -325,19 +338,20 @@ RebuildFitDatabase = function(con=NULL){
 #' @param bid Record as simulated by \code{SimulateBreathID} or \code{ReadBreathID}
 #' @param con Connection to sqlite database
 #' @export
-BreathTestRecordToDatabase = function(bid, con){
+BreathTestRecordToDatabase = function(bid, con) {
   # Nested transactions are not possible with dbBegin in SQlite,
   # therefore within the transaction it is not allowed to use dbWriteTable
   # which opens a transaction. Must use prepared queries instead.
   # TODO: Nesting is possible with named transactions
-  if (is.null(bid)) return(NULL)
-  if (! inherits(bid,"BreathTestData"))
+  if (is.null(bid))
+    return(NULL)
+  if (!inherits(bid,"BreathTestData"))
     stop("BreathTestRecordToDatabase: bid must of class 'BreathTestData'")
   # Wrap everything in a transaction
   dbBegin(con,"BreathTestRecordToDatabase")
   ## Do not use dbWriteTable in any nested function
-  ret =try(BreathTestRecordToDatabaseInternal(bid,con), silent = TRUE)
-  if (inherits(ret,"try-error")){
+  ret = try(BreathTestRecordToDatabaseInternal(bid,con), silent = TRUE)
+  if (inherits(ret,"try-error")) {
     dbRollback(con,"BreathTestRecordToDatabase")
     stop(attr(ret,"condition")$message)
   }
@@ -347,30 +361,33 @@ BreathTestRecordToDatabase = function(bid, con){
 
 ## This internal function does the work, and is wrapped by try in the exported
 ## function BreatTestRecordToDatabase
-BreathTestRecordToDatabaseInternal = function(bid, con){
+BreathTestRecordToDatabaseInternal = function(bid, con) {
   BreathTestRecordID = SavePatientRecord(bid,con)
   # Device specific (not always present)
-  pars = na.omit(data.frame(BreathTestRecordID,
-                    Parameter = c("t50","tlag","GEC"),
-                    Method = rep(bid$Device,3),
-                    Values = c(bid$T50, bid$TLag,bid$GEC)
+  pars = na.omit(data.frame(
+    BreathTestRecordID,
+    Parameter = c("t50","tlag","GEC"),
+    Method = rep(bid$Device,3),
+    Values = c(bid$T50, bid$TLag,bid$GEC)
   ))
-  if (nrow(pars)> 0 ){
-    pars = cbind(BreathTestParameterID=as.integer(NA),pars)
+  if (nrow(pars) > 0) {
+    pars = cbind(BreathTestParameterID = as.integer(NA),pars)
     ret = try(dbGetPreparedQuery(con,
-      "INSERT INTO BreathTestParameter VALUES(?,?,?,?,?)",pars),silent=TRUE)
+                                 "INSERT INTO BreathTestParameter VALUES(?,?,?,?,?)",pars),silent =
+                TRUE)
     if (inherits(ret,"try-error"))
       stop(str_c("Error writing Device parameters for patient ",bid$PatientID))
   }
-
+  
   # Compute and save fit (will do nothing if not successful)
   ComputeAndSaveParameterizedFit(con,BreathTestRecordID)
   ComputeAndSaveWNFit(con,BreathTestRecordID) # This requires the parameterized fit
   BreathTestRecordID
 }
 
-sn = function(x){
-  ifelse (is.null(x) || is.na(x),"NULL",str_c("'",as.character(x),"'"))
+sn = function(x) {
+  ifelse (is.null(x) ||
+            is.na(x),"NULL",str_c("'",as.character(x),"'"))
 }
 
 SavePatientRecord = function(bid,con) {
@@ -380,56 +397,79 @@ SavePatientRecord = function(bid,con) {
   PatientID = bid$PatientID
   q = sprintf("SELECT COUNT(*) from Patient where PatientID='%s'",
               bid$PatientID)
-  if (printSQL) print(q)
+  if (printSQL)
+    print(q)
   if (dbGetQuery(con,q) == 0)
   {
     # Must insert Patient
-    q = with(bid,sprintf("INSERT INTO Patient
-     (PatientID,Name,FirstName,Initials,DOB,BirthYear,Gender,Study,PatStudyID)
-     VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)",
-     sn(PatientID),sn(Name),sn(FirstName),sn(Initials),sn(DOB),sn(BirthYear),
-                         sn(Gender),sn(Study),sn(PatStudyID)))
-    if (printSQL) print(q)
-    # Make sure to use utf8 here for Müller und Möller
+    q = with(
+      bid,sprintf(
+        "INSERT INTO Patient
+        (PatientID,Name,FirstName,Initials,DOB,BirthYear,Gender,Study,PatStudyID)
+        VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)",
+        sn(PatientID),sn(Name),sn(FirstName),sn(Initials),sn(DOB),sn(BirthYear),
+        sn(Gender),sn(Study),sn(PatStudyID)
+      )
+    )
+    if (printSQL)
+      print(q)
+    # Make sure to use utf8 here for umlauts in names
     q = enc2utf8(q)
-    tryCatch( dbSendQuery(con,q),
-              error=function(e) stop(str_c("Error inserting PatientID ",PatientID)))
+    tryCatch(
+      dbSendQuery(con,q),
+      error = function(e)
+        stop(str_c(
+          "Error inserting PatientID ",PatientID
+        ))
+    )
   }
-  q = with(bid,sprintf("INSERT INTO BreathTestRecord (Filename, Device,Substrate,
+  q = with(
+    bid,sprintf(
+      "INSERT INTO BreathTestRecord (Filename, Device,Substrate,
       PatientID,RecordDate,StartTime,EndTime,TestNo,Dose,Height,Weight,Status) VALUES (
       %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
       sn(FileName), sn(Device), sn(Substrate),sn(PatientID),sn(RecordDate),
-      sn(StartTime),sn(EndTime), sn(TestNo), sn(Dose), sn(Height), sn(Weight),0))
-  if (printSQL) print(q)
+      sn(StartTime),sn(EndTime), sn(TestNo), sn(Dose), sn(Height), sn(Weight),0
+  )
+    )
+  if (printSQL)
+    print(q)
   ret = try(dbSendQuery(con,q),TRUE)
   if (inherits(ret,"try-error"))
   {
-    if (str_detect(ret,"unique")){
-      stop(str_c("A record for file ",bid$FileName," already exists. Skipped."))
+    if (str_detect(ret,"unique")) {
+      stop(str_c(
+        "A record for file ",bid$FileName," already exists. Skipped."
+      ))
     } else {
       stop(attr(ret,"condition")$message)
     }
   }
   BreathTestRecordID = LastInsertRowid(con)
-  bts = melt(bid$Data,"Time",variable.name="Parameter",value.name="Value")
+  bts = melt(bid$Data,"Time",variable.name = "Parameter",value.name = "Value")
   # Remove NA and NaN
-  bts = bts[!(is.nan(bts$Value) |is.na(bts$Value)),]
+  bts = bts[!(is.nan(bts$Value) | is.na(bts$Value)),]
   bts$BreathTestRecordID = BreathTestRecordID
   bts$BreathTestTimeSeriesID = NA
   # Retrieve column names to get the order right
   flds = dbListFields(con,"BreathTestTimeSeries")
   q = str_c("INSERT INTO BreathTestTimeSeries VALUES(",
-        paste(rep("?",length(flds)),collapse=","),")")
-  if (printSQL) print(q)
-  ret = try(dbGetPreparedQuery(con, q,bind.data= bts[,flds]), silent=TRUE)
-
+            paste(rep("?",length(flds)),collapse = ","),")")
+  if (printSQL)
+    print(q)
+  ret = try(dbGetPreparedQuery(con, q,bind.data = bts[,flds]), silent =
+              TRUE)
+  
   if (inherits(ret,"try-error"))
-    stop(str_c("Could not write raw time series record for patient ",PatientID,"\n",
-    attr(ret,"condition")$message))
+    stop(
+      str_c(
+        "Could not write raw time series record for patient ",PatientID,"\n",
+        attr(ret,"condition")$message
+      )
+    )
   BreathTestRecordID
 }
 
-LastInsertRowid = function(con){
+LastInsertRowid = function(con) {
   as.integer(dbGetQuery(con,"SELECT last_insert_rowid()")[1,1])
 }
-

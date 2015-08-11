@@ -10,6 +10,6 @@
 #' RunShiny()
 #' }
 #' @export
-RunShiny = function(){
-  shiny::runApp(system.file('shiny', package='D13CBreath'),port=8100)
+RunShiny = function() {
+  shiny::runApp(system.file('shiny', package = 'D13CBreath'),port = 8100)
 }

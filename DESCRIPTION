@@ -1,7 +1,7 @@
 Package: D13CBreath
-Title: Reads and evaluates gastric emptying 13C breath test data
-Version: 1.7.11
-Date: 2015-06-25
+Title: Reads and Evaluates Gastric Emptying 13C Breath Test Data
+Version: 1.7.12
+Date: 2015-08-10
 Author: Dieter Menne
 Maintainer: Dieter Menne <dieter.menne@menne-biomed.de>
 Description: Reads several formats of 13C data (IRIS/Wagner, BreathID).
@@ -13,7 +13,8 @@ Description: Reads several formats of 13C data (IRIS/Wagner, BreathID).
         scintigraphy Physiol. Meas. 27 279-89. Uses Shiny to display
         selected parameters and decision plots in the browser.
 Depends: R (>= 2.15.0),RSQLite (>= 1.0.0)
-Imports: stringr,reshape2,ggplot2,RColorBrewer,nlme, shiny,plyr, hdrcde
+Imports: stringr,reshape2,ggplot2,RColorBrewer,nlme, shiny,plyr,
+        hdrcde, DBI
 Suggests: testthat,lattice,latticeExtra
 License: GPL-2
 Roxygen: list(wrap = FALSE)

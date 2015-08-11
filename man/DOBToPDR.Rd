@@ -38,7 +38,8 @@ Camillieri, Stable Isotope Breath Test and Gastric Emptying, page 207 a factor
 of 0.1123 instead of 0.01123 is used, without the factor 10. Which one is correct?
 }
 \examples{
-filename = system.file("extdata/extrasample", "350_20049_0_GERWithWeight.txt", package = "D13CBreath")
+filename = system.file("extdata/extrasample", "350_20049_0_GERWithWeight.txt",
+    package = "D13CBreath")
 bid = ReadBreathId(filename)
 bid$Data$PDR1 = DOBToPDR(bid$Data$DOB,weight=bid$Weight,height=bid$Height)
 
