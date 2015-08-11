@@ -4,8 +4,6 @@ language: r
 warnings_are_errors: true
 sudo: required
 
-apt_packages: r-cran-rodbc
-  
 env:
  global:
    - CRAN: http://cran.rstudio.com
