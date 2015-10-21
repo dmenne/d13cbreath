@@ -1,5 +1,4 @@
 # .travis.yml using container-based infrastructure
-# Second run to check if it is faster; Dieter Menne fork for testing
 
 # use c as catch-all language
 language: c
