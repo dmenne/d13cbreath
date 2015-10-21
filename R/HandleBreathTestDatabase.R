@@ -1,11 +1,8 @@
 #' @title Create an empty SQLite database for breath test data
 #' @description
 #' These functions can be used for testing, or as a sample
-#' how to write data to the database. Using sqlite allows for full control of
-#' database and table creation from the script; creating a Microsoft Access database
-#' is not possible from RODBC, creating tables is possible, but
-#' "ON UPDATE DELETE" fails and you will need to dig deep into webspace
-#' to find it is not your fault.
+#' how to write data to the database. Using sqlite allows for full 
+#' control of database and table creation from the script.
 #'
 #' @name CreateEmptyBreathTestDatabase
 #' @author Dieter Menne, \email{dieter.menne@@menne-biomed.de}

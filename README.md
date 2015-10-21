@@ -1,3 +1,6 @@
+[![Travis-CI Build Status](https://travis-ci.org/dmenne/d13cbreath.svg?branch=master)](https://travis-ci.org/dmenne/d13cbreath)
+[![Coverage Status](https://coveralls.io/repos/dmenne/d13cbreath/badge.svg?branch=master&service=github)](https://coveralls.io/github/dmenne/d13cbreath?branch=master)
+
 D13CBreath: Processing C13 breath test data
 ===========================================
 
@@ -7,7 +10,6 @@ http://www.menne-biomed.de
 
 dieter.menne@menne-biomed.de 
 
-[![Travis-CI Build Status](https://travis-ci.org/dmenne/d13cbreath.svg?branch=master)](https://travis-ci.org/dmenne/d13cbreath)
 
 ## What it does
 The software is being developed in cooperation with the ETH and Department of Gastroenterology of the University Hospital of Zürich, Switzerland. Thanks to Andreas Steingötter, Benjamin Misselwitz, Mark Fox and Werner Schwizer.
