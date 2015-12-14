@@ -87,6 +87,8 @@ t50BluckCoward = function(cf) {
 
 #' @name tLagBluckCoward
 #' @title Lag phase for BluckCoward self-correcting fit
+#' @description This parameter is misnamed: it is not the lag, but the maximum 
+#' of the PDR time series.
 #' @param cf named vector of coefficients; only \code{k} and \code{beta} are required
 #' Note that in D13CBreath, \code{k} is measured in 1/min (e.g. 0.01/min),
 #' usually it is quoted as 1/h (e.g. 0.6/h).

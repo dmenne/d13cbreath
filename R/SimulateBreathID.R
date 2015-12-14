@@ -1,4 +1,5 @@
-#' @title Creates a simulated BreathID record for testing
+#' @title Simulated BreathID record for testing
+#' @description A time series that can be fit by exponential beta
 #' @name SimulateBreathId
 #' @return A record that is a modified version of the provided sample
 #' record, with additional fields \code{Name, FirstName, Initials, FileName}
