@@ -5,4 +5,3 @@ README.html
 test.sqlite
 .Rbuildignore
 .gitattributes
-*.Rd
