@@ -28,7 +28,7 @@ The software is being developed in cooperation with the ETH and Department of Ga
 ## How to install
 To install the functions, use
 ```
-devtools::install_bitbucket("d13cbreath","dmenne")
+devtools::install_github("d13cbreath","dmenne")
 ```
 
 This package is also included in my [drat](https://github.com/eddelbuettel/drat) repository. Install R package `drat`, and issue the following command:
