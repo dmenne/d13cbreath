@@ -1,5 +1,5 @@
 [![Travis-CI Build Status](https://travis-ci.org/dmenne/d13cbreath.svg?branch=master)](https://travis-ci.org/dmenne/d13cbreath)
-[![Coverage Status](https://coveralls.io/repos/dmenne/d13cbreath/badge.svg?branch=master&service=github)](https://coveralls.io/github/dmenne/d13cbreath?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/dmenne/d13cbreath/badge.svg?branch=master)](https://coveralls.io/github/dmenne/d13cbreath?branch=master)
 
 D13CBreath: Processing C13 breath test data
 ===========================================
