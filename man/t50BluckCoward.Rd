@@ -67,7 +67,7 @@ cf4 = data.frame(
 )
 cf4 = mutate(cf4,
           t50Maes = t50Maes(cf4),
-          t50BluckCoward=t50BluckCoward(cf4),
+          t50BluckCoward = t50BluckCoward(cf4),
           tLagMaes = tLagMaes(cf4),
           tLagBluckCoward = tLagBluckCoward(cf4),
           Err_t50Maes = unlist(round(100*(t50Maes-t12)/t12)),

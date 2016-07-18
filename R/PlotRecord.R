@@ -150,12 +150,12 @@ Plot13CRecord = function(con, breathTestRecordID, showParameters = NULL,ymax =
         aes(
           x = Value, y = itext, xend = Value, yend = yend
         ),
-        col = "gray",linetype = 1, lwd = 0.4, data = showPars, show_guide =
+        col = "gray",linetype = 1, lwd = 0.4, data = showPars, show.legend =
           FALSE
       ) +
       geom_text(
         aes(label = text, x = Value, y = itext), col = "darkgreen",cex = 5,
-        adj = -0.04,data = showPars,show_guide = FALSE
+        adj = -0.04,data = showPars, show.legend = FALSE
       )
     
   }

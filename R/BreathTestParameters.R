@@ -56,7 +56,7 @@
 #' )
 #' cf4 = mutate(cf4,
 #'           t50Maes = t50Maes(cf4),
-#'           t50BluckCoward=t50BluckCoward(cf4),
+#'           t50BluckCoward = t50BluckCoward(cf4),
 #'           tLagMaes = tLagMaes(cf4),
 #'           tLagBluckCoward = tLagBluckCoward(cf4),
 #'           Err_t50Maes = unlist(round(100*(t50Maes-t12)/t12)),
@@ -76,10 +76,10 @@ t50BluckCoward = function(cf) {
   g = function(cf0) {
     ret = try(uniroot(f,interval = c(1,1000),cf0)$root, silent = TRUE)
     if (inherits(ret, "try-error"))
-      ret = 0 # Dirty workaround, correct this
+      ret = NA 
     ret
   }
-  if (class(cf) == "numeric")
+  if (inherits(cf, "numeric"))
     round(g(cf),3)
   else
     round(apply(cf[,c("k","beta")],1,g),3)
