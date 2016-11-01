@@ -57,11 +57,13 @@ ComputeAndSaveWNFit = function(con,BreathTestRecordID)  {
   )
   # *** Todo: remove dirty trick for invalid WN
   pars =  pars[pars$Value != 0,]
+  if (nrow(pars) ==0) 
+    return(0) # Do not report error, we can live without
   q = str_c("INSERT INTO BreathTestParameter VALUES(",
             paste(rep("?",ncol(pars)),collapse = ","),")")
   ret = try(dbGetPreparedQuery(con, q,bind.data = pars), silent = TRUE)
   if (inherits(ret,"try-error"))
-    stop(str_c("Could not write fit parameters for Record",BreathTestRecordID))
+    stop(str_c("Could not write WN fit parameters for Record ",BreathTestRecordID))
   # Compute predicted WN fit
   Time = seq(0,max(data$Time), by = 5)
   wn = data.frame(

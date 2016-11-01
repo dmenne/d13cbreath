@@ -378,7 +378,9 @@ BreathTestRecordToDatabaseInternal = function(bid, con) {
   
   # Compute and save fit (will do nothing if not successful)
   ComputeAndSaveParameterizedFit(con,BreathTestRecordID)
-  ComputeAndSaveWNFit(con,BreathTestRecordID) # This requires the parameterized fit
+  # WN requires the parameterized fit. In case it fails, 
+  # no WN is written, but no error is raised
+  ComputeAndSaveWNFit(con,BreathTestRecordID) 
   BreathTestRecordID
 }
 
