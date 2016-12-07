@@ -486,6 +486,8 @@ SavePatientRecord = function(bid,con) {
   )
   
   if (inherits(ret,"try-error")){
+    print(ret)
+    print(str(ret))
     stop(
       paste0(
         "Could not write raw time series record for patient ",PatientID,"\n",
