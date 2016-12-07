@@ -52,7 +52,7 @@ Plot13CRecord = function(con, breathTestRecordID, showParameters = NULL,ymax =
                   c("Parameter","Value")]
     pred = NULL
     if (nrow(bcPars) == 3) {
-      pred = data.frame(what = str_c("Pred",str_sub(method,12,14)),
+      pred = data.frame(what = paste0("Pred",str_sub(method,12,14)),
                         Time = c(rangeTs[1],seq(stepMinutes,rangeTs[2],by =
                                                   stepMinutes)))
       rownames(bcPars) = bcPars$Parameter
@@ -64,28 +64,28 @@ Plot13CRecord = function(con, breathTestRecordID, showParameters = NULL,ymax =
   }
   ## End Local function
   
-  q = str_c(
+  q = paste0(
     "SELECT Time, Value as PDR from BreathTestTimeSeries where
     Time > 0 and Parameter = 'PDR' and BreathTestRecordID = ",
     breathTestRecordID
   )
   ts = dbGetQuery(con,q)
   if (nrow(ts) == 0)
-    stop(str_c(
+    stop(paste0(
       "No time series found for BreathTestRecordID ",breathTestRecordID
     ))
   ts = cbind(what = "Data",ts)
-  q = str_c(
+  q = paste0(
     "SELECT Parameter, Method, Value from BreathTestParameter where BreathTestRecordID = ",
     breathTestRecordID," ORDER BY Parameter, Method"
   )
   parm = dbGetQuery(con,q)
   if (nrow(parm) == 0)
-    stop(str_c(
+    stop(paste0(
       "No parameters found for BreathTestRecordID ",breathTestRecordID
     ))
   
-  q = str_c(
+  q = paste0(
     "SELECT * from BreathTestRecord
     join Patient on Patient.PatientID = BreathTestRecord.PatientID
     where BreathTestRecordID = ",    breathTestRecordID
@@ -125,9 +125,9 @@ Plot13CRecord = function(con, breathTestRecordID, showParameters = NULL,ymax =
   Time = PDR = Value = itext = yend = NULL # Avoid "no visible binding"
   title =   format(strptime(rec$StartTime, "%Y-%m-%d"),"%d.%m.%Y")
   if (showName) {
-    title = str_c(rec$FirstName," ",rec$Name, ", Test  ",title)
+    title = paste0(rec$FirstName," ",rec$Name, ", Test  ",title)
   } else {
-    title = str_c(rec$PatientID, " (",rec$Initials, "),  Test  ",title)
+    title = paste0(rec$PatientID, " (",rec$Initials, "),  Test  ",title)
   }
   g = ggplot(data = ts,aes(x = Time,y = PDR)) +
     geom_point() +
@@ -140,7 +140,7 @@ Plot13CRecord = function(con, breathTestRecordID, showParameters = NULL,ymax =
   # Position pars
   if (nrow(showPars) > 0) {
     showPars = showPars[order(showPars$Value),]
-    showPars$text = str_c(showPars$Parameter," ",showPars$Method,": ",
+    showPars$text = paste0(showPars$Parameter," ",showPars$Method,": ",
                           round(showPars$Value), " min")
     showPars$text = str_replace(showPars$text,"WN","Wagner-Nelson")
     showPars$itext = (1:nrow(showPars)) * ylim[2] * 0.03

@@ -15,18 +15,18 @@
 ReadBreathId = function(filename) {
   filename = as.character(filename)
   if (!file.exists(filename))
-    stop(str_c("File ",filename," does not exist."))
+    stop(paste0("File ",filename," does not exist."))
   bid = readLines(filename)
   header = str_trim(bid[1])
   if (header != "Test and Patient parameters")
-    stop(str_c("File ",filename," is not a valid BreathID file."))
+    stop(paste0("File ",filename," is not a valid BreathID file."))
   recordDate = findSinglePattern(bid,"Date")
   RecordDate = strptime(recordDate,"%m/%d/%y")
   ## Note : End Time and Start Time are reversed in the data file, we correct
   ## this here, no typo!!
-  EndTime = strptime(str_c(recordDate, " ",findSinglePattern(bid,"Start time")),
+  EndTime = strptime(paste0(recordDate, " ",findSinglePattern(bid,"Start time")),
                      "%m/%d/%y %H:%M")
-  StartTime = strptime(str_c(recordDate, " ",findSinglePattern(bid,"End time")),
+  StartTime = strptime(paste0(recordDate, " ",findSinglePattern(bid,"End time")),
                        "%m/%d/%y %H:%M")
   PatientID = findSinglePattern(bid,"Patient #")
   TestNo = as.integer(findSinglePattern(bid,"Test No."))
@@ -43,10 +43,10 @@ ReadBreathId = function(filename) {
   bid = try(str_trim(bid[which(str_detect(bid,"Time\\s*DOB")):length(bid)]),silent =
               TRUE)
   if (class(bid) == "try-error")
-    stop(str_c("File ",filename," does not contain PDR data"))
+    stop(paste0("File ",filename," does not contain PDR data"))
   bid = bid[bid != ""]
   if (length(bid) < 2)
-    stop(str_c("File ",filename," does not contain PDR data"))
+    stop(paste0("File ",filename," does not contain PDR data"))
   data = read.table(textConnection(bid),header = TRUE)
   data = RemoveNAColumns(data)
   BreathTestData(
@@ -77,13 +77,13 @@ RemoveNAColumns = function(x) {
 
 
 findSinglePattern = function(bid,pattern,required = TRUE) {
-  p = str_match(bid,str_c(pattern,"[^-]+-\\s*(\\S.*)"))[,2]
+  p = str_match(bid,paste0(pattern,"[^-]+-\\s*(\\S.*)"))[,2]
   p = p[!is.na(p)]
   if (length(p) > 1)
-    stop(str_c("No unique <<", pattern,">> in BreathID file"))
+    stop(paste0("No unique <<", pattern,">> in BreathID file"))
   if (length(p) == 0) {
     if (required)
-      stop(str_c("No <<" ,pattern, ">> found in BreathID file "))
+      stop(paste0("No <<" ,pattern, ">> found in BreathID file "))
     else
       p = ""
   }

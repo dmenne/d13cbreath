@@ -12,7 +12,7 @@ dieter.menne@menne-biomed.de
 
 
 ## What it does
-The software is being developed in cooperation with the ETH and Department of Gastroenterology of the University Hospital of Zürich, Switzerland. Thanks to Andreas Steingötter, Benjamin Misselwitz, Mark Fox and Werner Schwizer.
+The software is being developed in cooperation with the ETH and Department of Gastroenterology of the University Hospital of Zürich, Switzerland. Thanks to Andreas Steingötter, Benjamin Misselwitz, Mark Fox and Werner Schwizer. And to Kirill Müller for supporting the RSqlite package.
 
 * Reads several formats of 13C data: IRIS/Wagner (partially supported), BreathID
 * Creates sample data and writes sample SQLite database; default database is in `<HOME>/Gastrobase2/Gastrobase2.sqlite`.

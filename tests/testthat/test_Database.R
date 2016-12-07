@@ -44,11 +44,11 @@ test_that("Update Cascade and Delete Cascade must be effective for BreathTestRec
   patID = dbGetQuery(con,"SELECT PatientID from Patient")$PatientID
   # Test Delete
   expect_equal(dbGetQuery(con, countSQL(patID[1]))[1,1] ,3)
-  dbSendQuery(con, sprintf("DELETE from Patient where patientID='%s'",patID[1]))
+  dbExecute(con, sprintf("DELETE from Patient where patientID='%s'",patID[1]))
   expect_equal(dbGetQuery(con, countSQL(patID[1]))[1,1] ,0)
   # Test Update
   expect_equal(dbGetQuery(con, countSQL(patID[2]))[1,1] ,3)
-  dbSendQuery(con, 
+  dbExecute(con, 
     sprintf("UPDATE Patient SET patientID='blub' where PatientID='%s'", patID[2]))
   expect_equal(dbGetQuery(con, countSQL(patID[2]))[1,1] ,0)
   expect_equal(dbGetQuery(con, countSQL('blub'))[1,1] ,3)  

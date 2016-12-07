@@ -20,17 +20,17 @@
 #' @import RColorBrewer
 #' @export
 Summary13CRecord = function(con, breathTestRecordID) {
-  q = str_c(
+  q = paste0(
     "SELECT Parameter, Method, Value from BreathTestParameter where BreathTestRecordID = ",
     breathTestRecordID," ORDER BY Parameter, Method"
   )
   parm = dbGetQuery(con,q)
   if (nrow(parm) == 0)
-    stop(str_c(
+    stop(paste0(
       "No parameters found for BreathTestRecordID ",breathTestRecordID
     ))
   
-  q = str_c(
+  q = paste0(
     "SELECT * from BreathTestRecord
     join Patient on Patient.PatientID = BreathTestRecord.PatientID
     where BreathTestRecordID = ",    breathTestRecordID

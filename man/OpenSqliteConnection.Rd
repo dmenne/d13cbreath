@@ -10,7 +10,7 @@ OpenSqliteConnection(sqlitePath = NULL)
 \item{sqlitePath}{Full filename with path to create database file.}
 }
 \value{
-con Connection for use with dbSendQuery and dbGetQuery
+con Connection for use with dbExecute and dbGetQuery
 }
 \description{
 Opens an connection to sqlite database; creates the database

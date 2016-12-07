@@ -21,13 +21,13 @@
 #' @export ReadIris
 ReadIris = function(filename) {
   if (!file.exists(filename))
-    stop(str_c("File ",filename," does not exist."))
+    stop(paste0("File ",filename," does not exist."))
   # Check if this is the right format
   bid = readLines(filename)
   header = str_trim(bid[1])
   if (header != "\"Testergebnis\"")
     stop(
-      str_c(
+      paste0(
         "File ",filename,
         " is not a valid Iris file. First line should be <<Testergebnis>>"
       )
@@ -61,7 +61,7 @@ ReadIris = function(filename) {
   FirstName = findPattern(bid,"Vorname")
   Initials = NA
   if (nchar(Name) > 0 && nchar(FirstName) > 0)
-    Initials =  str_c(str_sub(Name,1,1),
+    Initials =  paste0(str_sub(Name,1,1),
                       str_sub(FirstName,1,1))
   data = read.csv(textConnection(bid[-(1:dataRow)]))
   data = try(data[,c("Testzeit..min.","DOB..o.oo.","Atom.ppm.Excess.13C..ppm.")])
@@ -69,6 +69,8 @@ ReadIris = function(filename) {
   if (inherits(data,"try-error"))
     stop("Invalid data columns in Iris data file")
   names(data) = c("Time","DOB")
+  # remove too small values
+  data = data[data$DOB >= -10,]
   BreathTestData(
     FileName = basename(filename),
     PatientID = PatientID,
@@ -89,13 +91,13 @@ ReadIris = function(filename) {
 
 
 findPattern = function(bid,pattern,required = TRUE) {
-  p = str_match(bid,str_c('\\"',pattern,'\\",\\s*\\"(.*)\\"'))[,2]
+  p = str_match(bid,paste0('\\"',pattern,'\\",\\s*\\"(.*)\\"'))[,2]
   p = p[!is.na(p)]
   if (length(p) > 1)
-    stop(str_c("No unique <<", pattern,">> in Iris file"))
+    stop(paste0("No unique <<", pattern,">> in Iris file"))
   if (length(p) == 0) {
     if (required)
-      stop(str_c("No <<" ,pattern, ">> found in Iris file "))
+      stop(paste0("No <<" ,pattern, ">> found in Iris file "))
     else
       p = ""
   }

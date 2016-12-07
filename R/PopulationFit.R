@@ -145,16 +145,15 @@ SavePopulationFit = function(cf,con = NULL) {
     "DELETE FROM BreathTestParameter where Method in ('",
     paste0(unique(Method),collapse = "','"),"')"
   )
-  dbSendQuery(con,q)
+  dbExecute(con,q)
   for (i in 1:nrow(cf))
   {
     cf1 = cf[i,]
     pars = data.frame(
-      BreathTestParameterID = as.integer(NA),
       BreathTestRecordID = cf1$BreathTestRecordID,
       Parameter = c("m","k","beta","t50","t50","t50","tlag","tlag"),
       Method = Method,
-      Values = unlist(
+      Value = unlist(
         c(
           cf1["m"],cf1["k"],cf1["beta"],
           t50BluckCoward(cf1),
@@ -164,12 +163,14 @@ SavePopulationFit = function(cf,con = NULL) {
         )
       )
     )
-    success = dbWriteTable(con,"BreathTestParameter",pars,append = TRUE,
-                           row.names = FALSE)
-    if (!success)
-      stop(str_c(
-        "Could not write fit parameters for RecordID",cf1$BreathTestRecordID
-      ))
+    ret = try(
+      SaveBreathTestParameters(con, pars),
+      silent = TRUE
+    )
+    if (inherits(ret,"try-error"))
+      stop(paste0(
+        "Could not write fit parameters for RecordID",cf1$BreathTestRecordID)
+      )
   }
   if (localCon)
     dbDataType(con)
