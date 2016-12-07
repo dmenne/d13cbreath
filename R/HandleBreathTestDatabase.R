@@ -17,11 +17,12 @@
 #' # This creates a default database, but does not overwrite existing files
 #' CreateEmptyBreathTestDatabase(getOption("Gastrobase2SqlitePath"))
 #' }
+#' @importFrom DBI dbExecute
 #' @export
 CreateEmptyBreathTestDatabase = function(sqlitePath) {
   if (file.exists(sqlitePath))
     stop(
-      str_c(
+      paste0(
         "The database", basename(sqlitePath),
         " already exists, please delete it manually to proceed."
       )
@@ -98,21 +99,20 @@ CreateEmptyBreathTestDatabase = function(sqlitePath) {
   index3 =
     'CREATE INDEX BreathTestTimeSeriesBreathTestRecordID  ON BreathTestTimeSeries (BreathTestRecordID)'
   
-  #  dbSendQuery(con,"DROP TABLE IF EXISTS Patient")
-  #  dbSendQuery(con,"DROP TABLE IF EXISTS BreathTestRecord")
-  #  dbSendQuery(con,"DROP TABLE IF EXISTS BreathTestTimeSeries")
-  #  dbSendQuery(con,"DROP TABLE IF EXISTS BreathTestParameter")
-  dbSendQuery(con,createPatient)
-  dbSendQuery(con,createBreathTestRecord)
-  dbSendQuery(con,createBreathTestTimeSeries)
-  dbSendQuery(con,createShowParameters)
-  dbSendQuery(con,createSettings)
-  dbSendQuery(con,createBreathTestParameter)
-  dbSendQuery(con,index1)
-  dbSendQuery(con,index2)
-  ret = dbSendQuery(con,index3)
+  #  dbExecute(con,"DROP TABLE IF EXISTS Patient")
+  #  dbExecute(con,"DROP TABLE IF EXISTS BreathTestRecord")
+  #  dbExecute(con,"DROP TABLE IF EXISTS BreathTestTimeSeries")
+  #  dbExecute(con,"DROP TABLE IF EXISTS BreathTestParameter")
+  dbExecute(con,createPatient)
+  dbExecute(con,createBreathTestRecord)
+  dbExecute(con,createBreathTestTimeSeries)
+  dbExecute(con,createShowParameters)
+  dbExecute(con,createSettings)
+  dbExecute(con,createBreathTestParameter)
+  dbExecute(con,index1)
+  dbExecute(con,index2)
+  dbExecute(con,index3)
   ## Avoid closing error
-  dbClearResult(ret)
   dbDisconnect(con)
   return (invisible(NULL))
 }
@@ -126,7 +126,7 @@ CreateEmptyBreathTestDatabase = function(sqlitePath) {
 #'
 #' When \code{options(D13CBreath.sqldebug=TRUE)}, SQL of queries is printed out
 #' @param sqlitePath Full filename with path to create database file.
-#' @return con Connection for use with dbSendQuery and dbGetQuery
+#' @return con Connection for use with dbExecute and dbGetQuery
 #' @import stringr
 #' @import reshape2
 #' @examples
@@ -135,6 +135,7 @@ CreateEmptyBreathTestDatabase = function(sqlitePath) {
 #' dbGetQuery(con, "Select PatientID,Name,FirstName from Patient")
 #' dbDisconnect(con)
 #' }
+#' @importFrom DBI dbExecute
 #' @export
 OpenSqliteConnection = function(sqlitePath = NULL) {
   if (is.null(sqlitePath))
@@ -145,9 +146,9 @@ OpenSqliteConnection = function(sqlitePath = NULL) {
     if (!file.exists(path))
       dir.create(path)
   }
-  m <- DBI::dbDriver("SQLite")
+  m <- RSQLite::SQLite()
   con <- dbConnect(m, dbname = sqlitePath)
-  dbSendQuery(con,"PRAGMA foreign_keys=ON")
+  ret = dbExecute(con,"PRAGMA foreign_keys=ON")
   if (dbGetQuery(con,"PRAGMA foreign_keys") != 1)
     stop("This version of sqlite does not support foreign key constraints")
   return (con)
@@ -306,16 +307,17 @@ RebuildFitDatabase = function(con = NULL) {
     con = OpenSqliteConnection()
   rid = dbGetQuery(con,"SELECT BreathTestRecordID from BreathTestRecord")[,1]
   # Faster delete, this is optimized to TRUNCATE by SQLite
-  dbSendQuery(con,"DELETE FROM BreathTestParameter")
-  dbSendQuery(con,"DELETE FROM sqlite_sequence where name='BreathTestParameter'")
+  dbExecute(con,"DELETE FROM BreathTestParameter")
+  dbExecute(con,"DELETE FROM sqlite_sequence where name='BreathTestParameter'")
   lapply(rid,function(BreathTestRecordID) {
     ComputeAndSaveParameterizedFit(con,BreathTestRecordID)
     ComputeAndSaveWNFit(con,BreathTestRecordID) # This requires the parameterized fit
     invisible(NULL)
   })
   #RebuildPopulationFitDatabase(con)
-  if (localCon)
+  if (localCon){
     dbDisconnect(con)
+  }
 }
 
 #' @title Computes fit and writes a 13C record and extracted parameters to databse
@@ -356,6 +358,29 @@ BreathTestRecordToDatabase = function(bid, con) {
   ret
 }
 
+#' @title Saves Breath Test Parameters to Database
+#' @name SaveBreatTestParameters
+#' @description Mainly for internal use, but can be called to store any
+#' additional key/value pair
+#' @param con Connection to sqlite database
+#' @param pars Data frame with columns BreathTestRecordID, Parameter, Method, Value
+#' @export
+SaveBreathTestParameters = function(con, pars){
+  ret = NULL
+  if (nrow(pars) > 0) {
+    pars = cbind(BreathTestParameterID = as.integer(NA), pars)
+    ret = try(
+      dbExecute(con,
+      "INSERT INTO BreathTestParameter VALUES($BreathTestParameterID, 
+      $BreathTestRecordID, $Parameter, $Method, $Value)",  params = pars),
+      silent =  TRUE
+    )
+  }
+  ret
+}
+
+
+
 ## This internal function does the work, and is wrapped by try in the exported
 ## function BreatTestRecordToDatabase
 BreathTestRecordToDatabaseInternal = function(bid, con) {
@@ -365,16 +390,14 @@ BreathTestRecordToDatabaseInternal = function(bid, con) {
     BreathTestRecordID,
     Parameter = c("t50","tlag","GEC"),
     Method = rep(bid$Device,3),
-    Values = c(bid$T50, bid$TLag,bid$GEC)
+    Value = c(bid$T50, bid$TLag,bid$GEC)
   ))
-  if (nrow(pars) > 0) {
-    pars = cbind(BreathTestParameterID = as.integer(NA),pars)
-    ret = try(dbGetPreparedQuery(con,
-                                 "INSERT INTO BreathTestParameter VALUES(?,?,?,?,?)",pars),silent =
-                TRUE)
-    if (inherits(ret,"try-error"))
-      stop(str_c("Error writing Device parameters for patient ",bid$PatientID))
-  }
+  ret = try(
+    SaveBreathTestParameters(con, pars),
+    silent = TRUE
+  )
+  if (inherits(ret, "try-error"))
+    stop(paste0("Error writing device parameters for patient ",bid$PatientID))
   
   # Compute and save fit (will do nothing if not successful)
   ComputeAndSaveParameterizedFit(con,BreathTestRecordID)
@@ -386,7 +409,7 @@ BreathTestRecordToDatabaseInternal = function(bid, con) {
 
 sn = function(x) {
   ifelse (is.null(x) ||
-            is.na(x),"NULL",str_c("'",as.character(x),"'"))
+            is.na(x),"NULL",paste0("'",as.character(x),"'"))
 }
 
 SavePatientRecord = function(bid,con) {
@@ -415,9 +438,9 @@ SavePatientRecord = function(bid,con) {
     # Make sure to use utf8 here for umlauts in names
     q = enc2utf8(q)
     tryCatch(
-      dbSendQuery(con,q),
+      dbExecute(con,q),
       error = function(e)
-        stop(str_c(
+        stop(paste0(
           "Error inserting PatientID ",PatientID
         ))
     )
@@ -433,11 +456,11 @@ SavePatientRecord = function(bid,con) {
     )
   if (printSQL)
     print(q)
-  ret = try(dbSendQuery(con,q),TRUE)
+  ret = try(dbExecute(con,q),TRUE)
   if (inherits(ret,"try-error"))
   {
     if (str_detect(ret,"unique")) {
-      stop(str_c(
+      stop(paste0(
         "A record for file ",bid$FileName," already exists. Skipped."
       ))
     } else {
@@ -452,20 +475,27 @@ SavePatientRecord = function(bid,con) {
   bts$BreathTestTimeSeriesID = NA
   # Retrieve column names to get the order right
   flds = dbListFields(con,"BreathTestTimeSeries")
-  q = str_c("INSERT INTO BreathTestTimeSeries VALUES(",
-            paste(rep("?",length(flds)),collapse = ","),")")
+  
+  q = paste0("INSERT INTO BreathTestTimeSeries VALUES($",
+             paste0(flds, collapse = ",$"),")")
   if (printSQL)
     print(q)
-  ret = try(dbGetPreparedQuery(con, q,bind.data = bts[,flds]), silent =
-              TRUE)
+  # dbExecute does not work as expected here, with NA in autoincrement
+  # I believe the currently issued warning is bogus
+  # https://github.com/rstats-db/RSQLite/issues/153
+  ret = try(
+    dbExecute(con, q, params = bts),
+    silent =  TRUE
+  )
   
-  if (inherits(ret,"try-error"))
+  if (inherits(ret,"try-error")){
     stop(
-      str_c(
+      paste0(
         "Could not write raw time series record for patient ",PatientID,"\n",
         attr(ret,"condition")$message
       )
     )
+  }
   BreathTestRecordID
 }
 

@@ -67,10 +67,10 @@ ComputeAndSaveParameterizedFit = function(con,BreathTestRecordID)  {
     BreathTestRecordID ," and Method in ('",
     paste0(unique(methods),collapse = "','",sep = ""),"')"
   )
-  dbSendQuery(con, q)
+  dbExecute(con, q)
   # Write parameters and coefficients
   pars = data.frame(
-    BreathTestParameterID = as.integer(NA), BreathTestRecordID,
+    BreathTestRecordID = BreathTestRecordID,
     Parameter = parameters,
     Method = methods,
     Value = unlist(
@@ -84,13 +84,14 @@ ComputeAndSaveParameterizedFit = function(con,BreathTestRecordID)  {
   )
   # Dirty trick: remove zero t50BluckCowards
   pars = pars[pars$Value != 0,]
-  q = str_c("INSERT INTO BreathTestParameter VALUES(",
-            paste(rep("?",ncol(pars)),collapse = ","),")")
-  ret = try(dbGetPreparedQuery(con, q,bind.data = pars), silent = TRUE)
+  ret = try(
+    SaveBreathTestParameters(con, pars),
+    silent = TRUE
+  )
   if (inherits(ret,"try-error"))
     stop(
-      str_c(
-        "Could not write fit parameters for record with BreathTestRecordID= ",
+      paste0(
+        "Could not write fit parameters for record with BreathTestRecordID = ",
         BreathTestRecordID
       )
     )

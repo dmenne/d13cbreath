@@ -16,6 +16,15 @@ test_that("ReadIris returns valid data set",{
   expect_equal(ncol(f$Data),3)
 })
 
+test_that("ReadIris returns valid data set when values are negative",{
+  filename = d13File("IrisNegativeValues.TXT")
+  f = ReadIris(filename)
+  expect_is(f,"BreathTestData")
+  expect_equal(nrow(f$Data),12)
+  expect_equal(ncol(f$Data),3)
+  expect_true(all(f$Data$DOB >= -10))
+})
+
 test_that("ReadIris returns valid data set when Weight/Height is zero",{
   filename = d13File("IrisZeroWeight.TXT")
   f = ReadIris(filename)

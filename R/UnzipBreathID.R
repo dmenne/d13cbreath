@@ -34,7 +34,7 @@ UnzipBreathID = function(zipPath,destinationPath,
   destinationPath = normalizePath(destinationPath)
   if (str_detect(zipPath1,"^[A-Z]:\\\\*$"))
     # This fails on non-Windows
-    zipPath1 = str_c(zipPath1,"/.")
+    zipPath1 = paste0(zipPath1,"/.")
   
   if (!is.null(lastZipDate))
     lastZipDate = as.POSIXct(lastZipDate)

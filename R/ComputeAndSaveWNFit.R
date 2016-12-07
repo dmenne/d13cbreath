@@ -43,27 +43,29 @@ ComputeAndSaveWNFit = function(con,BreathTestRecordID)  {
     predict(spl,t)$y - 0.5,c(0,max(data$Time)))$root,silent = TRUE)
   if (class(t50) == "try-error")
     t50 = 0
-  ret = dbSendQuery(
+  ret = dbExecute(
     con, paste0(
       "DELETE FROM BreathTestParameter where BreathTestRecordID=",
       BreathTestRecordID ," and Method ='WN'"
     )
   )
-  dbClearResult(ret)
   # Write parameters and coefficients
   pars = data.frame(
-    BreathTestParameterID = as.integer(NA), BreathTestRecordID,
-    Parameter = "t50",Method = "WN",Value = t50
+    BreathTestRecordID = BreathTestRecordID,
+    Parameter = "t50",
+    Method = "WN",
+    Value = t50
   )
   # *** Todo: remove dirty trick for invalid WN
   pars =  pars[pars$Value != 0,]
-  if (nrow(pars) ==0) 
+  if (nrow(pars) == 0) 
     return(0) # Do not report error, we can live without
-  q = str_c("INSERT INTO BreathTestParameter VALUES(",
-            paste(rep("?",ncol(pars)),collapse = ","),")")
-  ret = try(dbGetPreparedQuery(con, q,bind.data = pars), silent = TRUE)
+  ret = try(
+    SaveBreathTestParameters(con, pars),
+    silent = TRUE
+  )
   if (inherits(ret,"try-error"))
-    stop(str_c("Could not write WN fit parameters for Record ",BreathTestRecordID))
+    stop(paste0("Could not write WN fit parameters for Record ",BreathTestRecordID))
   # Compute predicted WN fit
   Time = seq(0,max(data$Time), by = 5)
   wn = data.frame(
@@ -75,19 +77,22 @@ ComputeAndSaveWNFit = function(con,BreathTestRecordID)  {
   )
   
   # Delete old values
-  ret = dbSendQuery(
+  ret = dbExecute(
     con, paste0(
       "DELETE FROM BreathTestTimeSeries where BreathTestRecordID=",
       BreathTestRecordID ," and Parameter ='WN'"
     )
   )
-  dbClearResult(ret)
-  q = str_c("INSERT INTO BreathTestTimeSeries VALUES(",
-            paste(rep("?",ncol(wn)),collapse = ","),")")
-  ret = try(dbGetPreparedQuery(con, q,bind.data = wn), silent = TRUE)
+  # Retrieve column names to get the order right
+  flds = dbListFields(con,"BreathTestTimeSeries")
   
-  if (inherits(ret,"try-error"))
-    stop(str_c(
+  q = paste0("INSERT INTO BreathTestTimeSeries VALUES($",
+             paste0(flds, collapse = ",$"),")")
+  ret = try(
+    dbExecute(con, q, params = wn), silent = TRUE
+  )
+  if (inherits(ret, "try-error"))
+    stop(paste0(
       "Could not write predicted Wagner-Nelson data for record ",
       BreathTestRecordID
     ))

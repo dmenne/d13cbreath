@@ -12,7 +12,7 @@ SimulateBreathId = function() {
   bid = ReadBreathId(filename)
   bid$FirstName = RandomName()
   bid$Name = RandomName()
-  bid$Initials = str_c(str_sub(bid$FirstName,1,1),
+  bid$Initials = paste0(str_sub(bid$FirstName,1,1),
                        str_sub(bid$Name,1,1))
   bid$FileName = RandomFile()
   bid$StartTime = Sys.time() -  60 * 60 * 24 * 200 * runif(1)
@@ -79,12 +79,15 @@ CreateSimulatedBreathTestDatabase = function(sqlitePath = NULL) {
   if (is.null(sqlitePath))
     sqlitePath = tempfile(pattern = "Gastrobase", tmpdir = tempdir(), fileext = ".sqlite")
   # ***************** Debug ***********************************
-  #     sqlitePath = "C:/tmp/GastrobaseTest.sqlite"
+  #print("DDDDDDDDDDDDD")
+  #sqlitePath = "C:/tmp/GastrobaseTest.sqlite"
   unlink(sqlitePath)
   CreateEmptyBreathTestDatabase(sqlitePath)
   con = OpenSqliteConnection(sqlitePath)
-  add = try (for (i in 1:10)
-    AddSimulatedBreathTestRecord(con),silent = TRUE)
+  add = try(
+    for (i in 1:10)
+      AddSimulatedBreathTestRecord(con),silent = TRUE
+  )
   if (inherits(add,"try-error")) {
     stop(paste(
       "CreateSimulatedBreathTestDatabase", attr(add,"condition")$message
@@ -94,9 +97,9 @@ CreateSimulatedBreathTestDatabase = function(sqlitePath = NULL) {
     SettingID = c("BlueItem","GreenItem","OrangeItem","RedItem"),
     Value = c("Record_1","Record_2","Record_3","Patient_Gamma")
   )
-  q = "INSERT INTO Setting VALUES(?,?)"
-  ret = try(dbGetPreparedQuery(con, q,bind.data = setting), silent = TRUE)
-  
+  q = "INSERT INTO Setting VALUES($SettingID, $Value)"
+  try(dbExecute(con, q, params = setting), silent = TRUE)
+
   # Ok
   RebuildPopulationFitDatabase(con)
   dbDisconnect(con)
