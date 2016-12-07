@@ -113,7 +113,7 @@ test_that("Duplicate Time values raise",{
   con = OpenSqliteConnection(sqlitePath)
   filename = system.file("extdata", "350_20043_0_GERDuplicateTime.txt", 
                          package = "D13CBreath")
-  expect_error(AddBreathTestRecord(filename,con), "UNIQUE constraint")
+  expect_error(AddBreathTestRecord(filename,con), "raw time series")
   dbDisconnect(con)
   unlink(sqlitePath)
 })

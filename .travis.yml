@@ -4,9 +4,9 @@ cache: packages
 latex: false
 
 
-#r-github-packages:
-#  - jimhester/covr
+r-github-packages:
+  - jimhester/covr
 
-#after_success:
-#  - Rscript -e 'covr::coveralls()'
+after_success:
+  - Rscript -e 'covr::coveralls()'
   
