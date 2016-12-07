@@ -1,5 +1,5 @@
 context("Database write test")
-
+options(warn=0)
 
 test_that("Writing sample BreathID database returns valid set of fit parameters ",{
   if (exists("con")) suppressWarnings(try(dbDisconnect(con)))
@@ -44,11 +44,11 @@ test_that("Update Cascade and Delete Cascade must be effective for BreathTestRec
   patID = dbGetQuery(con,"SELECT PatientID from Patient")$PatientID
   # Test Delete
   expect_equal(dbGetQuery(con, countSQL(patID[1]))[1,1] ,3)
-  dbExecute(con, sprintf("DELETE from Patient where patientID='%s'",patID[1]))
+  DBI::dbExecute(con, sprintf("DELETE from Patient where patientID='%s'",patID[1]))
   expect_equal(dbGetQuery(con, countSQL(patID[1]))[1,1] ,0)
   # Test Update
   expect_equal(dbGetQuery(con, countSQL(patID[2]))[1,1] ,3)
-  dbExecute(con, 
+  DBI::dbExecute(con, 
     sprintf("UPDATE Patient SET patientID='blub' where PatientID='%s'", patID[2]))
   expect_equal(dbGetQuery(con, countSQL(patID[2]))[1,1] ,0)
   expect_equal(dbGetQuery(con, countSQL('blub'))[1,1] ,3)  
@@ -58,7 +58,7 @@ test_that("Update Cascade and Delete Cascade must be effective for BreathTestRec
 test_that("Summary returns list of Record and Parameters",{
  sqlitePath = CreateSimulatedBreathTestDatabase()
  con = OpenSqliteConnection(sqlitePath)
- breathTestRecordID=1
+ breathTestRecordID = 1
  sum = Summary13CRecord(con,breathTestRecordID)
  dbDisconnect(con)
  expect_equal(length(sum),2)
