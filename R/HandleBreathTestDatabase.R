@@ -480,9 +480,6 @@ SavePatientRecord = function(bid,con) {
              paste0(flds, collapse = ",$"),")")
   if (printSQL)
     print(q)
-  # dbExecute does not work as expected here, with NA in autoincrement
-  # I believe the currently issued warning is bogus
-  # https://github.com/rstats-db/RSQLite/issues/153
   ret = try(
     dbExecute(con, q, params = bts),
     silent =  TRUE
@@ -492,7 +489,7 @@ SavePatientRecord = function(bid,con) {
     stop(
       paste0(
         "Could not write raw time series record for patient ",PatientID,"\n",
-        attr(ret,"condition")$message
+        paste0(attr(ret,"condition")$message, collapse = "\n")
       )
     )
   }

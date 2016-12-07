@@ -1,5 +1,4 @@
 context("Database write test")
-options(warn=0)
 
 test_that("Writing sample BreathID database returns valid set of fit parameters ",{
   if (exists("con")) suppressWarnings(try(dbDisconnect(con)))
@@ -98,7 +97,7 @@ test_that("Data columns with NaN are not stored",{
                          package = "D13CBreath")
   AddBreathTestRecord(filename,con)
   pars = dbGetQuery(con,"SELECT DISTINCT Parameter from BreathTestTimeSeries order by Parameter") 
-  ### Change this !!
+  ### Change this when new method has been added
   expectParams = c("CPDR","DOB","PDR","PDRfit","WN")
   expect_equal(pars[,1],expectParams)
   dbDisconnect(con)
