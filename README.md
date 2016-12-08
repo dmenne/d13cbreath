@@ -22,7 +22,7 @@ The software is being developed in cooperation with the ETH and Department of Ga
 * See documentation of function `bluckCoward` for examples, including how to use
   `nlme` for stuborn or highly incomplete cases.
 * For additional examples, see the folder `tests/testthat` of the source package
-* [A comparison of results with nls, nlme](http://dmenne.github.io/d13cbreath) and the Bayesian [Stan](http://www.mc-stan.org).
+* [A comparison of results with nls, nlme](http://menne-biomed.de/blog/de/breath-test-stan) and Bayesian [Stan](http://www.mc-stan.org).
 * See the example in the documentation of `t50BluckCoward` for a comparison with published data. Most cases agree with those published here, but there are some exceptions; possible a typo in the published table?
 
 ## How to install
