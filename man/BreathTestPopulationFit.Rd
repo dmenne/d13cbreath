@@ -4,24 +4,16 @@
 \alias{BreathTestPopulationFit}
 \title{Breathtest population fit}
 \usage{
-BreathTestPopulationFit(x = NULL, RemoveItemsFunction = NULL)
+BreathTestPopulationFit(x = NULL)
 }
 \arguments{
 \item{x}{data frame with columns \code{BreathTestRecordID, Time, PDR}.
 When no parameter is given, reads from default database via with function
 \code{GetPopulationsData}.}
-
-\item{RemoveItemsFunction}{When this function is at its default NULL value,
-items that were not successfully fitted with nlsList are removed. This
-is done with function \code{RemoveNACoefficients}.
-To force retries  of case that were not successfully fit by nlsList, pass 
-a custom function modelled after \code{RemoveNACoefficients}. This will
-trigger retries of \code{nlme} which is rarely successful.}
 }
 \value{
 data frame with columns \code{BreathTestRecordID, m, k,beta}
 of the population fit. Use function \code{SavePopulationFit} to save to database.
-An attribute \code{removed} is attached with a list of record that were removed.
 }
 \description{
 Fits a population \code{nlme} model to multiple breath test PDR records.
@@ -41,11 +33,9 @@ pp = pd$PDR[pd$BreathTestRecordID=="1"]
 pp = pp+(1:length(pp))*0.5
 pd$PDR[pd$BreathTestRecordID==1] = pp
 head(pd)
-cf = BreathTestPopulationFit(pd)
-# The offending record was removed
-cat("Removed Record:", attr(cf, "removed"))
-head(cf)
-SavePopulationFit(cf,con) # Return a data frame with kept/removed
+# This gives a "did not converge" error
+cf = try(BreathTestPopulationFit(pd))
+print(cf)
 dbDisconnect(con)
 }
 \author{

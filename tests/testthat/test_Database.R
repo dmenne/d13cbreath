@@ -153,3 +153,16 @@ test_that("ReadBreathID on difficult file does not throw",{
   unlink(sqlitePath)
 })
 
+test_that("Rebuild database must recreate parameters", {
+  sqlitePath = CreateSimulatedBreathTestDatabase()
+  con = OpenSqliteConnection(sqlitePath)
+  expect_count = 210
+  expect_equal(DBI::dbExecute(con,"DELETE FROM BreathTestParameter"), expect_count)
+  expect_equal(dbGetQuery(con, "SELECT count(*) from BreathTestParameter")[1,1], 0)
+  RebuildFitDatabase(con)
+  # Currently, population fits are not recomputed
+  expect_gte(dbGetQuery(con, "SELECT count(*) from BreathTestParameter")[1,1], 
+            100)
+  dbDisconnect(con)
+  unlink(sqlitePath)
+})

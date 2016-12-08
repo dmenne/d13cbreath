@@ -10,15 +10,8 @@
 #' @param x data frame with columns \code{BreathTestRecordID, Time, PDR}.
 #' When no parameter is given, reads from default database via with function
 #' \code{GetPopulationsData}.
-#' @param RemoveItemsFunction When this function is at its default NULL value,
-#' items that were not successfully fitted with nlsList are removed. This
-#' is done with function \code{RemoveNACoefficients}.
-#' To force retries  of case that were not successfully fit by nlsList, pass 
-#' a custom function modelled after \code{RemoveNACoefficients}. This will
-#' trigger retries of \code{nlme} which is rarely successful.
 #' @return data frame with columns \code{BreathTestRecordID, m, k,beta}
 #' of the population fit. Use function \code{SavePopulationFit} to save to database.
-#' An attribute \code{removed} is attached with a list of record that were removed.
 #' @examples
 #' set.seed(14024)
 #' sqliteFile = CreateSimulatedBreathTestDatabase()
@@ -29,19 +22,14 @@
 #' pp = pp+(1:length(pp))*0.5
 #' pd$PDR[pd$BreathTestRecordID==1] = pp
 #' head(pd)
-#' cf = BreathTestPopulationFit(pd)
-#' # The offending record was removed
-#' cat("Removed Record:", attr(cf, "removed"))
-#' head(cf)
-#' SavePopulationFit(cf,con) # Return a data frame with kept/removed
+#' # This gives a "did not converge" error
+#' cf = try(BreathTestPopulationFit(pd))
+#' print(cf)
 #' dbDisconnect(con)
 #' @import nlme
 #' @export
 #'
-BreathTestPopulationFit = function(x = NULL, RemoveItemsFunction = NULL) {
-  retryFits = !is.null(RemoveItemsFunction)
-  if (!retryFits)
-    RemoveItemsFunction = RemoveNACoefficients
+BreathTestPopulationFit = function(x = NULL) {
   # Get data from default directory if not given
   if (is.null(x))
     x = GetPopulationData()
@@ -53,15 +41,9 @@ BreathTestPopulationFit = function(x = NULL, RemoveItemsFunction = NULL) {
     PDR ~ ExpBeta(Time,100,m,k,beta) | BreathTestRecordID,
     data = x,start = start
   ))
-  # For testing, we make RemoveItems a function
-  removed = RemoveItemsFunction(coef(bc.nls))
-  if (is.null(removed))
-    x1 = x
-  else
-    x1 = x[!(x$BreathTestRecordID %in% removed),]
   bc.nlme = suppressWarnings(try(nlme(
     PDR ~ ExpBeta(Time,100,m,k,beta),
-    data = x1,
+    data = x,
     control = nlmeControl(pnlsTol = 3),
     fixed = m + k + beta ~ 1,
     random = m + pdDiag(k + beta) ~ 1,
@@ -72,54 +54,12 @@ BreathTestPopulationFit = function(x = NULL, RemoveItemsFunction = NULL) {
   success = !inherits(bc.nlme,"try-error")
   if (!success)
     # This should work in most cases, since we removed all nlsList failures
-    stop("Populationsfit nicht erfolgreich")
-  # retrying Fits is rarely successfull
-  if (retryFits) {
-    nextRemoved = 1
-    while (length(removed) >  0) {
-      actRemoved = removed[-nextRemoved]
-      if (length(actRemoved) > 0)
-        x1 = x[!(x$BreathTestRecordID %in% actRemoved),]
-      else
-        x1 = x
-      bc1.nlme = suppressWarnings(
-        try(update(bc.nlme,data  =  x1),silent  =
-              TRUE)
-      )
-      success = !inherits(bc1.nlme,"try-error")
-      if (success) {
-        removed = actRemoved
-        bc.nlme = bc1.nlme
-        nextRemoved = 1
-      } else
-      {
-        nextRemoved = nextRemoved + 1
-      }
-      #    cat("Success ", success, "act ",actRemoved," removed ",removed," nextRemoved ",nextRemoved,"\n")
-      if (length(removed) == 0 || nextRemoved > length(removed))
-        break
-    }
-  }
-  #cat(removed,"\n")
+    stop("Population fit did not converge")
   cf = coef(bc.nlme)
   cf = cbind(BreathTestRecordID = rownames(cf),cf)
-  attr(cf,"removed") = removed
   cf
 }
 
-
-#' @title Remove coefficients from \code{nlsList} for subsequent \code{nlme} run.
-#' @description
-#' Returns a character vector of the levels to be deleted from nlme.
-#' Used in function \code{\link{BreathTestPopulationFit}} as the default function.
-#' In general, leave this function at its default value.
-#' Overriding this function is required for testing only
-#' @param cf coefficients from a nlsList fit.
-#' @return character vector of levels to be deleted
-#' @name RemoveNACoefficients
-RemoveNACoefficients = function(cf) {
-  attr(attr(na.omit(cf),"na.action"),"names")
-}
 
 #' @title Save population fit to breath test data
 #' @description
