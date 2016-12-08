@@ -53,7 +53,6 @@ BreathTestPopulationFit = function(x = NULL) {
   )
   success = !inherits(bc.nlme,"try-error")
   if (!success)
-    # This should work in most cases, since we removed all nlsList failures
     stop("Population fit did not converge")
   cf = coef(bc.nlme)
   cf = cbind(BreathTestRecordID = rownames(cf),cf)
