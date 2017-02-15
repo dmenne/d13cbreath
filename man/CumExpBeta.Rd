@@ -26,4 +26,3 @@ and can be used to compute the 50% points.
 \seealso{
 \code{\link{ExpBeta}}
 }
-

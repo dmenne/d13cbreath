@@ -20,4 +20,3 @@ Maes B D, Ghoos Y F, Rutgeerts P J, Hiele M I, Geypens B and Vantrappen G 1994 D
 \seealso{
 \code{\link{ExpBeta}}, and \code{\link{t50BluckCoward}} for an example.
 }
-

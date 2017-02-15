@@ -14,4 +14,3 @@ path \code{getOption("Gastrobase2SqlitePath")} is used.}
 Recomputes all fits parameters, excluding population fit. Use this
 function to refresh coefficients when the algorithm has changed.
 }
-

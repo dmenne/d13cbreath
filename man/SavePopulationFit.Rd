@@ -18,4 +18,3 @@ with values \code{kept} and \code{removed}.
 \description{
 Deletes all old population entries, and saves new population fits to database.
 }
-

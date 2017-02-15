@@ -32,4 +32,3 @@ dbDisconnect(con)
 \author{
 Dieter Menne, \email{dieter.menne@menne-biomed.de}
 }
-

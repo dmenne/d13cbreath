@@ -24,4 +24,3 @@ str(bid)
 \author{
 Dieter Menne, \email{dieter.menne@menne-biomed.de}
 }
-

@@ -81,4 +81,3 @@ cf4
 
 #' @seealso \\code{\\link{ExpBeta}}
 }
-

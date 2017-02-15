@@ -22,4 +22,3 @@ of the PDR time series.
 \seealso{
 \code{\link{ExpBeta}}, and \code{\link{t50BluckCoward}} for an example.
 }
-

@@ -28,4 +28,3 @@ CreateEmptyBreathTestDatabase(getOption("Gastrobase2SqlitePath"))
 \author{
 Dieter Menne, \email{dieter.menne@menne-biomed.de}
 }
-

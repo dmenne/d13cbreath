@@ -50,4 +50,3 @@ var(bid$Data$PDR1-bid$Data$PDR)
 \author{
 Dieter Menne, \email{dieter.menne@menne-biomed.de}
 }
-

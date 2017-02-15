@@ -30,4 +30,3 @@ dbDisconnect(con)
 \code{\link{ReadBreathId}}, \code{\link{SimulateBreathId}},
 \code{\link{CreateSimulatedBreathTestDatabase}}
 }
-

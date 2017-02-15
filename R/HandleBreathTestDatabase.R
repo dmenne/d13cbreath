@@ -244,11 +244,13 @@ AddAllBreathTestRecords = function(path,con) {
       next
     } else {
       if (device == "BreathID") {
-        bid = try(ReadBreathId(filename),silent = TRUE)
+        bid = try(ReadBreathId(filename), silent = TRUE)
       } else if (device == "Iris")  {
-        bid = try(ReadIris(filename),silent = TRUE)
+        bid = try(ReadIris(filename), silent = TRUE)
+      } else if (device == "IrisCSV")  {
+        bid = try(ReadIrisCSV(filename), silent = TRUE)
       }
-      if (inherits(bid,"try-error")) {
+    if (inherits(bid,"try-error")) {
         files[i,"error"] = attr(bid,"condition")$message
         files[i,"status"] = "invalid"
         next
@@ -288,6 +290,8 @@ DeviceType = function(files) {
       return("BreathID")
     if (line == '"Testergebnis"')
       return("Iris")
+    if (str_detect(line, "Identifikation"))
+      return("IrisCSV")
     return("invalid")
   }))
 }
@@ -359,7 +363,7 @@ BreathTestRecordToDatabase = function(bid, con) {
 }
 
 #' @title Saves Breath Test Parameters to Database
-#' @name SaveBreatTestParameters
+#' @name SaveBreathTestParameters
 #' @description Mainly for internal use, but can be called to store any
 #' additional key/value pair
 #' @param con Connection to sqlite database

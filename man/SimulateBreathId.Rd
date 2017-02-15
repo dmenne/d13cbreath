@@ -16,4 +16,3 @@ A time series that can be fit by exponential beta
 \seealso{
 \code{\link{ReadBreathId}}, \code{\link{AddSimulatedBreathTestRecord}}
 }
-

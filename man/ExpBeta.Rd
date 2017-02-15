@@ -138,4 +138,3 @@ xyplot(PDR~time|patient,groups=what,data=predData,cex=0.4,pch=16, type=c("p","l"
 \author{
 Dieter Menne, \email{dieter.menne@menne-biomed.de}
 }
-

@@ -27,4 +27,3 @@ dbGetQuery(con, "Select PatientID,Name,FirstName from Patient")
 dbDisconnect(con)
 }
 }
-

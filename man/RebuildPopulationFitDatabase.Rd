@@ -14,4 +14,3 @@ to default database with path given by \code{getOption("Gastrobase2SqlitePath")}
 The population fit using nlme is computed, and coefficients are saved in database,
 overwriting old ones.
 }
-

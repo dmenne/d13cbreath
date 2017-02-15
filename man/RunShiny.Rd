@@ -19,4 +19,3 @@ databasePath = CreateSimulatedBreathTestDatabase()
 RunShiny()
 }
 }
-

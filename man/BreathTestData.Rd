@@ -71,4 +71,3 @@ Generates structure of class BreathTestData with required fields
 and optional fields as an intermediate between file data and the SQlite database.
 All optional fields by default are NA
 }
-

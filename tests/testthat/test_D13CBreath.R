@@ -77,3 +77,7 @@ test_that("DOBToPDR is not too far from what BreathID says",{
   bid$Data$PDR1 = DOBToPDR(bid$Data$DOB,weight=bid$Weight,height=bid$Height)
   expect_true(sqrt(var(bid$Data$PDR1-bid$Data$PDR))<0.032)
 })
+
+
+#id = "KEK-ZH-Nr.2013-1234"
+#id = "Las4Dd5 .f lkj"

@@ -24,4 +24,3 @@ filename = system.file("extdata", "350_20043_0_GER.txt", package = "D13CBreath")
 AddBreathTestRecord(filename,con)
 dbDisconnect(con)
 }
-

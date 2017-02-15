@@ -18,4 +18,3 @@ If sqlitePath is NULL, it is created in temporary directory.
 To create a file in the default path, use
 \code{CreateSimulatedBreathTestDatabase(getOption("Gastrobase2SqlitePath"))}
 }
-

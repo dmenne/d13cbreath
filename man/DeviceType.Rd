@@ -23,4 +23,3 @@ files = dir(path,pattern="*.txt",ignore.case=TRUE,
         recursive=TRUE,full.names=TRUE)
 DeviceType(files)
 }
-

@@ -26,4 +26,3 @@ Table BreathTestRecord: PatientID (refers to Patient); Filename, Device, ...
 
 Table BreathTestTimeSeries: Original times series as \code{Parameter=BreathID},
 }
-

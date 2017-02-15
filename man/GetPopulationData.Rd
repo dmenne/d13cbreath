@@ -16,4 +16,3 @@ data frame with columns \code{BreathTestRecordID, Time, Value}
 \description{
 Retrieves a dataframe for use in \code{BreathTestPopulationFit}
 }
-
