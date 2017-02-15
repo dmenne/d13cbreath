@@ -1,8 +1,7 @@
-#' @title Read 13C data from IRIs/Wagner Analysen
+#' @title Read 13C data from IRIS/Wagner Analysen in composite format
 #'
 #' @description Reads 13C data from IRIS/Wagner Analysen.
-#' Reading CSV-formatted files is not supported, because these do not contain
-#' weight and height information required for DOB to PDR conversion.
+#' Use ReadIrisCSV to read IRIS data in CSV format
 #' The composite files required start as follows:
 #' \preformatted{
 #' "Testergebnis"
