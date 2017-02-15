@@ -35,10 +35,9 @@
 #' @import RSQLite
 #' @import RColorBrewer
 #' @export
-Plot13CRecord = function(con, breathTestRecordID, showParameters = NULL,ymax =
-                           NULL,
-                         xmax = NULL,  showName = FALSE,showPopulationFit =
-                           FALSE) {
+Plot13CRecord = function(con, breathTestRecordID, showParameters = NULL,
+                         ymax = NULL, xmax = NULL, showName = FALSE,
+                         showPopulationFit = FALSE) {
   # Debug
   #showParameters=data.frame(Parameter="t50",Method="BluckCoward")
   #breathTestRecordID = 25; showName = FALSE; ymax=NULL; ymax=0;showPopulationFit=FALSE

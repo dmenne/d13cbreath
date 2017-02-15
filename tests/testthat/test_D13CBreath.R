@@ -59,9 +59,9 @@ test_that("ReadBreathID on bad data file throws",{
   filename = d13File("350_20043_0_GERBadHeader.txt")
   expect_error(ReadBreathId(filename),"not a valid BreathID")
   filename = d13File("350_20043_0_GERNoData.txt")
-  expect_error( ReadBreathId(filename),"does not contain PDR")
+  expect_error(ReadBreathId(filename),"does not contain PDR")
   filename = d13File("350_20043_0_GERNoT50.txt")
-  expect_error( ReadBreathId(filename),"No <<T 1/2>> found")
+  expect_error(ReadBreathId(filename),"No <<T 1/2>> found")
 } )
 
 test_that("ReadBreathID with NaN returns valid data, without NaN Columns",{
@@ -79,5 +79,3 @@ test_that("DOBToPDR is not too far from what BreathID says",{
 })
 
 
-#id = "KEK-ZH-Nr.2013-1234"
-#id = "Las4Dd5 .f lkj"
