@@ -14,9 +14,9 @@
 #' con = OpenSqliteConnection(sqliteFile)
 #' filename = system.file("extdata", "350_20043_0_GER.txt", package = "D13CBreath")
 #' AddBreathTestRecord(filename,con)
-#' filename = system.file("extdata", "IrisCSV.txt", package = "D13CBreath")
+#' filename = system.file("extdata", "IrisCSV.TXT", package = "D13CBreath")
 #' AddIrisCSVRecord(filename,con)
-#' filename = system.file("extdata", "IrisMulti.txt", package = "D13CBreath")
+#' filename = system.file("extdata", "IrisMulti.TXT", package = "D13CBreath")
 #' AddIrisRecord(filename,con)
 #' dbDisconnect(con)
 #' @rdname AddRecord
