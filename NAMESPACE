@@ -2,6 +2,8 @@
 
 export(AddAllBreathTestRecords)
 export(AddBreathTestRecord)
+export(AddIrisCSVRecord)
+export(AddIrisRecord)
 export(AddSimulatedBreathTestRecord)
 export(BreathTestData)
 export(BreathTestPopulationFit)

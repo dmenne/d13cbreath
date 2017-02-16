@@ -43,3 +43,14 @@ test_that("ReadIrisCSV raises error on invalid entries",{
   expect_error(ReadIrisCSV(filename), "2 parsing failures")
 })
 
+
+test_that("Iris CSV file can be added to database", {
+  sqlitePath = tempfile(pattern = "Gastrobase", 
+                        tmpdir = tempdir(), fileext = ".sqlite")
+  unlink(sqlitePath)
+  CreateEmptyBreathTestDatabase(sqlitePath)
+  con = OpenSqliteConnection(sqlitePath)
+  filename = d13File("IrisCSV_with_KEK.TXT")
+  expect_equal(AddIrisCSVRecord(filename,con), 1)
+  dbDisconnect(con)
+})

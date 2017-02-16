@@ -77,14 +77,30 @@ test_that("Reading of multiple files returns dataframe with status",{
   path = dirname(
     system.file("extdata", "350_20043_0_GER.txt", package = "D13CBreath"))
   # Test
-  res = AddAllBreathTestRecords(path,con)
-  res1 = AddAllBreathTestRecords(path,con) # Try again, same records
+  res = AddAllBreathTestRecords(path, con)
+  res1 = AddAllBreathTestRecords(path, con) # Try again, same records
   pars = dbGetQuery(con,"SELECT DISTINCT Parameter from BreathTestTimeSeries order by Parameter") 
   dbDisconnect(con)
   unlink(sqlitePath)
   expectParams = c("CPDR","CPDRfit","DOB","PDR","PDRfit","WN")
   expect_equal(pars[,1],expectParams)
 })
+
+
+test_that("Reading all good files in a directory", {
+  if (exists("con")) suppressWarnings(dbDisconnect(con))
+  sqlitePath = tempfile(pattern = "Gastrobase", tmpdir = tempdir(), fileext = ".sqlite")
+  unlink(sqlitePath)
+  CreateEmptyBreathTestDatabase(sqlitePath)
+  con = OpenSqliteConnection(sqlitePath)
+  path = dirname(
+    system.file("extdata/good", "IrisCSV.TXT", package = "D13CBreath"))
+  res = AddAllBreathTestRecords(path, con)
+  dbDisconnect(con)
+  unlink(sqlitePath)
+  expect_true(all(res$status == "saved"))
+})
+
 
 test_that("Data columns with NaN are not stored",{
   # Setup
