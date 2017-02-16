@@ -141,9 +141,6 @@ GetPopulationData = function(con = NULL) {
   if (localCon)
     con = OpenSqliteConnection()
   q = "SELECT BreathTestRecordID,Time,Value as PDR from BreathTestTimeSeries where Parameter='PDR' and Time >0"
-  # Use these as initial values
-  q1 = "SELECT BreathTestRecordID, Parameter, Value from BreathTestParameter where Method='BluckCoward' order by BreathTestRecordID,Value "
-  pars = dbGetQuery(con,q1)
   x = dbGetQuery(con,q)
   if (localCon)
     dbDisconnect(con)
