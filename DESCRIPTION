@@ -1,23 +1,22 @@
-Package: breathtestcore
-Title: Core functions to
-Version: 0.1.1
-Date: 2017-03-20
+Package: D13CBreath
+Title: Reads and Evaluates Gastric Emptying 13C Breath Test Data
+Version: 1.10.9
+Date: 2017-02-15
 Author: Dieter Menne
 Maintainer: Dieter Menne <dieter.menne@menne-biomed.de>
-Description: Reads several formats of 13C data (IRIS/Wagner, BreathID)
-        and CSV. Creates artificial sample data for testing. Fits
-        Maes/Ghoos, Bluck-Coward self-correcting formula using nls,
-        nlme and Stan, and Wagner-Nelson with k(el) estimated from
-        parametric fit. See Bluck L J C and Coward W A 2006 Measurement
-        of gastric emptying by the C-13-octanoate breath test ---
-        rationalization with scintigraphy Physiol. Meas. 27 279-89.
-        This package is a refactored part of dmenne/d13cbreath without
-        database and display functions.
-Depends: R (>= 3.2.0), Rcpp (>= 0.12.8)
-Imports: stringr,ggplot2,nlme, rstan (>= 2.14.1), rstantools (>= 1.1.0)
-Suggests: testthat
-LinkingTo: StanHeaders (>= 2.12.0.1), rstan (>= 2.12.1), BH (>=
-        1.62.0.1), Rcpp (>= 0.12.8), RcppEigen (>= 0.3.2.9.0)
+Description: Reads several formats of 13C data (IRIS/Wagner, BreathID).
+        Creates sample data, and sqlite database, and writes sample
+        database. Fits Bluck-Coward self-correcting formula using nls,
+        and Wagner-Nelson with k(el) estimated from parametric fit.
+        Bluck L J C and Coward W A 2006 Measurement of gastric emptying
+        by the C-13-octanoate breath test --- rationalization with
+        scintigraphy Physiol. Meas. 27 279-89. Uses Shiny to display
+        selected parameters and decision plots in the browser.
+Depends: R (>= 3.2.0), RSQLite (>= 1.1.0)
+Imports: stringr,reshape2,ggplot2,RColorBrewer,nlme, shiny, plyr,
+        hdrcde, DBI, readr
+Suggests: testthat, lattice, latticeExtra, covr
 License: GPL-2
+Roxygen: list(wrap = FALSE)
 RoxygenNote: 6.0.1
 VignetteBuilder: knitr, packagedocs
