@@ -6,3 +6,4 @@ test.sqlite
 .Rbuildignore
 .gitattributes
 *.pdf
+*.bak

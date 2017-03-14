@@ -1,7 +1,7 @@
-[![Travis-CI Build Status](https://travis-ci.org/dmenne/d13cbreath.svg?branch=master)](https://travis-ci.org/dmenne/d13cbreath)
-[![Coverage Status](https://coveralls.io/repos/github/dmenne/d13cbreath/badge.svg?branch=master)](https://coveralls.io/github/dmenne/d13cbreath?branch=master)
+[![Travis-CI Build Status](https://travis-ci.org/dmenne/breathtestcore.svg?branch=master)](https://travis-ci.org/dmenne/breathtestcore)
+[![Coverage Status](https://coveralls.io/repos/github/dmenne/breathtestcore/badge.svg?branch=master)](https://coveralls.io/github/dmenne/breathtestcore?branch=master)
 
-D13CBreath: Processing C13 breath test data
+Package breathtestcore: Fitting C13 breath test data for gastric emptying studies
 ===========================================
 
 Dieter Menne   
@@ -12,15 +12,14 @@ dieter.menne@menne-biomed.de
 
 
 ## What it does
-The software is being developed in cooperation with the ETH and Department of Gastroenterology of the University Hospital of Zürich, Switzerland. Thanks to Andreas Steingötter, Benjamin Misselwitz, Mark Fox and Werner Schwizer. And to Kirill Müller for supporting the RSqlite package.
+The software is being developed in cooperation with the ETH and Department of Gastroenterology of the University Hospital of Zürich, Switzerland. Thanks to Andreas Steingötter, Benjamin Misselwitz, Mark Fox and Werner Schwizer.
 
-* Reads several formats of 13C data: IRIS/Wagner (partially supported), BreathID
-* Creates sample data and writes sample SQLite database; default database is in `<HOME>/Gastrobase2/Gastrobase2.sqlite`.
-* Fits Beta-Exponential nonlinear function using `nls`.
-* Fits Wagner-Nelson, with terminal slope estimated from Bluck-Coward fit.
+* Reads several formats of 13C data: IRIS/Wagner, BreathID and generic CSV
+* Fits Beta-Exponential nonlinear function using `nls`, which gives successful estimates for 90% of PDR curves
+* Fits Wagner-Nelson, with terminal slope estimated from Bluck-Coward fit
 * Computes population fit with `nlme` using all data in database
-* See documentation of function `bluckCoward` for examples, including how to use
-  `nlme` for stuborn or highly incomplete cases.
+* Computes Bayesian non-linear population fit with Stan for multiple records
+* Computes prior-constraing Bayesian non-linear fit for single records
 * For additional examples, see the folder `tests/testthat` of the source package
 * [A comparison of results with nls, nlme](http://menne-biomed.de/blog/de/breath-test-stan) and Bayesian [Stan](http://www.mc-stan.org).
 * See the example in the documentation of `t50BluckCoward` for a comparison with published data. Most cases agree with those published here, but there are some exceptions; possible a typo in the published table?
@@ -28,35 +27,12 @@ The software is being developed in cooperation with the ETH and Department of Ga
 ## How to install
 To install the functions, use
 ```
-devtools::install_github("d13cbreath","dmenne")
+devtools::install_github("breathtestcore","dmenne")
 ```
 
-This package is also included in my [drat](https://github.com/eddelbuettel/drat) repository. Install R package `drat`, and issue the following command:
-
-`drat::addRepo("dmenne")`
-
-After this, the packages from the `dmenne` github repository can be installed like CRAN packages, e.g. from RStudio. When a new version is available, the package is available as an update like any other CRAN package.
-
-For a persistent setting, add the above line to `<R_HOME>/etc/Rprofile.site`.
-
-## Using shiny to display the results
-
-The Shiny package is the test bed for new ways to display the data. To run
-it with a sample database, use:
-
-```
-library(D13CBreath)
-# remove the following line if there is a database in the default location
-# <HOME>/Gastrobase2/Gastrobase2sqlite
-databasePath = CreateSimulatedBreathTestDatabase()
-RunShiny()
-```
-
-These function were developed under Windows 7 and have not been tested under Linux.
-
-## Known problems
-The coupling between computation and database storage is rather tight because of requirements of the first installation. Some refactoring must be done to allow using the computational part without data from the database.
-
+## Previous and future work
+This is a refactored version of github package `dmenne/d13cbreath` without database and display functionality. Use this package if you want to write your own processing with R. 
+A Shiny-based interface with a patient database for installation on your computer system will be added later.
 
 __Reference__: 
 
