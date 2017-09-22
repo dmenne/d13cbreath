@@ -1,6 +1,6 @@
 Package: D13CBreath
 Title: Reads and Evaluates Gastric Emptying 13C Breath Test Data
-Version: 1.10.13
+Version: 1.11.1
 Author: Dieter Menne
 Maintainer: Dieter Menne <dieter.menne@menne-biomed.de>
 Description: Reads several formats of 13C data (IRIS/Wagner, BreathID).

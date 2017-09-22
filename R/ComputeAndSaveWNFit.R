@@ -70,10 +70,11 @@ ComputeAndSaveWNFit = function(con,BreathTestRecordID)  {
   Time = seq(0,max(data$Time), by = 5)
   wn = data.frame(
     BreathTestTimeSeriesID = as.integer(NA),
-    BreathTestRecordID = BreathTestRecordID,
+    BreathTestRecordID = as.character(BreathTestRecordID),
     Time = Time,
-    Parameter = "WN",
-    Value = predict(spl,Time)$y
+    Parameter = as.character("WN"),
+    Value = predict(spl,Time)$y,
+    stringsAsFactors = FALSE
   )
   
   # Delete old values
@@ -94,12 +95,12 @@ ComputeAndSaveWNFit = function(con,BreathTestRecordID)  {
   if (inherits(ret, "try-error"))
     stop(paste0(
       "Could not write predicted Wagner-Nelson data for record ",
-      BreathTestRecordID
+      BreathTestRecordID, "\n", as.character(ret)
     ))
   t50
 }
 
-AUCt = function (x, y)
+AUCt = function(x, y)
 {
   # http://stackoverflow.com/questions/14201375/how-can-i-calculate-the-95-credible-limit-of-an-area-under-a-curve-in-r/14204138#14204138
   cumsum(c(0,diff(x) * (y[-1] + y[-length(y)])) / 2)

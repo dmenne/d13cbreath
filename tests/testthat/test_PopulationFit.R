@@ -1,6 +1,5 @@
 context("Population fit test")
 set.seed(4711)
-options(warn = 2)
 sqlitePath = CreateSimulatedBreathTestDatabase()
 con = OpenSqliteConnection(sqlitePath)
 

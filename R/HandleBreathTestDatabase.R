@@ -322,23 +322,23 @@ BreathTestRecordToDatabase = function(bid, con) {
   # Nested transactions are not possible with dbBegin in SQlite,
   # therefore within the transaction it is not allowed to use dbWriteTable
   # which opens a transaction. Must use prepared queries instead.
-  # TODO: Nesting is possible with named transactions
+  #
+  ## TODO: The above comment is old, nesting is now possible, with named
+  ## transactions, but I have not changed the code yet
+  #
   if (is.null(bid))
     return(NULL)
-  if (!inherits(bid,"BreathTestData"))
+  if (!inherits(bid, "BreathTestData"))
     stop("BreathTestRecordToDatabase: bid must of class 'BreathTestData'")
   # Wrap everything in a transaction
-  comm_name = as.character(Sys.time)
-  dbBegin(con,"BreathTestRecordToDatabase", name = comm_name)
+  dbBegin(con, name = "BreathTestRecordToDatabase")
   ## Do not use dbWriteTable in any nested function
-  ## The above comment is old, nesting is now possible, but 
-  ## I have not changed the code yet
   ret = try(BreathTestRecordToDatabaseInternal(bid,con), silent = TRUE)
   if (inherits(ret,"try-error")) {
-    dbRollback(con,"BreathTestRecordToDatabase", name = comm_name)
+    dbRollback(con, name = "BreathTestRecordToDatabase")
     stop(attr(ret,"condition")$message)
   }
-  dbCommit(con,"BreathTestRecordToDatabase", name = comm_name)
+  dbCommit(con, name = "BreathTestRecordToDatabase")
   ret
 }
 
@@ -353,6 +353,8 @@ SaveBreathTestParameters = function(con, pars){
   ret = NULL
   if (nrow(pars) > 0) {
     pars = cbind(BreathTestParameterID = as.integer(NA), pars)
+    facs = sapply(pars, is.factor)
+    pars[facs] = lapply(pars[facs], as.character)
     ret = try(
       dbExecute(con,
       "INSERT INTO BreathTestParameter VALUES($BreathTestParameterID, 
@@ -392,8 +394,8 @@ BreathTestRecordToDatabaseInternal = function(bid, con) {
 }
 
 sn = function(x) {
-  ifelse (is.null(x) ||
-            is.na(x),"NULL",paste0("'",as.character(x),"'"))
+  ifelse(is.null(x) ||
+         is.na(x),"NULL",paste0("'",as.character(x),"'"))
 }
 
 SavePatientRecord = function(bid,con) {
@@ -457,6 +459,9 @@ SavePatientRecord = function(bid,con) {
   bts = bts[!(is.nan(bts$Value) | is.na(bts$Value)),]
   bts$BreathTestRecordID = BreathTestRecordID
   bts$BreathTestTimeSeriesID = NA
+  # More recent versions of SQLite don't like factors
+  facs = sapply(bts, is.factor)
+  bts[facs] = lapply(bts[facs], as.character)
   # Retrieve column names to get the order right
   flds = dbListFields(con,"BreathTestTimeSeries")
   

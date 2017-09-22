@@ -1,7 +1,4 @@
 context("13C read IRIS CSV test")
-d13File = function(filename){
-  system.file("extdata", filename, package = "D13CBreath")  
-}
 
 test_that("ExtractID returns valid id" , {
   expect_equal(ExtractID("123456"), "123456")  
