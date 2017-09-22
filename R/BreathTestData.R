@@ -54,7 +54,7 @@ BreathTestData = function(PatientID, Name = NA, FirstName = NA,
   substrates = c("octanoate","acetate")
   substratePattern = c("o[ck]t","acet")
   substrate = substrates[str_detect(tolower(Substrate),substratePattern)][1]
-  if (length(substrate) == 0)
+  if (length(substrate) == 0 | is.na(substrate))
     stop(
       "Function BreathTestData: Substrate is '", Substrate,
       "'; it should contain substrings '" ,paste(str_sub(substrates,1,4),collapse =
@@ -68,7 +68,7 @@ BreathTestData = function(PatientID, Name = NA, FirstName = NA,
     Weight = NA
   }
   if (!"PDR" %in% nd)
-    Data$PDR = DOBToPDR(Data$DOB,Weight,Height,MW = substrate)
+    Data$PDR = DOBToPDR(Data$DOB,Weight,Height, MW = substrate)
   structure(
     list(
       PatientID = PatientID, Name = Name, FirstName = FirstName,
