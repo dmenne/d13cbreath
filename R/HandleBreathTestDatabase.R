@@ -328,14 +328,17 @@ BreathTestRecordToDatabase = function(bid, con) {
   if (!inherits(bid,"BreathTestData"))
     stop("BreathTestRecordToDatabase: bid must of class 'BreathTestData'")
   # Wrap everything in a transaction
-  dbBegin(con,"BreathTestRecordToDatabase")
+  comm_name = as.character(Sys.time)
+  dbBegin(con,"BreathTestRecordToDatabase", name = comm_name)
   ## Do not use dbWriteTable in any nested function
+  ## The above comment is old, nesting is now possible, but 
+  ## I have not changed the code yet
   ret = try(BreathTestRecordToDatabaseInternal(bid,con), silent = TRUE)
   if (inherits(ret,"try-error")) {
-    dbRollback(con,"BreathTestRecordToDatabase")
+    dbRollback(con,"BreathTestRecordToDatabase", name = comm_name)
     stop(attr(ret,"condition")$message)
   }
-  dbCommit(con,"BreathTestRecordToDatabase")
+  dbCommit(con,"BreathTestRecordToDatabase", name = comm_name)
   ret
 }
 
