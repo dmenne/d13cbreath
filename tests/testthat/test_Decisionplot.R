@@ -12,5 +12,6 @@ test_that("Decision plots must be generated",{
   dev.off()
   expect_true(file.exists(png_file))
   unlink(png_file)
+  dbDisconnect(con)
 })
   
