@@ -5,8 +5,8 @@
 \title{Data structure for saving into database}
 \usage{
 BreathTestData(PatientID, Name = NA, FirstName = NA, Initials = NA,
-  DOB = NA, BirthYear = NA, Gender = NA, Study = NA, PatStudyID = NA,
-  FileName, Device = "generic", Substrate, RecordDate,
+  DOB = NA, BirthYear = NA, Gender = NA, Study = NA,
+  PatStudyID = NA, FileName, Device = "generic", Substrate, RecordDate,
   StartTime = RecordDate, EndTime = RecordDate, TestNo, Dose = 100,
   Height = NA, Weight = NA, T50 = NA, GEC = NA, TLag = NA,
   Data = Data)

@@ -4,8 +4,8 @@
 \alias{DOBToPDR}
 \title{Convert DOB to PDR}
 \usage{
-DOBToPDR(DOB, weight = 75, height = 180, MW = 167, purityPercent = 99.1,
-  mgSubstrate = 100)
+DOBToPDR(DOB, weight = 75, height = 180, MW = 167,
+  purityPercent = 99.1, mgSubstrate = 100)
 }
 \arguments{
 \item{DOB}{vector in 0/00}

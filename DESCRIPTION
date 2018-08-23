@@ -1,6 +1,6 @@
 Package: D13CBreath
 Title: Reads and Evaluates Gastric Emptying 13C Breath Test Data
-Version: 1.12.2
+Version: 1.12.3
 Author: Dieter Menne
 Maintainer: Dieter Menne <dieter.menne@menne-biomed.de>
 Description: Reads several formats of 13C data (IRIS/Wagner, BreathID).
@@ -17,5 +17,5 @@ Imports: stringr,reshape2,ggplot2,RColorBrewer,nlme, shiny, plyr,
 Suggests: testthat, lattice, latticeExtra, covr
 License: GPL-2
 Roxygen: list(wrap = FALSE)
-RoxygenNote: 6.0.1.9000
+RoxygenNote: 6.1.0
 Encoding: UTF-8

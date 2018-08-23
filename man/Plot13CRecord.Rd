@@ -4,8 +4,9 @@
 \alias{Plot13CRecord}
 \title{Plot a 13C record and fit results}
 \usage{
-Plot13CRecord(con, breathTestRecordID, showParameters = NULL, ymax = NULL,
-  xmax = NULL, showName = FALSE, showPopulationFit = FALSE)
+Plot13CRecord(con, breathTestRecordID, showParameters = NULL,
+  ymax = NULL, xmax = NULL, showName = FALSE,
+  showPopulationFit = FALSE)
 }
 \arguments{
 \item{con}{Open connection to SQLite database; use \code{OpenSqliteConnection}

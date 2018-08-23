@@ -62,7 +62,9 @@ ReadIris = function(filename) {
   if (nchar(Name) > 0 && nchar(FirstName) > 0)
     Initials =  paste0(str_sub(Name,1,1),
                       str_sub(FirstName,1,1))
-  data = read.csv(textConnection(bid[-(1:dataRow)]))
+  tc = textConnection(bid[-(1:dataRow)])
+  data = read.csv(tc)
+  close(tc)
   data = try(data[,c("Testzeit..min.","DOB..o.oo.","Atom.ppm.Excess.13C..ppm.")])
   data = try(data[,c("Testzeit..min.","DOB..o.oo.")])
   if (inherits(data,"try-error"))

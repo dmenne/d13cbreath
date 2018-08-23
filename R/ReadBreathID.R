@@ -47,7 +47,9 @@ ReadBreathId = function(filename) {
   bid = bid[bid != ""]
   if (length(bid) < 2)
     stop(paste0("File ",filename," does not contain PDR data"))
-  data = read.table(textConnection(bid),header = TRUE)
+  tc = textConnection(bid)
+  data = read.table(tc, header = TRUE)
+  close(tc)
   data = RemoveNAColumns(data)
   BreathTestData(
     FileName = basename(filename),
