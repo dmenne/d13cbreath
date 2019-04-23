@@ -13,29 +13,29 @@ test_that("Test ok cases during file extraction without date comparison",{
   
   # Test normal case without dates of old file
   ret = UnzipBreathID(zipPath,destinationPath)
-  expect_that(ret$n,equals(3))
-  expect_that(ret$type,equals("ok"))
-  expect_that(ret$msg,matches("New"))
+  expect_equal(ret$n, 3)
+  expect_equal(ret$type, "ok")
+  expect_match(ret$msg, "New")
   expect_true(file.exists(ret$lastZipFile))
-  expect_that(ret$lastZipDate, equals(as.character(file.info(ret$lastZipFile)$mtime)))
+  expect_equal(ret$lastZipDate, as.character(file.info(ret$lastZipFile)$mtime))
   firstFile = file.path(destinationPath,ret$files[1])
   # Try again, nothing should be extracted
   ret = UnzipBreathID(zipPath,destinationPath,inZipPath = "txt/")
-  expect_that(ret$n,equals(0))
-  expect_that(ret$type,equals("ok"))
-  expect_that(ret$msg,matches("All"))
+  expect_equal(ret$n, 0)
+  expect_equal(ret$type, "ok")
+  expect_match(ret$msg, "All")
   expect_true(file.exists(ret$lastZipFile))
-  expect_that(ret$lastZipDate, equals(as.character(file.info(ret$lastZipFile)$mtime)))
+  expect_equal(ret$lastZipDate, as.character(file.info(ret$lastZipFile)$mtime))
   # Remove one file, extract again
   file.remove(firstFile)
   expect_true(!file.exists(firstFile))
   ret = UnzipBreathID(zipPath,destinationPath,inZipPath = "txt/")
-  expect_that(ret$n,equals(1))
-  expect_that(ret$type,equals("ok"))
-  expect_that(ret$msg,matches("New"))
+  expect_equal(ret$n, 1)
+  expect_equal(ret$type, "ok")
+  expect_match(ret$msg, "New")
   expect_true(file.exists(firstFile))
   expect_true(file.exists(ret$lastZipFile))
-  expect_that(ret$lastZipDate, equals(as.character(file.info(ret$lastZipFile)$mtime)))
+  expect_equal(ret$lastZipDate, as.character(file.info(ret$lastZipFile)$mtime))
   
   unlink(zipPath,TRUE)
   unlink(destinationPath,TRUE)
@@ -63,31 +63,31 @@ test_that("Test ok cases during file extraction with date comparison",{
   Sys.setFileTime(firstFile, "2000-01-01")
   ret = UnzipBreathID(zipPath,destinationPath)
   # it should be extracted
-  expect_that(ret$n,equals(1))
+  expect_equal(ret$n, 1)
   # If no date given, it should unpack
   unlink(file.path(destinationPath,"*.txt"))
   ret = UnzipBreathID(zipPath,destinationPath,lastZipFile = lastZipFile)
-  expect_that(ret$n,equals(3))
+  expect_equal(ret$n, 3)
   # If date given, it should not unpack
   #  unlink(file.path(destinationPath,"*.txt"))
   ret = UnzipBreathID(zipPath,destinationPath,
                       lastZipFile, lastZipDate)
-  expect_that(ret$n,equals(0))
-  expect_that(ret$msg,matches("processed"))
+  expect_equal(ret$n, 0)
+  expect_match(ret$msg, "processed")
   # If date given, it should not unpack, even if the target files do not exist
   ### This is risky....
   unlink(file.path(destinationPath,"*.txt"))
   ret = UnzipBreathID(zipPath,destinationPath,lastZipFile = lastZipFile,
                       lastZipDate = lastZipDate)
-  expect_that(ret$n,equals(0))
-  expect_that(ret$msg,matches("already"))
+  expect_equal(ret$n, 0)
+  expect_match(ret$msg, "already")
   # Setting date to older forces read
   unlink(file.path(destinationPath,"*.txt"))
   ret = UnzipBreathID(zipPath,destinationPath,lastZipFile = lastZipFile,
                       lastZipDate = "2000-01-01")
-  expect_that(ret$n,equals(3))
-  expect_that(ret$type,equals("ok"))
-  expect_that(ret$msg,matches("New files"))
+  expect_equal(ret$n, 3)
+  expect_equal(ret$type, "ok")
+  expect_match(ret$msg, "New files")
   unlink(zipPath,TRUE)
   unlink(destinationPath,TRUE)
 })
@@ -108,27 +108,27 @@ test_that("Test error and info cases",{
   # No zip file
   ret = UnzipBreathID(zipPath,destinationPath,lastZipFile = lastZipFile,
                       lastZipDate = "2000-01-01")
-  expect_that(ret$n,equals(0))
-  expect_that(ret$type,equals("info"))
-  expect_that(ret$msg,matches("No zip"))
+  expect_equal(ret$n, 0)
+  expect_equal(ret$type, "info")
+  expect_match(ret$msg, "No zip")
   # Multiple zip files
   file.copy(zipFile,zipPath)
   file.copy(zipFile,file.path(zipPath,"a.zip"))
   ret = UnzipBreathID(zipPath,destinationPath)
-  expect_that(ret$type,equals("error"))
-  expect_that(ret$msg,matches("More than"))
+  expect_equal(ret$type, "error")
+  expect_match(ret$msg, "More than")
   ret = UnzipBreathID(zipPath,destinationPath,lastZipFile = lastZipFile,
                       lastZipDate = "2000-01-01")
-  expect_that(ret$type,equals("error"))
-  expect_that(ret$msg,matches("More than"))
+  expect_equal(ret$type, "error")
+  expect_match(ret$msg, "More than")
   # Non-existing directory (typically USB stick)
   badZipPath = "X:"
   if (!file_test("-d",paste0(badZipPath,"/.")))
   {
     ret = suppressWarnings(UnzipBreathID(badZipPath,destinationPath))
-    expect_that(ret$n,equals(0))
-    expect_that(ret$type,equals("info"))
-    expect_that(ret$msg,matches("Zip source"))
+    expect_equal(ret$n, 0)
+    expect_equal(ret$type, "info")
+    expect_match(ret$msg, "Zip source")
   }
   # Cleanup
   unlink(zipPath,TRUE)

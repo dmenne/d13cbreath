@@ -65,7 +65,6 @@ test_that("Summary returns list of Record and Parameters",{
  expect_equal(class(sum[[2]]),"data.frame")
  expect_equal(length(sum$Record),23)
  expect_true( nrow(sum$Parameters)>5)
- dbDisconnect(con)
 })
 
 test_that("Reading of multiple files returns dataframe with status",{
