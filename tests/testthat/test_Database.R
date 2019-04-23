@@ -64,7 +64,7 @@ test_that("Summary returns list of Record and Parameters",{
  expect_equal(class(sum[[1]]),"data.frame")
  expect_equal(class(sum[[2]]),"data.frame")
  expect_equal(length(sum$Record),23)
- expect_that( nrow(sum$Parameters)>5,is_true())
+ expect_true( nrow(sum$Parameters)>5)
  dbDisconnect(con)
 })
 

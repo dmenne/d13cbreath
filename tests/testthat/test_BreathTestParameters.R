@@ -12,7 +12,7 @@ test_that("Breath test parameter must return valid data or vectors",{
   # multiple inheritance
   class(dff) = c("data.frame","dummy")
   
-  expect_that(CumExpBeta(seq(0, 6, by = 0.5), 100, cf)[13] > 98.967, is_true())
+  expect_true(CumExpBeta(seq(0, 6, by = 0.5), 100, cf)[13] > 98.967)
   expect_error(CumExpBeta(seq(0, 6, by = 0.5), 100, df) ,"requires")
   
   expect_that(t50BluckCoward(cf), is_a("numeric") )
