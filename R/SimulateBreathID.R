@@ -95,7 +95,8 @@ CreateSimulatedBreathTestDatabase = function(sqlitePath = NULL) {
   }
   setting = data.frame(
     SettingID = c("BlueItem","GreenItem","OrangeItem","RedItem"),
-    Value = c("Record_1","Record_2","Record_3","Patient_Gamma")
+    Value = c("Record_1","Record_2","Record_3","Patient_Gamma"),
+    stringsAsFactors = FALSE
   )
   q = "INSERT INTO Setting VALUES($SettingID, $Value)"
   try(dbExecute(con, q, params = setting), silent = TRUE)

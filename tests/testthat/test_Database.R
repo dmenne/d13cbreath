@@ -27,10 +27,10 @@ test_that("Writing sample BreathID database returns valid set of fit parameters 
   unlink(sqlitePath)
   # BreathID, ExpBeta, BluckCoward, Maes, MaesScint,WN
   expect_equal(length(unique(nParameters$Method)),6,
-               info = paste(unique(nParameters$Method),collapse=", "))    
+               info = paste(unique(nParameters$Method),collapse = ", "))    
   # t50 tlag GEC beta deviance k m       
   expect_equal(length(unique(nParameters$Parameter)),7,
-               info = paste(unique(nParameters$Parameter),collapse=", "))
+               info = paste(unique(nParameters$Parameter),collapse = ", "))
 })
 
 test_that("Update Cascade and Delete Cascade must be effective for BreathTestRecord",{
@@ -42,15 +42,15 @@ test_that("Update Cascade and Delete Cascade must be effective for BreathTestRec
   con = OpenSqliteConnection(sqlitePath)
   patID = dbGetQuery(con,"SELECT PatientID from Patient")$PatientID
   # Test Delete
-  expect_equal(dbGetQuery(con, countSQL(patID[1]))[1,1] ,3)
+  expect_equal(dbGetQuery(con, countSQL(patID[1]))[1,1] ,4)
   DBI::dbExecute(con, sprintf("DELETE from Patient where patientID='%s'",patID[1]))
   expect_equal(dbGetQuery(con, countSQL(patID[1]))[1,1] ,0)
   # Test Update
-  expect_equal(dbGetQuery(con, countSQL(patID[2]))[1,1] ,3)
+  expect_equal(dbGetQuery(con, countSQL(patID[3]))[1,1] ,5)
   DBI::dbExecute(con, 
-    sprintf("UPDATE Patient SET patientID='blub' where PatientID='%s'", patID[2]))
-  expect_equal(dbGetQuery(con, countSQL(patID[2]))[1,1] ,0)
-  expect_equal(dbGetQuery(con, countSQL('blub'))[1,1] ,3)  
+    sprintf("UPDATE Patient SET patientID='blub' where PatientID='%s'", patID[3]))
+  expect_equal(dbGetQuery(con, countSQL(patID[3]))[1,1] ,0)
+  expect_equal(dbGetQuery(con, countSQL('blub'))[1,1] ,5)  
   dbDisconnect(con)
 })  
 
@@ -64,7 +64,7 @@ test_that("Summary returns list of Record and Parameters",{
  expect_equal(class(sum[[1]]),"data.frame")
  expect_equal(class(sum[[2]]),"data.frame")
  expect_equal(length(sum$Record),23)
- expect_true( nrow(sum$Parameters)>5)
+ expect_true( nrow(sum$Parameters) > 5)
 })
 
 test_that("Reading of multiple files returns dataframe with status",{
@@ -145,8 +145,8 @@ test_that("Wagner-Nelson creates a valid predicted time series",{
    expect_true(min(wn$Value) > 10)
    ts = dbGetQuery(con,"SELECT * from BreathTestTimeSeries where Parameter = 'WN'")
    expect_equal(range(ts$Time),c(0,225))
-   expect_true(max(ts$Value)<=1)
-   expect_true(min(ts$Value)>=-0.2)
+   expect_true(max(ts$Value) <= 1)
+   expect_true(min(ts$Value) >= -0.2)
    dbDisconnect(con)
 })
 
